@@ -1,0 +1,277 @@
+definitions:
+  DecisionCase:
+    description: A single case within a decision workflow step, defining a condition
+      and the next step to take if the condition is met.
+    properties:
+      condition:
+        type: string
+      nextStepId:
+        type: string
+    type: object
+  DecisionWorkflowStep:
+    description: A workflow step that makes a decision based on conditions to determine
+      the next step.
+    properties:
+      cases:
+        items:
+          $ref: '#/definitions/DecisionCase'
+        type: array
+    type: object
+  ForkBranch:
+    description: A single branch within a fork workflow step, defining the next step
+      to take.
+    properties:
+      id:
+        type: string
+      nextStepId:
+        type: string
+    type: object
+  ForkWorkflowStep:
+    description: A workflow step that forks into multiple branches.
+    properties:
+      branches:
+        items:
+          $ref: '#/definitions/ForkBranch'
+        type: array
+    type: object
+  HttpWorkflowStep:
+    description: A workflow step that performs an HTTP request.
+    properties:
+      body:
+        type: string
+      headers:
+        additionalProperties:
+          type: string
+        type: object
+      method:
+        type: string
+      nextStepId:
+        type: string
+      url:
+        type: string
+    type: object
+  JoinWorkflowStep:
+    description: A workflow step that joins multiple incoming steps into one.
+    properties:
+      incomingSteps:
+        items:
+          type: string
+        type: array
+      nextStepId:
+        type: string
+      originId:
+        type: string
+    type: object
+  ScriptWorkflowStep:
+    description: A workflow step that executes a script.
+    properties:
+      nextStepId:
+        type: string
+      script:
+        type: string
+    type: object
+  SubWorkflowStep:
+    description: A workflow step that invokes a sub-workflow.
+    properties:
+      nextStepId:
+        type: string
+      workflowId:
+        type: string
+    type: object
+  TaskWorkflowStep:
+    description: A simple task workflow step that performs a specific action.
+    properties:
+      nextStepId:
+        type: string
+    type: object
+  TerminateWorkflowStep:
+    description: A workflow step that terminates the workflow execution.
+    properties:
+      reason:
+        type: string
+    type: object
+  WaitWorkflowStep:
+    description: A workflow step that waits for a specified duration before proceeding.
+    properties:
+      duration:
+        description: e.g., "5m", "1h"
+        type: string
+      nextStepId:
+        type: string
+    type: object
+  WorkflowDefinition:
+    description: A workflow definition defines the structure and behavior of a workflow,
+      including its steps and metadata.
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      metadata:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+      steps:
+        items:
+          $ref: '#/definitions/WorkflowStep'
+        type: array
+      updated_at:
+        type: string
+      version:
+        type: string
+    type: object
+  WorkflowStep:
+    description: A step within a workflow, defining its type and specific configurations.
+    properties:
+      decision:
+        $ref: '#/definitions/DecisionWorkflowStep'
+      description:
+        type: string
+      displayName:
+        type: string
+      fork:
+        $ref: '#/definitions/ForkWorkflowStep'
+      http:
+        $ref: '#/definitions/HttpWorkflowStep'
+      id:
+        type: string
+      join:
+        $ref: '#/definitions/JoinWorkflowStep'
+      script:
+        $ref: '#/definitions/ScriptWorkflowStep'
+      subWorkflow:
+        $ref: '#/definitions/SubWorkflowStep'
+      task:
+        $ref: '#/definitions/TaskWorkflowStep'
+      terminate:
+        $ref: '#/definitions/TerminateWorkflowStep'
+      type:
+        $ref: '#/definitions/WorkflowStepType'
+      wait:
+        $ref: '#/definitions/WaitWorkflowStep'
+    type: object
+  WorkflowStepType:
+    enum:
+    - task
+    - fork
+    - join
+    - decision
+    - sub_workflow
+    - wait
+    - script
+    - http
+    - terminate
+    type: string
+    x-enum-varnames:
+    - WorkflowStepTypeTask
+    - WorkflowStepTypeFork
+    - WorkflowStepTypeJoin
+    - WorkflowStepTypeDecision
+    - WorkflowStepTypeSubWorkflow
+    - WorkflowStepTypeWait
+    - WorkflowStepTypeScript
+    - WorkflowStepTypeHttp
+    - WorkflowStepTypeTerminate
+info:
+  contact: {}
+paths:
+  /workflow-definitions:
+    get:
+      description: Retrieve a list of all workflow definitions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/WorkflowDefinition'
+            type: array
+      summary: Get all workflow definitions
+      tags:
+      - workflow-definitions
+    post:
+      consumes:
+      - application/json
+      description: Create a new workflow definition
+      parameters:
+      - description: Workflow Definition
+        in: body
+        name: workflow
+        required: true
+        schema:
+          $ref: '#/definitions/WorkflowDefinition'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/WorkflowDefinition'
+      summary: Create a new workflow definition
+      tags:
+      - workflow-definitions
+  /workflow-definitions/{id}:
+    delete:
+      description: Delete a workflow definition by its ID
+      parameters:
+      - description: Workflow Definition ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+      summary: Delete a workflow definition
+      tags:
+      - workflow-definitions
+    get:
+      description: Retrieve a single workflow definition by its ID
+      parameters:
+      - description: Workflow Definition ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WorkflowDefinition'
+      summary: Get a workflow definition by ID
+      tags:
+      - workflow-definitions
+    put:
+      consumes:
+      - application/json
+      description: Update an existing workflow definition by its ID
+      parameters:
+      - description: Workflow Definition ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Workflow Definition
+        in: body
+        name: workflow
+        required: true
+        schema:
+          $ref: '#/definitions/WorkflowDefinition'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WorkflowDefinition'
+      summary: Update an existing workflow definition
+      tags:
+      - workflow-definitions
+swagger: "2.0"

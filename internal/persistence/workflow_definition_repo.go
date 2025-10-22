@@ -1,6 +1,9 @@
 package persistence
 
 import (
+	"errors"
+
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"gorm.io/gorm"
 )
@@ -35,4 +38,10 @@ func (r *WorkflowDefinitionsRepository) Update(wf *models.WorkflowDefinition) er
 
 func (r *WorkflowDefinitionsRepository) Delete(id string) error {
 	return r.db.Delete(&models.WorkflowDefinition{}, "id = ?", id).Error
+}
+
+func (r *WorkflowDefinitionsRepository) IsDuplicateKeyError(err error) bool {
+	var pgErr *pgconn.PgError
+	errors.As(err, &pgErr)
+	return pgErr.Code == "23505"
 }

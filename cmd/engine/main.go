@@ -9,6 +9,11 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/internal/persistence"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	_ "github.com/paulhalleux/workflow-engine-go/docs"
+	_ "github.com/swaggo/files"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -27,7 +32,10 @@ func main() {
 	handler := api.NewWorkflowDefinitionsHandler(repo)
 
 	r := gin.Default()
-	handler.RegisterRoutes(r)
+	group := r.Group("/api/v1")
+	handler.RegisterRoutes(group)
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	log.Println("🚀 Engine HTTP server running on :8080")
 	serverErr := r.Run(":8080")
