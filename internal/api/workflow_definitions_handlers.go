@@ -10,8 +10,6 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/internal/utils"
 )
 
-var validate, _ = utils.CreateValidator()
-
 type WorkflowDefinitionsHandler struct {
 	repo *persistence.WorkflowDefinitionsRepository
 }

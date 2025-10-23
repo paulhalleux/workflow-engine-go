@@ -14,7 +14,7 @@ type WorkflowDefinitionsRepository struct {
 	db *gorm.DB
 }
 
-func NewWorkflowRepository(db *gorm.DB) *WorkflowDefinitionsRepository {
+func NewWorkflowDefinitionsRepository(db *gorm.DB) *WorkflowDefinitionsRepository {
 	return &WorkflowDefinitionsRepository{db}
 }
 

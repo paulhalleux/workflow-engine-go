@@ -2,11 +2,17 @@ package main
 
 import (
 	"log"
+	"net"
 
 	"github.com/gin-gonic/gin"
 	"github.com/paulhalleux/workflow-engine-go/internal/api"
+	"github.com/paulhalleux/workflow-engine-go/internal/grpcapi"
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/persistence"
+	"github.com/paulhalleux/workflow-engine-go/internal/proto"
+	"github.com/paulhalleux/workflow-engine-go/internal/services"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
@@ -28,15 +34,36 @@ func main() {
 		log.Fatalf("failed to migrate database: %v", migrateErr)
 	}
 
-	repo := persistence.NewWorkflowRepository(db)
-	handler := api.NewWorkflowDefinitionsHandler(repo)
+	wfdRepo := persistence.NewWorkflowDefinitionsRepository(db)
+	wfiRepo := persistence.NewWorkflowInstancesRepository(db)
+
+	lis, _ := net.Listen("tcp", ":50051")
+	grpcServer := grpc.NewServer()
+	reflection.Register(grpcServer)
+
+	workflowSvc := services.NewWorkflowService(wfdRepo, wfiRepo)
+
+	// Register gRPC services
+	proto.RegisterWorkflowEngineServer(grpcServer, grpcapi.NewWorkflowEngineServer(workflowSvc))
+
+	// Start the gRPC server
+	go func() {
+		log.Println("🚀 Engine gRPC server running on :50051")
+		if serveErr := grpcServer.Serve(lis); serveErr != nil {
+			log.Fatalf("failed to serve gRPC server: %v", serveErr)
+		}
+	}()
 
 	r := gin.Default()
 	group := r.Group("/api/v1")
-	handler.RegisterRoutes(group)
+
+	// Register REST API handlers
+	api.NewWorkflowDefinitionsHandler(wfdRepo).RegisterRoutes(group)
+	api.NewWorkflowInstancesHandler(wfiRepo).RegisterRoutes(group)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	// Start the HTTP server
 	log.Println("🚀 Engine HTTP server running on :8080")
 	serverErr := r.Run(":8080")
 	if serverErr != nil {

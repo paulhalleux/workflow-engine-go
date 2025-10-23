@@ -1,4 +1,20 @@
 syntax = "proto3";
 
+import "google/protobuf/struct.proto";
+
 option go_package = "internal/proto";
 package engine;
+
+service WorkflowEngine {
+  rpc StartWorkflow (StartWorkflowRequest) returns (StartWorkflowResponse);
+}
+
+message StartWorkflowRequest {
+  string workflow_definition_id = 1;
+  google.protobuf.Struct input = 2;
+  google.protobuf.Struct metadata = 3;
+}
+
+message StartWorkflowResponse {
+  string workflow_instance_id = 1;
+}

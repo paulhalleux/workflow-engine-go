@@ -9,7 +9,9 @@ package proto
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -20,19 +22,152 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type StartWorkflowRequest struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	WorkflowDefinitionId string                 `protobuf:"bytes,1,opt,name=workflow_definition_id,json=workflowDefinitionId,proto3" json:"workflow_definition_id,omitempty"`
+	Input                *structpb.Struct       `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
+	Metadata             *structpb.Struct       `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *StartWorkflowRequest) Reset() {
+	*x = StartWorkflowRequest{}
+	mi := &file_proto_workflow_engine_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartWorkflowRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartWorkflowRequest) ProtoMessage() {}
+
+func (x *StartWorkflowRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_workflow_engine_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartWorkflowRequest.ProtoReflect.Descriptor instead.
+func (*StartWorkflowRequest) Descriptor() ([]byte, []int) {
+	return file_proto_workflow_engine_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *StartWorkflowRequest) GetWorkflowDefinitionId() string {
+	if x != nil {
+		return x.WorkflowDefinitionId
+	}
+	return ""
+}
+
+func (x *StartWorkflowRequest) GetInput() *structpb.Struct {
+	if x != nil {
+		return x.Input
+	}
+	return nil
+}
+
+func (x *StartWorkflowRequest) GetMetadata() *structpb.Struct {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+type StartWorkflowResponse struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	WorkflowInstanceId string                 `protobuf:"bytes,1,opt,name=workflow_instance_id,json=workflowInstanceId,proto3" json:"workflow_instance_id,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *StartWorkflowResponse) Reset() {
+	*x = StartWorkflowResponse{}
+	mi := &file_proto_workflow_engine_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartWorkflowResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartWorkflowResponse) ProtoMessage() {}
+
+func (x *StartWorkflowResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_workflow_engine_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartWorkflowResponse.ProtoReflect.Descriptor instead.
+func (*StartWorkflowResponse) Descriptor() ([]byte, []int) {
+	return file_proto_workflow_engine_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *StartWorkflowResponse) GetWorkflowInstanceId() string {
+	if x != nil {
+		return x.WorkflowInstanceId
+	}
+	return ""
+}
+
 var File_proto_workflow_engine_proto protoreflect.FileDescriptor
 
 const file_proto_workflow_engine_proto_rawDesc = "" +
 	"\n" +
-	"\x1bproto/workflow-engine.proto\x12\x06engineB\x10Z\x0einternal/protob\x06proto3"
+	"\x1bproto/workflow-engine.proto\x12\x06engine\x1a\x1cgoogle/protobuf/struct.proto\"\xb0\x01\n" +
+	"\x14StartWorkflowRequest\x124\n" +
+	"\x16workflow_definition_id\x18\x01 \x01(\tR\x14workflowDefinitionId\x12-\n" +
+	"\x05input\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x05input\x123\n" +
+	"\bmetadata\x18\x03 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"I\n" +
+	"\x15StartWorkflowResponse\x120\n" +
+	"\x14workflow_instance_id\x18\x01 \x01(\tR\x12workflowInstanceId2^\n" +
+	"\x0eWorkflowEngine\x12L\n" +
+	"\rStartWorkflow\x12\x1c.engine.StartWorkflowRequest\x1a\x1d.engine.StartWorkflowResponseB\x10Z\x0einternal/protob\x06proto3"
 
-var file_proto_workflow_engine_proto_goTypes = []any{}
+var (
+	file_proto_workflow_engine_proto_rawDescOnce sync.Once
+	file_proto_workflow_engine_proto_rawDescData []byte
+)
+
+func file_proto_workflow_engine_proto_rawDescGZIP() []byte {
+	file_proto_workflow_engine_proto_rawDescOnce.Do(func() {
+		file_proto_workflow_engine_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_workflow_engine_proto_rawDesc), len(file_proto_workflow_engine_proto_rawDesc)))
+	})
+	return file_proto_workflow_engine_proto_rawDescData
+}
+
+var file_proto_workflow_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_workflow_engine_proto_goTypes = []any{
+	(*StartWorkflowRequest)(nil),  // 0: engine.StartWorkflowRequest
+	(*StartWorkflowResponse)(nil), // 1: engine.StartWorkflowResponse
+	(*structpb.Struct)(nil),       // 2: google.protobuf.Struct
+}
 var file_proto_workflow_engine_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	2, // 0: engine.StartWorkflowRequest.input:type_name -> google.protobuf.Struct
+	2, // 1: engine.StartWorkflowRequest.metadata:type_name -> google.protobuf.Struct
+	0, // 2: engine.WorkflowEngine.StartWorkflow:input_type -> engine.StartWorkflowRequest
+	1, // 3: engine.WorkflowEngine.StartWorkflow:output_type -> engine.StartWorkflowResponse
+	3, // [3:4] is the sub-list for method output_type
+	2, // [2:3] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_proto_workflow_engine_proto_init() }
@@ -46,12 +181,13 @@ func file_proto_workflow_engine_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_workflow_engine_proto_rawDesc), len(file_proto_workflow_engine_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   0,
+			NumMessages:   2,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
 		GoTypes:           file_proto_workflow_engine_proto_goTypes,
 		DependencyIndexes: file_proto_workflow_engine_proto_depIdxs,
+		MessageInfos:      file_proto_workflow_engine_proto_msgTypes,
 	}.Build()
 	File_proto_workflow_engine_proto = out.File
 	file_proto_workflow_engine_proto_goTypes = nil
