@@ -1,82 +1,64 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net"
 
 	"github.com/gin-gonic/gin"
-	"github.com/paulhalleux/workflow-engine-go/internal/api"
-	"github.com/paulhalleux/workflow-engine-go/internal/grpcapi"
-	"github.com/paulhalleux/workflow-engine-go/internal/models"
-	"github.com/paulhalleux/workflow-engine-go/internal/persistence"
-	"github.com/paulhalleux/workflow-engine-go/internal/proto"
-	"github.com/paulhalleux/workflow-engine-go/internal/queue"
-	"github.com/paulhalleux/workflow-engine-go/internal/services"
-	"github.com/paulhalleux/workflow-engine-go/internal/worker"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-
 	_ "github.com/paulhalleux/workflow-engine-go/docs"
+	"github.com/paulhalleux/workflow-engine-go/internal/api"
+	"github.com/paulhalleux/workflow-engine-go/internal/config"
+	"github.com/paulhalleux/workflow-engine-go/internal/container"
+	"github.com/paulhalleux/workflow-engine-go/internal/grpcapi"
+	"github.com/paulhalleux/workflow-engine-go/internal/proto"
 	_ "github.com/swaggo/files"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
-	dsn := "host=wf-engine-postgres user=db_user password=db_user_password dbname=workflow_engine port=5432 sslmode=disable"
-	db, dbErr := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if dbErr != nil {
-		log.Fatalf("failed to connect database: %v", dbErr)
-	}
+	ctn := container.NewContainer(config.Default())
+	defer ctn.CancelFunc()
 
-	migrateErr := db.AutoMigrate(&models.WorkflowDefinition{})
-	if migrateErr != nil {
-		log.Fatalf("failed to migrate database: %v", migrateErr)
-	}
+	ctn.WorkflowExecutor.Start(ctn.Context)
 
-	wfdRepo := persistence.NewWorkflowDefinitionsRepository(db)
-	wfiRepo := persistence.NewWorkflowInstancesRepository(db)
+	go startHttpServer(ctn)
+	go startGrpcServer(ctn)
 
-	lis, _ := net.Listen("tcp", ":50051")
-	grpcServer := grpc.NewServer()
-	reflection.Register(grpcServer)
+	<-ctn.Context.Done()
+}
 
-	wfQueue := queue.NewMemoryQueue(100)
-
-	workflowSvc := services.NewWorkflowService(wfdRepo, wfiRepo, wfQueue)
-	executor := worker.NewWorkflowExecutor(wfdRepo, wfiRepo, wfQueue, 1)
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	executor.Start(ctx)
-
-	// Register gRPC services
-	proto.RegisterWorkflowEngineServer(grpcServer, grpcapi.NewWorkflowEngineServer(workflowSvc))
-
-	// Start the gRPC server
-	go func() {
-		log.Println("🚀 Engine gRPC server running on :50051")
-		if serveErr := grpcServer.Serve(lis); serveErr != nil {
-			log.Fatalf("failed to serve gRPC server: %v", serveErr)
-		}
-	}()
-
+func startHttpServer(ctn *container.Container) {
 	r := gin.Default()
 	group := r.Group("/api/v1")
 
 	// Register REST API handlers
-	api.NewWorkflowDefinitionsHandler(wfdRepo).RegisterRoutes(group)
-	api.NewWorkflowInstancesHandler(wfiRepo).RegisterRoutes(group)
+	api.NewWorkflowDefinitionsHandler(ctn.WorkflowDefRepo).RegisterRoutes(group)
+	api.NewWorkflowInstancesHandler(ctn.WorkflowInstRepo).RegisterRoutes(group)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// Start the HTTP server
-	log.Println("🚀 Engine HTTP server running on :8080")
-	serverErr := r.Run(":8080")
+	log.Println("🚀 Engine HTTP server running on ", ctn.Config.HTTPPort)
+	serverErr := r.Run(ctn.Config.HTTPPort)
 	if serverErr != nil {
 		log.Fatalf("failed to run server: %v", serverErr)
+	}
+}
+
+func startGrpcServer(ctn *container.Container) {
+	lis, _ := net.Listen("tcp", ctn.Config.GRPCPort)
+	grpcServer := grpc.NewServer()
+	reflection.Register(grpcServer)
+
+	// Register gRPC services
+	proto.RegisterWorkflowEngineServer(grpcServer, grpcapi.NewWorkflowEngineServer(ctn.WorkflowService))
+
+	// Start the gRPC server
+	log.Println("🚀 Engine gRPC server running on ", ctn.Config.GRPCPort)
+	if serveErr := grpcServer.Serve(lis); serveErr != nil {
+		log.Fatalf("failed to serve gRPC server: %v", serveErr)
 	}
 }
