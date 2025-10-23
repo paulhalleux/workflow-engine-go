@@ -22,6 +22,7 @@ func NewWorkflowDefinitionsHandler(repo *persistence.WorkflowDefinitionsReposito
 
 func (h *WorkflowDefinitionsHandler) RegisterRoutes(r *gin.RouterGroup) {
 	r.GET("/workflow-definitions", h.GetAll)
+	r.POST("/workflow-definitions/search", h.Search)
 	r.GET("/workflow-definitions/:id", h.GetByID)
 	r.POST("/workflow-definitions", h.Create)
 	r.PUT("/workflow-definitions/:id", h.Update)
@@ -39,6 +40,41 @@ func (h *WorkflowDefinitionsHandler) RegisterRoutes(r *gin.RouterGroup) {
 // @Router /workflow-definitions [get]
 func (h *WorkflowDefinitionsHandler) GetAll(c *gin.Context) {
 	wfs, err := h.repo.GetAll()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, wfs)
+}
+
+// Search
+// @Summary Search workflow definitions
+// @Description Search for workflow definitions based on criteria
+// @Tags workflow-definitions
+// @Accept json
+// @Produce json
+// @Param search body dto.SearchWorkflowDefinitionsRequest true "Search Criteria"
+// @Success 200 {array} models.WorkflowDefinition
+// @Router /workflow-definitions/search [post]
+func (h *WorkflowDefinitionsHandler) Search(c *gin.Context) {
+	var searchReq dto.SearchWorkflowDefinitionsRequest
+	if err := c.ShouldBindJSON(&searchReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	validationErrors, err := utils.Validate(&searchReq)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if validationErrors != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"validationErrors": validationErrors})
+		return
+	}
+
+	wfs, err := h.repo.Search(&searchReq)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -223,9 +259,6 @@ func (h *WorkflowDefinitionsHandler) Disable(c *gin.Context) {
 }
 
 func updatePartialWorkflowDefinition(wf *models.WorkflowDefinition, wfr *dto.UpdateWorkflowDefinitionRequest) {
-	if wfr.Name != nil {
-		wf.Name = *wfr.Name
-	}
 	if wfr.Description != nil {
 		wf.Description = *wfr.Description
 	}

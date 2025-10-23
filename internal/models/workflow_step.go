@@ -11,7 +11,7 @@ const (
 	WorkflowStepTypeFork        WorkflowStepType = "fork"
 	WorkflowStepTypeJoin        WorkflowStepType = "join"
 	WorkflowStepTypeDecision    WorkflowStepType = "decision"
-	WorkflowStepTypeSubWorkflow WorkflowStepType = "sub_workflow"
+	WorkflowStepTypeSubWorkflow WorkflowStepType = "subworkflow"
 	WorkflowStepTypeWait        WorkflowStepType = "wait"
 	WorkflowStepTypeScript      WorkflowStepType = "script"
 	WorkflowStepTypeHttp        WorkflowStepType = "http"
@@ -30,7 +30,8 @@ type BaseWorkflowStep struct {
 // TaskWorkflowStep
 // @Description A simple task workflow step that performs a specific action.
 type TaskWorkflowStep struct {
-	NextStepId string `json:"nextStepId,omitempty"`
+	TaskDefinitionId string `json:"taskDefinitionId,omitempty" validate:"required"`
+	NextStepId       string `json:"nextStepId,omitempty"`
 } // @name TaskWorkflowStep
 
 // ForkBranch
@@ -108,15 +109,15 @@ type HttpWorkflowStep struct {
 // @Description A step within a workflow, defining its type and specific configurations.
 type WorkflowStep struct {
 	BaseWorkflowStep
-	Task        *TaskWorkflowStep      `json:"task,omitempty"`
-	Form        *ForkWorkflowStep      `json:"fork,omitempty"`
-	Decision    *DecisionWorkflowStep  `json:"decision,omitempty"`
-	Join        *JoinWorkflowStep      `json:"join,omitempty"`
-	SubWorkflow *SubWorkflowStep       `json:"subWorkflow,omitempty"`
-	Wait        *WaitWorkflowStep      `json:"wait,omitempty"`
-	Terminate   *TerminateWorkflowStep `json:"terminate,omitempty"`
-	Script      *ScriptWorkflowStep    `json:"script,omitempty"`
-	Http        *HttpWorkflowStep      `json:"http,omitempty"`
+	Task        *TaskWorkflowStep      `json:"task,omitempty" validate:"required_if=Type task"`
+	Form        *ForkWorkflowStep      `json:"fork,omitempty" validate:"required_if=Type fork"`
+	Decision    *DecisionWorkflowStep  `json:"decision,omitempty" validate:"required_if=Type decision"`
+	Join        *JoinWorkflowStep      `json:"join,omitempty" validate:"required_if=Type join"`
+	SubWorkflow *SubWorkflowStep       `json:"subWorkflow,omitempty" validate:"required_if=Type subworkflow"`
+	Wait        *WaitWorkflowStep      `json:"wait,omitempty" validate:"required_if=Type wait"`
+	Terminate   *TerminateWorkflowStep `json:"terminate,omitempty" validate:"required_if=Type terminate"`
+	Script      *ScriptWorkflowStep    `json:"script,omitempty" validate:"required_if=Type script"`
+	Http        *HttpWorkflowStep      `json:"http,omitempty" validate:"required_if=Type http"`
 } // @name WorkflowStep
 
 type WorkflowStepList []WorkflowStep

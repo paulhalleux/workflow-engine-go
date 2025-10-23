@@ -1,4 +1,30 @@
 definitions:
+  CreateWorkflowDefinitionRequest:
+    properties:
+      description:
+        maxLength: 500
+        type: string
+      isEnabled:
+        type: boolean
+      metadata:
+        items:
+          type: integer
+        type: array
+      name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      steps:
+        items:
+          $ref: '#/definitions/WorkflowStep'
+        type: array
+      version:
+        type: string
+    required:
+    - name
+    - steps
+    - version
+    type: object
   DecisionCase:
     description: A single case within a decision workflow step, defining a condition
       and the next step to take if the condition is met.
@@ -70,6 +96,30 @@ definitions:
       script:
         type: string
     type: object
+  SearchWorkflowDefinitionsRequest:
+    properties:
+      draft:
+        type: boolean
+      isEnabled:
+        type: boolean
+      majorVersion:
+        minimum: 0
+        type: integer
+      minorVersion:
+        minimum: 0
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      patchVersion:
+        minimum: 0
+        type: integer
+      release:
+        type: boolean
+      version:
+        type: string
+    type: object
   SubWorkflowStep:
     description: A workflow step that invokes a sub-workflow.
     properties:
@@ -83,12 +133,36 @@ definitions:
     properties:
       nextStepId:
         type: string
+      taskDefinitionId:
+        type: string
+    required:
+    - taskDefinitionId
     type: object
   TerminateWorkflowStep:
     description: A workflow step that terminates the workflow execution.
     properties:
       reason:
         type: string
+    type: object
+  UpdateWorkflowDefinitionRequest:
+    properties:
+      description:
+        maxLength: 500
+        type: string
+      isEnabled:
+        type: boolean
+      metadata:
+        items:
+          type: integer
+        type: array
+      steps:
+        items:
+          $ref: '#/definitions/WorkflowStep'
+        type: array
+      version:
+        type: string
+    required:
+    - steps
     type: object
   WaitWorkflowStep:
     description: A workflow step that waits for a specified duration before proceeding.
@@ -103,12 +177,14 @@ definitions:
     description: A workflow definition defines the structure and behavior of a workflow,
       including its steps and metadata.
     properties:
-      created_at:
+      createdAt:
         type: string
       description:
         type: string
       id:
         type: string
+      isEnabled:
+        type: boolean
       metadata:
         items:
           type: integer
@@ -119,7 +195,7 @@ definitions:
         items:
           $ref: '#/definitions/WorkflowStep'
         type: array
-      updated_at:
+      updatedAt:
         type: string
       version:
         type: string
@@ -153,6 +229,9 @@ definitions:
         $ref: '#/definitions/WorkflowStepType'
       wait:
         $ref: '#/definitions/WaitWorkflowStep'
+    required:
+    - id
+    - type
     type: object
   WorkflowStepType:
     enum:
@@ -160,7 +239,7 @@ definitions:
     - fork
     - join
     - decision
-    - sub_workflow
+    - subworkflow
     - wait
     - script
     - http
@@ -199,12 +278,12 @@ paths:
       - application/json
       description: Create a new workflow definition
       parameters:
-      - description: Workflow Definition
+      - description: Workflow Definition Data
         in: body
         name: workflow
         required: true
         schema:
-          $ref: '#/definitions/WorkflowDefinition'
+          $ref: '#/definitions/CreateWorkflowDefinitionRequest'
       produces:
       - application/json
       responses:
@@ -258,12 +337,12 @@ paths:
         name: id
         required: true
         type: string
-      - description: Workflow Definition
+      - description: Workflow Definition Data
         in: body
         name: workflow
         required: true
         schema:
-          $ref: '#/definitions/WorkflowDefinition'
+          $ref: '#/definitions/UpdateWorkflowDefinitionRequest'
       produces:
       - application/json
       responses:
@@ -272,6 +351,64 @@ paths:
           schema:
             $ref: '#/definitions/WorkflowDefinition'
       summary: Update an existing workflow definition
+      tags:
+      - workflow-definitions
+  /workflow-definitions/{id}/disable:
+    patch:
+      description: Disable a workflow definition by its ID
+      parameters:
+      - description: Workflow Definition ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WorkflowDefinition'
+      summary: Disable a workflow definition
+      tags:
+      - workflow-definitions
+  /workflow-definitions/{id}/enable:
+    patch:
+      description: Enable a workflow definition by its ID
+      parameters:
+      - description: Workflow Definition ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WorkflowDefinition'
+      summary: Enable a workflow definition
+      tags:
+      - workflow-definitions
+  /workflow-definitions/search:
+    post:
+      consumes:
+      - application/json
+      description: Search for workflow definitions based on criteria
+      parameters:
+      - description: Search Criteria
+        in: body
+        name: search
+        required: true
+        schema:
+          $ref: '#/definitions/SearchWorkflowDefinitionsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/WorkflowDefinition'
+            type: array
+      summary: Search workflow definitions
       tags:
       - workflow-definitions
 swagger: "2.0"

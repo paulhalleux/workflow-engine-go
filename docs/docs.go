@@ -51,12 +51,12 @@ const docTemplate = `{
                 "summary": "Create a new workflow definition",
                 "parameters": [
                     {
-                        "description": "Workflow Definition",
+                        "description": "Workflow Definition Data",
                         "name": "workflow",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/WorkflowDefinition"
+                            "$ref": "#/definitions/CreateWorkflowDefinitionRequest"
                         }
                     }
                 ],
@@ -65,6 +65,43 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/WorkflowDefinition"
+                        }
+                    }
+                }
+            }
+        },
+        "/workflow-definitions/search": {
+            "post": {
+                "description": "Search for workflow definitions based on criteria",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workflow-definitions"
+                ],
+                "summary": "Search workflow definitions",
+                "parameters": [
+                    {
+                        "description": "Search Criteria",
+                        "name": "search",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SearchWorkflowDefinitionsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/WorkflowDefinition"
+                            }
                         }
                     }
                 }
@@ -119,12 +156,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Workflow Definition",
+                        "description": "Workflow Definition Data",
                         "name": "workflow",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/WorkflowDefinition"
+                            "$ref": "#/definitions/UpdateWorkflowDefinitionRequest"
                         }
                     }
                 ],
@@ -158,9 +195,98 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/workflow-definitions/{id}/disable": {
+            "patch": {
+                "description": "Disable a workflow definition by its ID",
+                "tags": [
+                    "workflow-definitions"
+                ],
+                "summary": "Disable a workflow definition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workflow Definition ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/WorkflowDefinition"
+                        }
+                    }
+                }
+            }
+        },
+        "/workflow-definitions/{id}/enable": {
+            "patch": {
+                "description": "Enable a workflow definition by its ID",
+                "tags": [
+                    "workflow-definitions"
+                ],
+                "summary": "Enable a workflow definition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workflow Definition ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/WorkflowDefinition"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "CreateWorkflowDefinitionRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "steps",
+                "version"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "isEnabled": {
+                    "type": "boolean"
+                },
+                "metadata": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/WorkflowStep"
+                    }
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
         "DecisionCase": {
             "description": "A single case within a decision workflow step, defining a condition and the next step to take if the condition is met.",
             "type": "object",
@@ -263,6 +389,40 @@ const docTemplate = `{
                 }
             }
         },
+        "SearchWorkflowDefinitionsRequest": {
+            "type": "object",
+            "properties": {
+                "draft": {
+                    "type": "boolean"
+                },
+                "isEnabled": {
+                    "type": "boolean"
+                },
+                "majorVersion": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "minorVersion": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3
+                },
+                "patchVersion": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "release": {
+                    "type": "boolean"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
         "SubWorkflowStep": {
             "description": "A workflow step that invokes a sub-workflow.",
             "type": "object",
@@ -278,8 +438,14 @@ const docTemplate = `{
         "TaskWorkflowStep": {
             "description": "A simple task workflow step that performs a specific action.",
             "type": "object",
+            "required": [
+                "taskDefinitionId"
+            ],
             "properties": {
                 "nextStepId": {
+                    "type": "string"
+                },
+                "taskDefinitionId": {
                     "type": "string"
                 }
             }
@@ -289,6 +455,36 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "UpdateWorkflowDefinitionRequest": {
+            "type": "object",
+            "required": [
+                "steps"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "isEnabled": {
+                    "type": "boolean"
+                },
+                "metadata": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/WorkflowStep"
+                    }
+                },
+                "version": {
                     "type": "string"
                 }
             }
@@ -310,7 +506,7 @@ const docTemplate = `{
             "description": "A workflow definition defines the structure and behavior of a workflow, including its steps and metadata.",
             "type": "object",
             "properties": {
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "description": {
@@ -318,6 +514,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "isEnabled": {
+                    "type": "boolean"
                 },
                 "metadata": {
                     "type": "array",
@@ -334,7 +533,7 @@ const docTemplate = `{
                         "$ref": "#/definitions/WorkflowStep"
                     }
                 },
-                "updated_at": {
+                "updatedAt": {
                     "type": "string"
                 },
                 "version": {
@@ -345,6 +544,10 @@ const docTemplate = `{
         "WorkflowStep": {
             "description": "A step within a workflow, defining its type and specific configurations.",
             "type": "object",
+            "required": [
+                "id",
+                "type"
+            ],
             "properties": {
                 "decision": {
                     "$ref": "#/definitions/DecisionWorkflowStep"
@@ -394,7 +597,7 @@ const docTemplate = `{
                 "fork",
                 "join",
                 "decision",
-                "sub_workflow",
+                "subworkflow",
                 "wait",
                 "script",
                 "http",
