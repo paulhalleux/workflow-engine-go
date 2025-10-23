@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
 
@@ -10,7 +11,9 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/persistence"
 	"github.com/paulhalleux/workflow-engine-go/internal/proto"
+	"github.com/paulhalleux/workflow-engine-go/internal/queue"
 	"github.com/paulhalleux/workflow-engine-go/internal/services"
+	"github.com/paulhalleux/workflow-engine-go/internal/worker"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"gorm.io/driver/postgres"
@@ -41,7 +44,14 @@ func main() {
 	grpcServer := grpc.NewServer()
 	reflection.Register(grpcServer)
 
-	workflowSvc := services.NewWorkflowService(wfdRepo, wfiRepo)
+	wfQueue := queue.NewMemoryQueue(100)
+
+	workflowSvc := services.NewWorkflowService(wfdRepo, wfiRepo, wfQueue)
+	executor := worker.NewWorkflowExecutor(wfdRepo, wfiRepo, wfQueue, 1)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	executor.Start(ctx)
 
 	// Register gRPC services
 	proto.RegisterWorkflowEngineServer(grpcServer, grpcapi.NewWorkflowEngineServer(workflowSvc))

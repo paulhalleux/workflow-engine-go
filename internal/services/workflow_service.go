@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/persistence"
+	"github.com/paulhalleux/workflow-engine-go/internal/queue"
 	"github.com/paulhalleux/workflow-engine-go/internal/utils"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -24,13 +25,15 @@ type WorkflowService interface {
 type workflowService struct {
 	wfdRepo *persistence.WorkflowDefinitionsRepository
 	wfiRepo *persistence.WorkflowInstancesRepository
+	wfQueue queue.WorkflowQueue
 }
 
 func NewWorkflowService(
 	wfdRepo *persistence.WorkflowDefinitionsRepository,
 	wfiRepo *persistence.WorkflowInstancesRepository,
+	wfQueue queue.WorkflowQueue,
 ) WorkflowService {
-	return &workflowService{wfdRepo, wfiRepo}
+	return &workflowService{wfdRepo, wfiRepo, wfQueue}
 }
 
 func (s *workflowService) StartWorkflow(
@@ -52,22 +55,30 @@ func (s *workflowService) StartWorkflow(
 	}
 
 	// Marshal input as JSON
-	contextJSON, _ := utils.StructToJSON(input)
+	inputJSON, _ := utils.StructToJSON(input)
 	metadataJSON, _ := utils.StructToJSON(metadata)
 
-	now := time.Now()
 	// Create a new instance
+	now := time.Now()
 	instance := models.WorkflowInstance{
 		Id:                   uuid.New(),
 		WorkflowDefinitionId: def.Id,
 		Status:               models.WorkflowInstanceStatusPending,
 		CreatedAt:            now,
 		UpdatedAt:            now,
-		Input:                contextJSON,
+		Input:                inputJSON,
 		Metadata:             metadataJSON,
 	}
 
+	// Save the instance
 	if err := s.wfiRepo.Create(&instance); err != nil {
+		return uuid.Nil, err
+	}
+
+	// Enqueue the workflow job
+	if err := s.wfQueue.Enqueue(queue.WorkflowJob{
+		InstanceId: instance.Id,
+	}); err != nil {
 		return uuid.Nil, err
 	}
 
