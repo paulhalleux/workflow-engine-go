@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -42,13 +41,6 @@ func (s *workflowService) StartWorkflow(
 	input *structpb.Struct,
 	metadata *structpb.Struct,
 ) (uuid.UUID, error) {
-	log.Println(
-		"WorkflowService: Starting workflow",
-		"definitionID=", definitionID,
-		"input=", input,
-		"metadata=", metadata,
-	)
-
 	def, err := s.wfdRepo.GetById(definitionID.String())
 	if err != nil {
 		return uuid.Nil, err

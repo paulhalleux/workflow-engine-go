@@ -1,20 +1,31 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/paulhalleux/workflow-engine-go/internal/dto"
 	"github.com/paulhalleux/workflow-engine-go/internal/services"
 	"github.com/paulhalleux/workflow-engine-go/internal/utils"
+	"google.golang.org/protobuf/types/known/structpb"
+	"gorm.io/datatypes"
 )
 
 type WorkflowDefinitionsHandler struct {
-	svc services.WorkflowDefinitionService
+	workflowDefinitionService services.WorkflowDefinitionService
+	workflowService           services.WorkflowService
 }
 
-func NewWorkflowDefinitionsHandler(svc services.WorkflowDefinitionService) *WorkflowDefinitionsHandler {
-	return &WorkflowDefinitionsHandler{svc}
+func NewWorkflowDefinitionsHandler(
+	workflowDefinitionService services.WorkflowDefinitionService,
+	workflowService services.WorkflowService,
+) *WorkflowDefinitionsHandler {
+	return &WorkflowDefinitionsHandler{
+		workflowDefinitionService,
+		workflowService,
+	}
 }
 
 func (h *WorkflowDefinitionsHandler) RegisterRoutes(r *gin.RouterGroup) {
@@ -26,6 +37,7 @@ func (h *WorkflowDefinitionsHandler) RegisterRoutes(r *gin.RouterGroup) {
 	r.DELETE("/workflow-definitions/:id", h.Delete)
 	r.PATCH("/workflow-definitions/:id/enable", h.Enable)
 	r.PATCH("/workflow-definitions/:id/disable", h.Disable)
+	r.POST("/workflow-definitions/:id/_start", h.StartWorkflow)
 }
 
 // GetAll
@@ -36,7 +48,7 @@ func (h *WorkflowDefinitionsHandler) RegisterRoutes(r *gin.RouterGroup) {
 // @Success 200 {array} models.WorkflowDefinition
 // @Router /workflow-definitions [get]
 func (h *WorkflowDefinitionsHandler) GetAll(c *gin.Context) {
-	wfs, err := h.svc.GetAllWorkflowDefinitions()
+	wfs, err := h.workflowDefinitionService.GetAllWorkflowDefinitions()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -71,7 +83,7 @@ func (h *WorkflowDefinitionsHandler) Search(c *gin.Context) {
 		return
 	}
 
-	wfs, err := h.svc.SearchWorkflowDefinitions(&searchReq)
+	wfs, err := h.workflowDefinitionService.SearchWorkflowDefinitions(&searchReq)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -89,7 +101,7 @@ func (h *WorkflowDefinitionsHandler) Search(c *gin.Context) {
 // @Router /workflow-definitions/{id} [get]
 func (h *WorkflowDefinitionsHandler) GetByID(c *gin.Context) {
 	id := c.Param("id")
-	wf, err := h.svc.GetWorkflowDefinitionByID(id)
+	wf, err := h.workflowDefinitionService.GetWorkflowDefinitionById(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "workflow not found"})
 		return
@@ -124,7 +136,7 @@ func (h *WorkflowDefinitionsHandler) Create(c *gin.Context) {
 		return
 	}
 
-	wf, err := h.svc.CreateWorkflowDefinition(&wfr)
+	wf, err := h.workflowDefinitionService.CreateWorkflowDefinition(&wfr)
 	if err != nil {
 		if utils.IsDuplicateKeyError(err) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "workflow definition with the same name and version already exists"})
@@ -166,7 +178,7 @@ func (h *WorkflowDefinitionsHandler) Update(c *gin.Context) {
 		return
 	}
 
-	wf, err := h.svc.UpdateWorkflowDefinition(id, wfr)
+	wf, err := h.workflowDefinitionService.UpdateWorkflowDefinition(id, wfr)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -184,7 +196,7 @@ func (h *WorkflowDefinitionsHandler) Update(c *gin.Context) {
 // @Router /workflow-definitions/{id} [delete]
 func (h *WorkflowDefinitionsHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.svc.DeleteWorkflowDefinition(id); err != nil {
+	if err := h.workflowDefinitionService.DeleteWorkflowDefinition(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -200,7 +212,7 @@ func (h *WorkflowDefinitionsHandler) Delete(c *gin.Context) {
 // @Router /workflow-definitions/{id}/enable [patch]
 func (h *WorkflowDefinitionsHandler) Enable(c *gin.Context) {
 	id := c.Param("id")
-	wf, err := h.svc.EnableWorkflowDefinition(id)
+	wf, err := h.workflowDefinitionService.EnableWorkflowDefinition(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -217,10 +229,57 @@ func (h *WorkflowDefinitionsHandler) Enable(c *gin.Context) {
 // @Router /workflow-definitions/{id}/disable [patch]
 func (h *WorkflowDefinitionsHandler) Disable(c *gin.Context) {
 	id := c.Param("id")
-	wf, err := h.svc.DisableWorkflowDefinition(id)
+	wf, err := h.workflowDefinitionService.DisableWorkflowDefinition(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, wf)
+}
+
+// StartWorkflow
+// @Summary Start a workflow instance from a workflow definition
+// @Description Start a new workflow instance based on the specified workflow definition ID
+// @Tags workflow-definitions
+// @Param id path string true "Workflow Definition ID"
+// @Success 201 {object} models.WorkflowInstance
+// @Router /workflow-definitions/{id}/_start [post]
+func (h *WorkflowDefinitionsHandler) StartWorkflow(c *gin.Context) {
+	id := c.Param("id")
+	startRequest := &dto.StartWorkflowDefinitionRequest{}
+	if err := c.ShouldBindJSON(startRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	inputJSON, err := jsonToStructPB(startRequest.Input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input JSON"})
+		return
+	}
+
+	metadataJSON, err := jsonToStructPB(startRequest.Metadata)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid metadata JSON"})
+		return
+	}
+
+	if _, err := h.workflowService.StartWorkflow(c.Request.Context(), uuid.MustParse(id), inputJSON, metadataJSON); err != nil {
+		return
+	}
+
+	c.JSON(http.StatusCreated, nil)
+}
+
+func jsonToStructPB(data datatypes.JSON) (*structpb.Struct, error) {
+	if len(data) == 0 {
+		return structpb.NewStruct(nil)
+	}
+
+	var m map[string]interface{}
+	if err := json.Unmarshal(data, &m); err != nil {
+		return nil, err
+	}
+
+	return structpb.NewStruct(m)
 }

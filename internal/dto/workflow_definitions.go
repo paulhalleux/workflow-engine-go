@@ -31,3 +31,8 @@ type SearchWorkflowDefinitionsRequest struct {
 	IsRelease    *bool   `form:"isRelease,omitempty"`
 	IsEnabled    *bool   `form:"isEnabled,omitempty"`
 } // @name SearchWorkflowDefinitionsRequest
+
+type StartWorkflowDefinitionRequest struct {
+	Input    datatypes.JSON `json:"input,omitempty"`
+	Metadata datatypes.JSON `json:"metadata,omitempty"`
+} // @name StartWorkflowDefinitionRequest

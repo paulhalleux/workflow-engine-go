@@ -5,28 +5,31 @@ import (
 	"log"
 	"time"
 
-	"github.com/paulhalleux/workflow-engine-go/internal/persistence"
+	"github.com/paulhalleux/workflow-engine-go/internal/dto"
+	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/queue"
+	"github.com/paulhalleux/workflow-engine-go/internal/services"
+	"gorm.io/datatypes"
 )
 
 type WorkflowExecutor struct {
-	wfdRepo *persistence.WorkflowDefinitionsRepository
-	wfiRepo *persistence.WorkflowInstancesRepository
-	jobs    <-chan queue.WorkflowJob
-	sem     chan struct{}
+	workflowInstanceService   services.WorkflowInstanceService
+	workflowDefinitionService services.WorkflowDefinitionService
+	jobs                      <-chan queue.WorkflowJob
+	sem                       chan struct{}
 }
 
 func NewWorkflowExecutor(
-	wfdRepo *persistence.WorkflowDefinitionsRepository,
-	wfiRepo *persistence.WorkflowInstancesRepository,
+	workflowInstanceService services.WorkflowInstanceService,
+	workflowDefinitionService services.WorkflowDefinitionService,
 	q queue.WorkflowQueue,
 	maxParallelJobs int,
 ) *WorkflowExecutor {
 	return &WorkflowExecutor{
-		wfdRepo: wfdRepo,
-		wfiRepo: wfiRepo,
-		jobs:    q.Dequeue(),
-		sem:     make(chan struct{}, maxParallelJobs),
+		workflowInstanceService:   workflowInstanceService,
+		workflowDefinitionService: workflowDefinitionService,
+		jobs:                      q.Dequeue(),
+		sem:                       make(chan struct{}, maxParallelJobs),
 	}
 }
 
@@ -50,23 +53,42 @@ func (e *WorkflowExecutor) Start(ctx context.Context) {
 func (e *WorkflowExecutor) handleJob(job queue.WorkflowJob) {
 	log.Printf("Executing workflow instance %s", job.InstanceId)
 
-	// 1. Load instance + definition
-	instance, err := e.wfiRepo.GetById(job.InstanceId.String())
+	instance, err := e.workflowInstanceService.GetWorkflowInstanceById(job.InstanceId.String())
 	if err != nil {
 		log.Printf("Error loading instance: %v", err)
 		return
 	}
 
-	def, err := e.wfdRepo.GetById(instance.WorkflowDefinitionId.String())
+	def, err := e.workflowDefinitionService.GetWorkflowDefinitionById(instance.WorkflowDefinitionId.String())
 	if err != nil {
 		log.Printf("Error loading definition: %v", err)
 		return
 	}
 
-	// 2. Parse steps (you already store as JSON)
-	// 3. Execute first step(s)
-	log.Printf("Workflow %s started with %d steps", def.Name, len(*def.Steps))
+	status := models.WorkflowInstanceStatusRunning
+	if _, err := e.workflowInstanceService.UpdateWorkflowInstance(
+		job.InstanceId.String(),
+		&dto.UpdateWorkflowInstanceRequest{
+			Status: &status,
+		},
+	); err != nil {
+		log.Printf("Error updating instance status: %v", err)
+		return
+	}
 
-	// wait  for 5 seconds to simulate work
+	log.Printf("Workflow %s started with %d steps", def.Name, len(*def.Steps))
 	time.Sleep(5 * time.Second)
+
+	status = models.WorkflowInstanceStatusCompleted
+	output := datatypes.JSON(`{"result": "success"}`)
+	if _, err := e.workflowInstanceService.UpdateWorkflowInstance(
+		job.InstanceId.String(),
+		&dto.UpdateWorkflowInstanceRequest{
+			Status: &status,
+			Output: &output,
+		},
+	); err != nil {
+		log.Printf("Error updating instance status: %v", err)
+		return
+	}
 }

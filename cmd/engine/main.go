@@ -35,8 +35,8 @@ func startHttpServer(ctn *container.Container) {
 	group := r.Group("/api/v1")
 
 	// Register REST API handlers
-	api.NewWorkflowDefinitionsHandler(ctn.WorkflowDefinitionService).RegisterRoutes(group)
-	api.NewWorkflowInstancesHandler(ctn.WorkflowInstRepo).RegisterRoutes(group)
+	api.NewWorkflowDefinitionsHandler(ctn.WorkflowDefinitionService, ctn.WorkflowService).RegisterRoutes(group)
+	api.NewWorkflowInstancesHandler(ctn.WorkflowInstanceService).RegisterRoutes(group)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 

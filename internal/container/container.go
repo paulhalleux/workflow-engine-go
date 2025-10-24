@@ -18,6 +18,7 @@ type Container struct {
 	CancelFunc                context.CancelFunc
 	WorkflowService           services.WorkflowService
 	WorkflowDefinitionService services.WorkflowDefinitionService
+	WorkflowInstanceService   services.WorkflowInstanceService
 	WorkflowQueue             queue.WorkflowQueue
 	WorkflowExecutor          *worker.WorkflowExecutor
 	WorkflowDefRepo           *persistence.WorkflowDefinitionsRepository
@@ -35,11 +36,13 @@ func NewContainer(cfg *config.Config) *Container {
 	wfQueue := queue.NewMemoryQueue(cfg.QueueBuffer)
 	wfService := services.NewWorkflowService(wfdRepo, wfiRepo, wfQueue)
 	wfdService := services.NewWorkflowDefinitionService(wfdRepo)
-	wfExecutor := worker.NewWorkflowExecutor(wfdRepo, wfiRepo, wfQueue, cfg.MaxParallelWorkflows)
+	wfiService := services.NewWorkflowInstanceService(wfiRepo)
+	wfExecutor := worker.NewWorkflowExecutor(wfiService, wfdService, wfQueue, cfg.MaxParallelWorkflows)
 
 	return &Container{
 		WorkflowService:           wfService,
 		WorkflowDefinitionService: wfdService,
+		WorkflowInstanceService:   wfiService,
 		WorkflowExecutor:          wfExecutor,
 		WorkflowQueue:             wfQueue,
 		WorkflowDefRepo:           wfdRepo,

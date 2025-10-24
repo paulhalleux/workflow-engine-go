@@ -5,17 +5,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/paulhalleux/workflow-engine-go/internal/dto"
-	"github.com/paulhalleux/workflow-engine-go/internal/models"
-	"github.com/paulhalleux/workflow-engine-go/internal/persistence"
+	"github.com/paulhalleux/workflow-engine-go/internal/services"
 	"github.com/paulhalleux/workflow-engine-go/internal/utils"
 )
 
 type WorkflowInstancesHandler struct {
-	repo *persistence.WorkflowInstancesRepository
+	svc services.WorkflowInstanceService
 }
 
-func NewWorkflowInstancesHandler(repo *persistence.WorkflowInstancesRepository) *WorkflowInstancesHandler {
-	return &WorkflowInstancesHandler{repo: repo}
+func NewWorkflowInstancesHandler(svc services.WorkflowInstanceService) *WorkflowInstancesHandler {
+	return &WorkflowInstancesHandler{svc: svc}
 }
 
 func (h *WorkflowInstancesHandler) RegisterRoutes(r *gin.RouterGroup) {
@@ -34,7 +33,7 @@ func (h *WorkflowInstancesHandler) RegisterRoutes(r *gin.RouterGroup) {
 // @Success 200 {array} models.WorkflowInstance
 // @Router /workflow-instances [get]
 func (h *WorkflowInstancesHandler) GetAll(c *gin.Context) {
-	wfs, err := h.repo.GetAll()
+	wfs, err := h.svc.GetAllWorkflowInstances()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -52,7 +51,7 @@ func (h *WorkflowInstancesHandler) GetAll(c *gin.Context) {
 // @Router /workflow-instances/{id} [get]
 func (h *WorkflowInstancesHandler) GetByID(c *gin.Context) {
 	id := c.Param("id")
-	wf, err := h.repo.GetById(id)
+	wf, err := h.svc.GetWorkflowInstanceById(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "workflow not found"})
 		return
@@ -87,13 +86,8 @@ func (h *WorkflowInstancesHandler) Create(c *gin.Context) {
 		return
 	}
 
-	wf := models.WorkflowInstance{
-		WorkflowDefinitionId: wfr.WorkflowDefinitionId,
-		Input:                wfr.Input,
-		Metadata:             *wfr.Metadata,
-	}
-
-	if err := h.repo.Create(&wf); err != nil {
+	wf, err := h.svc.CreateWorkflowInstance(&wfr)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -113,11 +107,6 @@ func (h *WorkflowInstancesHandler) Create(c *gin.Context) {
 // @Router /workflow-instances/{id} [put]
 func (h *WorkflowInstancesHandler) Update(c *gin.Context) {
 	id := c.Param("id")
-	wf, err := h.repo.GetById(id)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "workflow not found"})
-		return
-	}
 
 	wfr := &dto.UpdateWorkflowInstanceRequest{}
 	if err := c.ShouldBindJSON(&wfr); err != nil {
@@ -136,8 +125,8 @@ func (h *WorkflowInstancesHandler) Update(c *gin.Context) {
 		return
 	}
 
-	updatePartialWorkflowInstance(wf, wfr)
-	if err := h.repo.Update(wf); err != nil {
+	wf, err := h.svc.UpdateWorkflowInstance(id, wfr)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -154,21 +143,9 @@ func (h *WorkflowInstancesHandler) Update(c *gin.Context) {
 // @Router /workflow-instances/{id} [delete]
 func (h *WorkflowInstancesHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.repo.Delete(id); err != nil {
+	if err := h.svc.DeleteWorkflowInstance(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusNoContent, nil)
-}
-
-func updatePartialWorkflowInstance(wf *models.WorkflowInstance, wfr *dto.UpdateWorkflowInstanceRequest) {
-	if wfr.Output != nil {
-		wf.Output = *wfr.Output
-	}
-	if wfr.Metadata != nil {
-		wf.Metadata = *wfr.Metadata
-	}
-	if wfr.Status != nil {
-		wf.Status = *wfr.Status
-	}
 }

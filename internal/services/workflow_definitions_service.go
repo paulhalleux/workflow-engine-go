@@ -8,7 +8,7 @@ import (
 
 type WorkflowDefinitionService interface {
 	GetAllWorkflowDefinitions() ([]*models.WorkflowDefinition, error)
-	GetWorkflowDefinitionByID(id string) (*models.WorkflowDefinition, error)
+	GetWorkflowDefinitionById(id string) (*models.WorkflowDefinition, error)
 	SearchWorkflowDefinitions(query *dto.SearchWorkflowDefinitionsRequest) ([]*models.WorkflowDefinition, error)
 	CreateWorkflowDefinition(def *dto.CreateWorkflowDefinitionRequest) (*models.WorkflowDefinition, error)
 	UpdateWorkflowDefinition(id string, def *dto.UpdateWorkflowDefinitionRequest) (*models.WorkflowDefinition, error)
@@ -31,7 +31,7 @@ func (s *workflowDefinitionService) GetAllWorkflowDefinitions() ([]*models.Workf
 	return s.repo.GetAll()
 }
 
-func (s *workflowDefinitionService) GetWorkflowDefinitionByID(id string) (*models.WorkflowDefinition, error) {
+func (s *workflowDefinitionService) GetWorkflowDefinitionById(id string) (*models.WorkflowDefinition, error) {
 	return s.repo.GetById(id)
 }
 
