@@ -99,23 +99,21 @@ func (e *WorkflowExecutor) handleJob(job queue.WorkflowJob) {
 
 		log.Printf("Enqueuing step %s of workflow %s", step.Id, def.Name)
 		if err := e.stepQueue.Enqueue(stepJob); err != nil {
-			log.Printf("Error enqueuing step %s: %v", step.Id, err)
+		}
+
+		status = models.WorkflowInstanceStatusCompleted
+		output := datatypes.JSON(`{"result": "success"}`)
+		now = time.Now()
+		if _, err := e.workflowInstanceService.UpdateWorkflowInstance(
+			job.Instance.Id.String(),
+			&dto.UpdateWorkflowInstanceRequest{
+				Status:      &status,
+				Output:      &output,
+				CompletedAt: &now,
+			},
+		); err != nil {
+			log.Printf("Error updating instance status: %v", err)
 			return
 		}
-	}
-
-	status = models.WorkflowInstanceStatusCompleted
-	output := datatypes.JSON(`{"result": "success"}`)
-	now = time.Now()
-	if _, err := e.workflowInstanceService.UpdateWorkflowInstance(
-		job.Instance.Id.String(),
-		&dto.UpdateWorkflowInstanceRequest{
-			Status:      &status,
-			Output:      &output,
-			CompletedAt: &now,
-		},
-	); err != nil {
-		log.Printf("Error updating instance status: %v", err)
-		return
 	}
 }

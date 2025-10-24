@@ -14,50 +14,65 @@ import (
 )
 
 type Container struct {
-	Context                   context.Context
-	CancelFunc                context.CancelFunc
+	Context    context.Context
+	CancelFunc context.CancelFunc
+
+	Config *config.Config
+
 	WorkflowService           services.WorkflowService
 	WorkflowDefinitionService services.WorkflowDefinitionService
 	WorkflowInstanceService   services.WorkflowInstanceService
-	WorkflowQueue             queue.WorkflowQueue
-	StepQueue                 queue.StepQueue
-	WorkflowExecutor          *worker.WorkflowExecutor
-	StepExecutor              *worker.StepExecutor
-	WorkflowDefRepo           *persistence.WorkflowDefinitionsRepository
-	WorkflowInstRepo          *persistence.WorkflowInstancesRepository
-	Config                    *config.Config
+	TypeSchemaService         services.TypeSchemaService
+
+	WorkflowQueue queue.WorkflowQueue
+	StepQueue     queue.StepQueue
+
+	WorkflowExecutor *worker.WorkflowExecutor
+	StepExecutor     *worker.StepExecutor
+
+	WorkflowDefRepo  *persistence.WorkflowDefinitionsRepository
+	WorkflowInstRepo *persistence.WorkflowInstancesRepository
+	TypeSchemaRepo   *persistence.TypeSchemasRepository
 }
 
 func NewContainer(cfg *config.Config) *Container {
 	db := createDatabaseConnection(cfg)
 	ctx, cancel := context.WithCancel(context.Background())
 
-	wfdRepo := persistence.NewWorkflowDefinitionsRepository(db)
-	wfiRepo := persistence.NewWorkflowInstancesRepository(db)
+	workflowDefinitionsRepo := persistence.NewWorkflowDefinitionsRepository(db)
+	workflowInstancesRepo := persistence.NewWorkflowInstancesRepository(db)
+	typeSchemaRepo := persistence.NewTypeSchemasRepository(db)
 
-	wfQueue := queue.NewMemoryWorkflowQueue(cfg.QueueBuffer)
+	workflowQueue := queue.NewMemoryWorkflowQueue(cfg.QueueBuffer)
 	stepQueue := queue.NewMemoryStepQueue(cfg.QueueBuffer)
 
-	wfService := services.NewWorkflowService(wfdRepo, wfiRepo, wfQueue)
-	wfdService := services.NewWorkflowDefinitionService(wfdRepo)
-	wfiService := services.NewWorkflowInstanceService(wfiRepo)
+	workflowService := services.NewWorkflowService(workflowDefinitionsRepo, workflowInstancesRepo, workflowQueue)
+	workflowDefinitionService := services.NewWorkflowDefinitionService(workflowDefinitionsRepo)
+	workflowInstanceService := services.NewWorkflowInstanceService(workflowInstancesRepo)
+	typeSchemaService := services.NewTypeSchemaService(typeSchemaRepo)
 
-	wfExecutor := worker.NewWorkflowExecutor(wfiService, wfdService, stepQueue, wfQueue, cfg.MaxParallelWorkflows)
+	wfExecutor := worker.NewWorkflowExecutor(workflowInstanceService, workflowDefinitionService, stepQueue, workflowQueue, cfg.MaxParallelWorkflows)
 	stepExecutor := worker.NewStepExecutor(stepQueue, cfg.MaxParallelSteps)
 
 	return &Container{
-		WorkflowService:           wfService,
-		WorkflowDefinitionService: wfdService,
-		WorkflowInstanceService:   wfiService,
-		WorkflowExecutor:          wfExecutor,
-		WorkflowQueue:             wfQueue,
-		StepQueue:                 stepQueue,
-		StepExecutor:              stepExecutor,
-		WorkflowDefRepo:           wfdRepo,
-		WorkflowInstRepo:          wfiRepo,
-		Context:                   ctx,
-		CancelFunc:                cancel,
-		Config:                    cfg,
+		WorkflowService:           workflowService,
+		WorkflowDefinitionService: workflowDefinitionService,
+		WorkflowInstanceService:   workflowInstanceService,
+		TypeSchemaService:         typeSchemaService,
+
+		WorkflowExecutor: wfExecutor,
+		StepExecutor:     stepExecutor,
+
+		WorkflowQueue: workflowQueue,
+		StepQueue:     stepQueue,
+
+		WorkflowDefRepo:  workflowDefinitionsRepo,
+		WorkflowInstRepo: workflowInstancesRepo,
+		TypeSchemaRepo:   typeSchemaRepo,
+
+		Context:    ctx,
+		CancelFunc: cancel,
+		Config:     cfg,
 	}
 }
 

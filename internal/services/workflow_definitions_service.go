@@ -41,12 +41,14 @@ func (s *workflowDefinitionService) SearchWorkflowDefinitions(query *dto.SearchW
 
 func (s *workflowDefinitionService) CreateWorkflowDefinition(def *dto.CreateWorkflowDefinitionRequest) (*models.WorkflowDefinition, error) {
 	wf := &models.WorkflowDefinition{
-		Name:        def.Name,
-		Description: def.Description,
-		Version:     def.Version,
-		Metadata:    def.Metadata,
-		Steps:       &def.Steps,
-		IsEnabled:   def.IsEnabled,
+		Name:             def.Name,
+		Description:      def.Description,
+		Version:          def.Version,
+		Metadata:         def.Metadata,
+		Steps:            &def.Steps,
+		InputParameters:  &def.InputParameters,
+		OutputParameters: &def.OutputParameters,
+		IsEnabled:        def.IsEnabled,
 	}
 	return wf, s.repo.Create(wf)
 }
@@ -94,6 +96,12 @@ func updatePartialWorkflowDefinition(wf *models.WorkflowDefinition, wfr *dto.Upd
 	}
 	if wfr.Steps != nil {
 		wf.Steps = wfr.Steps
+	}
+	if wfr.InputParameters != nil {
+		wf.InputParameters = wfr.InputParameters
+	}
+	if wfr.OutputParameters != nil {
+		wf.OutputParameters = wfr.OutputParameters
 	}
 	if wfr.IsEnabled != nil {
 		wf.IsEnabled = *wfr.IsEnabled
