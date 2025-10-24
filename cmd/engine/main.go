@@ -10,7 +10,9 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/internal/config"
 	"github.com/paulhalleux/workflow-engine-go/internal/container"
 	"github.com/paulhalleux/workflow-engine-go/internal/grpcapi"
+	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/proto"
+	"github.com/paulhalleux/workflow-engine-go/internal/worker"
 	_ "github.com/swaggo/files"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -22,12 +24,18 @@ func main() {
 	ctn := container.NewContainer(config.Default())
 	defer ctn.CancelFunc()
 
+	registerTaskExecutors()
+	ctn.StepExecutor.Start(ctn.Context)
 	ctn.WorkflowExecutor.Start(ctn.Context)
 
 	go startHttpServer(ctn)
 	go startGrpcServer(ctn)
 
 	<-ctn.Context.Done()
+}
+
+func registerTaskExecutors() {
+	worker.RegisterStepExecutor(models.WorkflowStepTypeWait, worker.NewWaitStepExecutor())
 }
 
 func startHttpServer(ctn *container.Container) {

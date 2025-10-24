@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS task_instances;
+DROP TABLE IF EXISTS step_instances;

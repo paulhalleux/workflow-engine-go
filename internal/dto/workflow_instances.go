@@ -1,6 +1,8 @@
 package dto
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"gorm.io/datatypes"
@@ -13,7 +15,9 @@ type CreateWorkflowInstanceRequest struct {
 } // @name CreateWorkflowInstanceRequest
 
 type UpdateWorkflowInstanceRequest struct {
-	Status   *models.WorkflowInstanceStatus `json:"status,omitempty" validate:"omitempty,oneof=pending running completed failed canceled paused"`
-	Output   *datatypes.JSON                `json:"output,omitempty"`
-	Metadata *datatypes.JSON                `json:"metadata,omitempty"`
+	Status      *models.WorkflowInstanceStatus `json:"status,omitempty" validate:"omitempty,oneof=pending running completed failed canceled paused"`
+	Output      *datatypes.JSON                `json:"output,omitempty"`
+	Metadata    *datatypes.JSON                `json:"metadata,omitempty"`
+	StartedAt   *time.Time                     `json:"startedAt,omitempty"`
+	CompletedAt *time.Time                     `json:"completedAt,omitempty"`
 } // @name UpdateWorkflowInstanceRequest

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS task_instances
+CREATE TABLE IF NOT EXISTS step_instances
 (
     id                   UUID PRIMARY KEY,
     workflow_instance_id UUID        NOT NULL,

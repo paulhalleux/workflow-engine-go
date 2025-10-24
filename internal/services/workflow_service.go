@@ -69,7 +69,7 @@ func (s *workflowService) StartWorkflow(
 
 	// Enqueue the workflow job
 	if err := s.wfQueue.Enqueue(queue.WorkflowJob{
-		InstanceId: instance.Id,
+		Instance: &instance,
 	}); err != nil {
 		return uuid.Nil, err
 	}

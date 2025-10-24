@@ -20,3 +20,12 @@ type WorkflowDefinition struct {
 	CreatedAt   time.Time         `json:"createdAt"`
 	UpdatedAt   time.Time         `json:"updatedAt"`
 } // @name WorkflowDefinition
+
+func (wd *WorkflowDefinition) GetStepById(stepId string) *WorkflowStep {
+	for _, step := range *wd.Steps {
+		if step.Id == stepId {
+			return &step
+		}
+	}
+	return nil
+}
