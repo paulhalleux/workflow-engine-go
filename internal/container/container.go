@@ -14,14 +14,15 @@ import (
 )
 
 type Container struct {
-	Context          context.Context
-	CancelFunc       context.CancelFunc
-	WorkflowService  services.WorkflowService
-	WorkflowQueue    queue.WorkflowQueue
-	WorkflowExecutor *worker.WorkflowExecutor
-	WorkflowDefRepo  *persistence.WorkflowDefinitionsRepository
-	WorkflowInstRepo *persistence.WorkflowInstancesRepository
-	Config           *config.Config
+	Context                   context.Context
+	CancelFunc                context.CancelFunc
+	WorkflowService           services.WorkflowService
+	WorkflowDefinitionService services.WorkflowDefinitionService
+	WorkflowQueue             queue.WorkflowQueue
+	WorkflowExecutor          *worker.WorkflowExecutor
+	WorkflowDefRepo           *persistence.WorkflowDefinitionsRepository
+	WorkflowInstRepo          *persistence.WorkflowInstancesRepository
+	Config                    *config.Config
 }
 
 func NewContainer(cfg *config.Config) *Container {
@@ -33,17 +34,19 @@ func NewContainer(cfg *config.Config) *Container {
 
 	wfQueue := queue.NewMemoryQueue(cfg.QueueBuffer)
 	wfService := services.NewWorkflowService(wfdRepo, wfiRepo, wfQueue)
+	wfdService := services.NewWorkflowDefinitionService(wfdRepo)
 	wfExecutor := worker.NewWorkflowExecutor(wfdRepo, wfiRepo, wfQueue, cfg.MaxParallelWorkflows)
 
 	return &Container{
-		WorkflowService:  wfService,
-		WorkflowExecutor: wfExecutor,
-		WorkflowQueue:    wfQueue,
-		WorkflowDefRepo:  wfdRepo,
-		WorkflowInstRepo: wfiRepo,
-		Context:          ctx,
-		CancelFunc:       cancel,
-		Config:           cfg,
+		WorkflowService:           wfService,
+		WorkflowDefinitionService: wfdService,
+		WorkflowExecutor:          wfExecutor,
+		WorkflowQueue:             wfQueue,
+		WorkflowDefRepo:           wfdRepo,
+		WorkflowInstRepo:          wfiRepo,
+		Context:                   ctx,
+		CancelFunc:                cancel,
+		Config:                    cfg,
 	}
 }
 

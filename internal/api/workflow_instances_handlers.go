@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/paulhalleux/workflow-engine-go/internal/api/dto"
+	"github.com/paulhalleux/workflow-engine-go/internal/dto"
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/persistence"
 	"github.com/paulhalleux/workflow-engine-go/internal/utils"

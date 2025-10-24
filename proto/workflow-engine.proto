@@ -5,7 +5,7 @@ import "google/protobuf/struct.proto";
 option go_package = "internal/proto";
 package engine;
 
-service WorkflowEngine {
+service WorkflowService {
   rpc StartWorkflow (StartWorkflowRequest) returns (StartWorkflowResponse);
 }
 

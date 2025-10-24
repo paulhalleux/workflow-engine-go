@@ -4,18 +4,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/paulhalleux/workflow-engine-go/internal/api/dto"
-	"github.com/paulhalleux/workflow-engine-go/internal/models"
-	"github.com/paulhalleux/workflow-engine-go/internal/persistence"
+	"github.com/paulhalleux/workflow-engine-go/internal/dto"
+	"github.com/paulhalleux/workflow-engine-go/internal/services"
 	"github.com/paulhalleux/workflow-engine-go/internal/utils"
 )
 
 type WorkflowDefinitionsHandler struct {
-	repo *persistence.WorkflowDefinitionsRepository
+	svc services.WorkflowDefinitionService
 }
 
-func NewWorkflowDefinitionsHandler(repo *persistence.WorkflowDefinitionsRepository) *WorkflowDefinitionsHandler {
-	return &WorkflowDefinitionsHandler{repo: repo}
+func NewWorkflowDefinitionsHandler(svc services.WorkflowDefinitionService) *WorkflowDefinitionsHandler {
+	return &WorkflowDefinitionsHandler{svc}
 }
 
 func (h *WorkflowDefinitionsHandler) RegisterRoutes(r *gin.RouterGroup) {
@@ -37,7 +36,7 @@ func (h *WorkflowDefinitionsHandler) RegisterRoutes(r *gin.RouterGroup) {
 // @Success 200 {array} models.WorkflowDefinition
 // @Router /workflow-definitions [get]
 func (h *WorkflowDefinitionsHandler) GetAll(c *gin.Context) {
-	wfs, err := h.repo.GetAll()
+	wfs, err := h.svc.GetAllWorkflowDefinitions()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -72,7 +71,7 @@ func (h *WorkflowDefinitionsHandler) Search(c *gin.Context) {
 		return
 	}
 
-	wfs, err := h.repo.Search(&searchReq)
+	wfs, err := h.svc.SearchWorkflowDefinitions(&searchReq)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -90,7 +89,7 @@ func (h *WorkflowDefinitionsHandler) Search(c *gin.Context) {
 // @Router /workflow-definitions/{id} [get]
 func (h *WorkflowDefinitionsHandler) GetByID(c *gin.Context) {
 	id := c.Param("id")
-	wf, err := h.repo.GetById(id)
+	wf, err := h.svc.GetWorkflowDefinitionByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "workflow not found"})
 		return
@@ -125,17 +124,9 @@ func (h *WorkflowDefinitionsHandler) Create(c *gin.Context) {
 		return
 	}
 
-	wf := models.WorkflowDefinition{
-		Name:        wfr.Name,
-		Description: wfr.Description,
-		Version:     wfr.Version,
-		Metadata:    wfr.Metadata,
-		Steps:       &wfr.Steps,
-		IsEnabled:   wfr.IsEnabled,
-	}
-
-	if err := h.repo.Create(&wf); err != nil {
-		if h.repo.IsDuplicateKeyError(err) {
+	wf, err := h.svc.CreateWorkflowDefinition(&wfr)
+	if err != nil {
+		if utils.IsDuplicateKeyError(err) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "workflow definition with the same name and version already exists"})
 			return
 		}
@@ -158,12 +149,6 @@ func (h *WorkflowDefinitionsHandler) Create(c *gin.Context) {
 // @Router /workflow-definitions/{id} [put]
 func (h *WorkflowDefinitionsHandler) Update(c *gin.Context) {
 	id := c.Param("id")
-	wf, err := h.repo.GetById(id)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "workflow not found"})
-		return
-	}
-
 	wfr := &dto.UpdateWorkflowDefinitionRequest{}
 	if err := c.ShouldBindJSON(&wfr); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -181,8 +166,8 @@ func (h *WorkflowDefinitionsHandler) Update(c *gin.Context) {
 		return
 	}
 
-	updatePartialWorkflowDefinition(wf, wfr)
-	if err := h.repo.Update(wf); err != nil {
+	wf, err := h.svc.UpdateWorkflowDefinition(id, wfr)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -199,7 +184,7 @@ func (h *WorkflowDefinitionsHandler) Update(c *gin.Context) {
 // @Router /workflow-definitions/{id} [delete]
 func (h *WorkflowDefinitionsHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.repo.Delete(id); err != nil {
+	if err := h.svc.DeleteWorkflowDefinition(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -215,19 +200,11 @@ func (h *WorkflowDefinitionsHandler) Delete(c *gin.Context) {
 // @Router /workflow-definitions/{id}/enable [patch]
 func (h *WorkflowDefinitionsHandler) Enable(c *gin.Context) {
 	id := c.Param("id")
-	wf, err := h.repo.GetById(id)
+	wf, err := h.svc.EnableWorkflowDefinition(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "workflow not found"})
-		return
-	}
-
-	wf.IsEnabled = true
-
-	if err := h.repo.Update(wf); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, wf)
 }
 
@@ -240,36 +217,10 @@ func (h *WorkflowDefinitionsHandler) Enable(c *gin.Context) {
 // @Router /workflow-definitions/{id}/disable [patch]
 func (h *WorkflowDefinitionsHandler) Disable(c *gin.Context) {
 	id := c.Param("id")
-	wf, err := h.repo.GetById(id)
+	wf, err := h.svc.DisableWorkflowDefinition(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "workflow not found"})
-		return
-	}
-
-	wf.IsEnabled = false
-
-	if err := h.repo.Update(wf); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, wf)
-}
-
-func updatePartialWorkflowDefinition(wf *models.WorkflowDefinition, wfr *dto.UpdateWorkflowDefinitionRequest) {
-	if wfr.Description != nil {
-		wf.Description = *wfr.Description
-	}
-	if wfr.Version != nil {
-		wf.Version = *wfr.Version
-	}
-	if wfr.Metadata != nil {
-		wf.Metadata = *wfr.Metadata
-	}
-	if wfr.Steps != nil {
-		wf.Steps = wfr.Steps
-	}
-	if wfr.IsEnabled != nil {
-		wf.IsEnabled = *wfr.IsEnabled
-	}
 }

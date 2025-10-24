@@ -1,11 +1,9 @@
 package persistence
 
 import (
-	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/paulhalleux/workflow-engine-go/internal/api/dto"
+	"github.com/paulhalleux/workflow-engine-go/internal/dto"
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"gorm.io/gorm"
 )
@@ -22,8 +20,8 @@ func (r *WorkflowDefinitionsRepository) Create(wf *models.WorkflowDefinition) er
 	return r.db.Create(wf).Error
 }
 
-func (r *WorkflowDefinitionsRepository) GetAll() ([]models.WorkflowDefinition, error) {
-	var wfs []models.WorkflowDefinition
+func (r *WorkflowDefinitionsRepository) GetAll() ([]*models.WorkflowDefinition, error) {
+	var wfs []*models.WorkflowDefinition
 	err := r.db.Find(&wfs).Error
 	return wfs, err
 }
@@ -42,8 +40,8 @@ func (r *WorkflowDefinitionsRepository) Delete(id string) error {
 	return r.db.Delete(&models.WorkflowDefinition{}, "id = ?", id).Error
 }
 
-func (r *WorkflowDefinitionsRepository) Search(req *dto.SearchWorkflowDefinitionsRequest) ([]models.WorkflowDefinition, error) {
-	var wfs []models.WorkflowDefinition
+func (r *WorkflowDefinitionsRepository) Search(req *dto.SearchWorkflowDefinitionsRequest) ([]*models.WorkflowDefinition, error) {
+	var wfs []*models.WorkflowDefinition
 	query := r.db.Model(&models.WorkflowDefinition{})
 
 	if req.Name != nil {
@@ -74,10 +72,4 @@ func (r *WorkflowDefinitionsRepository) Search(req *dto.SearchWorkflowDefinition
 
 	err := query.Find(&wfs).Error
 	return wfs, err
-}
-
-func (r *WorkflowDefinitionsRepository) IsDuplicateKeyError(err error) bool {
-	var pgErr *pgconn.PgError
-	errors.As(err, &pgErr)
-	return pgErr.Code == "23505"
 }
