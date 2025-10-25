@@ -31,3 +31,10 @@ func (wd *WorkflowDefinition) GetStepById(stepId string) *WorkflowStep {
 	}
 	return nil
 }
+
+func (wd *WorkflowDefinition) GetFirstStep() *WorkflowStep {
+	if len(*wd.Steps) == 0 {
+		return nil
+	}
+	return &(*wd.Steps)[0]
+}

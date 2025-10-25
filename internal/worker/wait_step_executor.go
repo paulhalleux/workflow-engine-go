@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -15,11 +16,11 @@ func NewWaitStepExecutor() *WaitStepExecutor {
 
 func (w *WaitStepExecutor) execute(
 	job *queue.StepJob,
-) (map[string]interface{}, error) {
-	value := job.Step.Wait.Duration.GetValue(job.Instance.Input)
+) (*StepResult, error) {
+	value := job.StepDefinition.Wait.Duration.GetValue(job.StepInstance.Input)
 	parsedValue, ok := value.(string)
 	if !ok {
-		return nil, nil
+		return nil, errors.New("invalid duration value")
 	}
 
 	durationTime, err := time.ParseDuration(parsedValue)
@@ -29,5 +30,16 @@ func (w *WaitStepExecutor) execute(
 
 	log.Printf("Waiting for %s", durationTime)
 	time.Sleep(durationTime)
-	return nil, nil
+
+	if job.StepDefinition.Wait.NextStepId != nil {
+		return &StepResult{
+			Output:      nil,
+			NextStepIds: []string{*job.StepDefinition.Wait.NextStepId},
+		}, nil
+	}
+
+	return &StepResult{
+		Output:      nil,
+		NextStepIds: []string{},
+	}, nil
 }

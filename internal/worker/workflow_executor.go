@@ -5,35 +5,33 @@ import (
 	"log"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/paulhalleux/workflow-engine-go/internal/dto"
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/queue"
 	"github.com/paulhalleux/workflow-engine-go/internal/services"
-	"gorm.io/datatypes"
 )
 
 type WorkflowExecutor struct {
-	workflowInstanceService   services.WorkflowInstanceService
+	workflowInstancesService  services.WorkflowInstanceService
 	workflowDefinitionService services.WorkflowDefinitionService
+	workflowQueue             queue.WorkflowQueue
 	stepQueue                 queue.StepQueue
-	jobs                      <-chan queue.WorkflowJob
 	sem                       chan struct{}
 }
 
 func NewWorkflowExecutor(
-	workflowInstanceService services.WorkflowInstanceService,
+	workflowInstancesService services.WorkflowInstanceService,
 	workflowDefinitionService services.WorkflowDefinitionService,
-	stepQueue queue.StepQueue,
 	workflowQueue queue.WorkflowQueue,
-	maxParallelJobs int,
+	stepQueue queue.StepQueue,
+	maxConcurrentWorkflows int,
 ) *WorkflowExecutor {
 	return &WorkflowExecutor{
-		workflowInstanceService:   workflowInstanceService,
+		workflowInstancesService:  workflowInstancesService,
 		workflowDefinitionService: workflowDefinitionService,
+		workflowQueue:             workflowQueue,
 		stepQueue:                 stepQueue,
-		jobs:                      workflowQueue.Dequeue(),
-		sem:                       make(chan struct{}, maxParallelJobs),
+		sem:                       make(chan struct{}, maxConcurrentWorkflows),
 	}
 }
 
@@ -41,11 +39,11 @@ func (e *WorkflowExecutor) Start(ctx context.Context) {
 	go func() {
 		for {
 			select {
-			case job := <-e.jobs:
+			case job := <-e.workflowQueue.Dequeue():
 				e.sem <- struct{}{}
 				go func(j queue.WorkflowJob) {
 					defer func() { <-e.sem }()
-					e.handleJob(j)
+					e.handle(j)
 				}(job)
 			case <-ctx.Done():
 				return
@@ -54,67 +52,75 @@ func (e *WorkflowExecutor) Start(ctx context.Context) {
 	}()
 }
 
-func (e *WorkflowExecutor) handleJob(job queue.WorkflowJob) {
-	def, err := e.workflowDefinitionService.GetWorkflowDefinitionById(job.Instance.WorkflowDefinitionId.String())
+func (e *WorkflowExecutor) handle(job queue.WorkflowJob) {
+	workflowDefinition, err := e.workflowDefinitionService.GetWorkflowDefinitionById(job.WorkflowInstance.WorkflowDefinitionId.String())
 	if err != nil {
-		log.Printf("Error loading definition: %v", err)
+		log.Printf("Error loading workflow definition: %v", err)
 		return
 	}
 
-	status := models.WorkflowInstanceStatusRunning
-	now := time.Now()
-	if _, err := e.workflowInstanceService.UpdateWorkflowInstance(
-		job.Instance.Id.String(),
+	newStatus := models.WorkflowInstanceStatusRunning
+	startTime := time.Now()
+
+	_, err = e.workflowInstancesService.UpdateWorkflowInstance(
+		job.WorkflowInstance.Id.String(),
 		&dto.UpdateWorkflowInstanceRequest{
-			Status:    &status,
-			StartedAt: &now,
+			Status:    &newStatus,
+			StartedAt: &startTime,
 		},
-	); err != nil {
-		log.Printf("Error updating instance status: %v", err)
+	)
+
+	if err != nil {
+		log.Printf("Error updating workflow instance status while stating it: %v", err)
 		return
 	}
 
-	log.Printf("Workflow %s started with %d steps", def.Name, len(*def.Steps))
+	firstStep := workflowDefinition.GetFirstStep()
+	if firstStep == nil {
+		log.Printf("Workflow definition %s has no steps defined", workflowDefinition.Id.String())
+		return
+	}
 
-	for _, step := range *def.Steps {
-		now := time.Now()
-		inputData := step.Input.GetValueMap(nil, job.Instance.Input)
-		taskInstance := models.StepInstance{
-			Id:                 uuid.New(),
-			StepId:             step.Id,
-			Status:             models.StepInstanceStatusPending,
-			WorkflowInstanceId: job.Instance.Id,
-			Input:              inputData,
-			Output:             datatypes.JSONMap{},
-			Metadata:           datatypes.JSONMap{},
-			CreatedAt:          now,
-			UpdatedAt:          now,
-		}
+	now := time.Now()
+	inputData := firstStep.Input.GetValueMap(nil, job.WorkflowInstance.Input)
+	instance := &models.StepInstance{
+		WorkflowInstanceId: job.WorkflowInstance.Id,
+		StepId:             firstStep.Id,
+		Status:             models.StepInstanceStatusPending,
+		Input:              inputData,
+		CreatedAt:          now,
+		UpdatedAt:          now,
+	}
 
-		stepJob := queue.StepJob{
-			Step:               &step,
-			Instance:           &taskInstance,
-			WorkflowDefinition: def,
-			WorkflowInstance:   job.Instance,
-		}
+	finishedCh := make(chan struct{})
+	err = e.stepQueue.Enqueue(queue.StepJob{
+		WorkflowFinishedCh: finishedCh,
+		WorkflowInstance:   job.WorkflowInstance,
+		StepDefinition:     firstStep,
+		StepInstance:       instance,
+		WorkflowDefinition: workflowDefinition,
+	})
 
-		log.Printf("Enqueuing step %s of workflow %s", step.Id, def.Name)
-		if err := e.stepQueue.Enqueue(stepJob); err != nil {
-		}
+	if err != nil {
+		log.Printf("Error enqueueing first step of workflow instance: %v", err)
+		return
+	}
 
-		status = models.WorkflowInstanceStatusCompleted
-		output := datatypes.JSON(`{"result": "success"}`)
-		now = time.Now()
-		if _, err := e.workflowInstanceService.UpdateWorkflowInstance(
-			job.Instance.Id.String(),
-			&dto.UpdateWorkflowInstanceRequest{
-				Status:      &status,
-				Output:      &output,
-				CompletedAt: &now,
-			},
-		); err != nil {
-			log.Printf("Error updating instance status: %v", err)
-			return
-		}
+	<-finishedCh
+	log.Printf("Workflow instance %s completed", job.WorkflowInstance.Id.String())
+
+	newStatus = models.WorkflowInstanceStatusCompleted
+	endTime := time.Now()
+	_, err = e.workflowInstancesService.UpdateWorkflowInstance(
+		job.WorkflowInstance.Id.String(),
+		&dto.UpdateWorkflowInstanceRequest{
+			Status:      &newStatus,
+			CompletedAt: &endTime,
+		},
+	)
+
+	if err != nil {
+		log.Printf("Error updating workflow instance status while completing it: %v", err)
+		return
 	}
 }

@@ -3,18 +3,19 @@ package worker
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/queue"
 )
 
-type StepExecutor struct {
-	jobs <-chan queue.StepJob
-	sem  chan struct{}
+type StepResult struct {
+	Output      map[string]interface{}
+	NextStepIds []string
 }
 
 type StepTypeExecutor interface {
-	execute(job *queue.StepJob) (map[string]interface{}, error)
+	execute(job *queue.StepJob) (*StepResult, error)
 }
 
 var executors = map[models.WorkflowStepType]StepTypeExecutor{}
@@ -23,10 +24,18 @@ func RegisterStepExecutor(stepType models.WorkflowStepType, executor StepTypeExe
 	executors[stepType] = executor
 }
 
-func NewStepExecutor(q queue.StepQueue, maxParallelJobs int) *StepExecutor {
+type StepExecutor struct {
+	stepQueue queue.StepQueue
+	sem       chan struct{}
+}
+
+func NewStepExecutor(
+	stepQueue queue.StepQueue,
+	maxConcurrentWorkflows int,
+) *StepExecutor {
 	return &StepExecutor{
-		jobs: q.Dequeue(),
-		sem:  make(chan struct{}, maxParallelJobs),
+		stepQueue: stepQueue,
+		sem:       make(chan struct{}, maxConcurrentWorkflows),
 	}
 }
 
@@ -34,12 +43,12 @@ func (e *StepExecutor) Start(ctx context.Context) {
 	go func() {
 		for {
 			select {
-			case job := <-e.jobs:
+			case job := <-e.stepQueue.Dequeue():
 				e.sem <- struct{}{}
-				go func(j queue.StepJob) {
+				go func(j *queue.StepJob) {
 					defer func() { <-e.sem }()
-					e.handleJob(j)
-				}(job)
+					e.handle(j)
+				}(&job)
 			case <-ctx.Done():
 				return
 			}
@@ -47,16 +56,58 @@ func (e *StepExecutor) Start(ctx context.Context) {
 	}()
 }
 
-func (e *StepExecutor) handleJob(job queue.StepJob) {
-	executor, exists := executors[job.Step.Type]
+func (e *StepExecutor) handle(job *queue.StepJob) {
+	executor, exists := executors[job.StepDefinition.Type]
 	if !exists {
+		log.Printf("No executor found for step type %s", job.StepDefinition.Type)
+		job.WorkflowFinishedCh <- struct{}{}
 		return
 	}
-	log.Printf("Executing step %s of type %s", job.Step.Id, job.Step.Type)
-	output, err := executor.execute(&job)
-	if err != nil {
-		log.Printf("Error executing step %s: %v", job.Step.Id, err)
+
+	result, err := executor.execute(job)
+	if err != nil || result == nil {
+		log.Printf("Error executing step %s: %v", job.StepDefinition.Id, err)
+		job.WorkflowFinishedCh <- struct{}{}
 		return
 	}
-	log.Printf("Step %s executed successfully with output: %v", job.Step.Id, output)
+
+	if len(result.NextStepIds) == 0 {
+		log.Printf("Workflow %s finished", job.WorkflowInstance.Id)
+		job.WorkflowFinishedCh <- struct{}{}
+		return
+	}
+
+	for _, nextStepId := range result.NextStepIds {
+		stepDef := job.WorkflowDefinition.GetStepById(nextStepId)
+		if stepDef == nil {
+			job.WorkflowFinishedCh <- struct{}{}
+			log.Printf("Next step definition %s not found", nextStepId)
+			break
+		}
+
+		now := time.Now()
+		inputData := stepDef.Input.GetValueMap(nil, job.WorkflowInstance.Input)
+		instance := &models.StepInstance{
+			WorkflowInstanceId: job.WorkflowInstance.Id,
+			StepId:             stepDef.Id,
+			Status:             models.StepInstanceStatusPending,
+			Input:              inputData,
+			CreatedAt:          now,
+			UpdatedAt:          now,
+		}
+
+		nextJob := queue.StepJob{
+			WorkflowFinishedCh: job.WorkflowFinishedCh,
+			StepDefinition:     stepDef,
+			StepInstance:       instance,
+			WorkflowDefinition: job.WorkflowDefinition,
+			WorkflowInstance:   job.WorkflowInstance,
+		}
+
+		err := e.stepQueue.Enqueue(nextJob)
+		if err != nil {
+			log.Printf("Error enqueueing next step job: %v", err)
+			continue
+		}
+	}
 }

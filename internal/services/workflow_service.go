@@ -22,17 +22,17 @@ type WorkflowService interface {
 }
 
 type workflowService struct {
-	wfdRepo *persistence.WorkflowDefinitionsRepository
-	wfiRepo *persistence.WorkflowInstancesRepository
-	wfQueue queue.WorkflowQueue
+	wfdRepo       *persistence.WorkflowDefinitionsRepository
+	wfiRepo       *persistence.WorkflowInstancesRepository
+	workflowQueue queue.WorkflowQueue
 }
 
 func NewWorkflowService(
 	wfdRepo *persistence.WorkflowDefinitionsRepository,
 	wfiRepo *persistence.WorkflowInstancesRepository,
-	wfQueue queue.WorkflowQueue,
+	workflowQueue queue.WorkflowQueue,
 ) WorkflowService {
-	return &workflowService{wfdRepo, wfiRepo, wfQueue}
+	return &workflowService{wfdRepo, wfiRepo, workflowQueue}
 }
 
 func (s *workflowService) StartWorkflow(
@@ -68,8 +68,8 @@ func (s *workflowService) StartWorkflow(
 	}
 
 	// Enqueue the workflow job
-	if err := s.wfQueue.Enqueue(queue.WorkflowJob{
-		Instance: &instance,
+	if err := s.workflowQueue.Enqueue(queue.WorkflowJob{
+		WorkflowInstance: &instance,
 	}); err != nil {
 		return uuid.Nil, err
 	}

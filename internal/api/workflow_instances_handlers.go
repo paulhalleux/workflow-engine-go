@@ -46,7 +46,7 @@ func (h *WorkflowInstancesHandler) GetAll(c *gin.Context) {
 // @Description Retrieve a single workflow instance by its ID
 // @Tags workflow-instances
 // @Produce json
-// @Param id path string true "Workflow Instance ID"
+// @Param id path string true "Workflow WorkflowInstance ID"
 // @Success 200 {object} models.WorkflowInstance
 // @Router /workflow-instances/{id} [get]
 func (h *WorkflowInstancesHandler) GetByID(c *gin.Context) {
@@ -65,7 +65,7 @@ func (h *WorkflowInstancesHandler) GetByID(c *gin.Context) {
 // @Tags workflow-instances
 // @Accept json
 // @Produce json
-// @Param workflow body dto.CreateWorkflowInstanceRequest true "Workflow Instance Data"
+// @Param workflow body dto.CreateWorkflowInstanceRequest true "Workflow WorkflowInstance Data"
 // @Success 201 {object} models.WorkflowInstance
 // @Router /workflow-instances [post]
 func (h *WorkflowInstancesHandler) Create(c *gin.Context) {
@@ -101,8 +101,8 @@ func (h *WorkflowInstancesHandler) Create(c *gin.Context) {
 // @Tags workflow-instances
 // @Accept json
 // @Produce json
-// @Param id path string true "Workflow Instance ID"
-// @Param workflow body dto.UpdateWorkflowInstanceRequest true "Workflow Instance Data"
+// @Param id path string true "Workflow WorkflowInstance ID"
+// @Param workflow body dto.UpdateWorkflowInstanceRequest true "Workflow WorkflowInstance Data"
 // @Success 200 {object} models.WorkflowInstance
 // @Router /workflow-instances/{id} [put]
 func (h *WorkflowInstancesHandler) Update(c *gin.Context) {
@@ -138,7 +138,7 @@ func (h *WorkflowInstancesHandler) Update(c *gin.Context) {
 // @Summary Delete a workflow instance
 // @Description Delete a workflow instance by its ID
 // @Tags workflow-instances
-// @Param id path string true "Workflow Instance ID"
+// @Param id path string true "Workflow WorkflowInstance ID"
 // @Success 204 "No Content"
 // @Router /workflow-instances/{id} [delete]
 func (h *WorkflowInstancesHandler) Delete(c *gin.Context) {

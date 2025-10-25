@@ -24,9 +24,6 @@ type Container struct {
 	WorkflowInstanceService   services.WorkflowInstanceService
 	TypeSchemaService         services.TypeSchemaService
 
-	WorkflowQueue queue.WorkflowQueue
-	StepQueue     queue.StepQueue
-
 	WorkflowExecutor *worker.WorkflowExecutor
 	StepExecutor     *worker.StepExecutor
 
@@ -43,15 +40,15 @@ func NewContainer(cfg *config.Config) *Container {
 	workflowInstancesRepo := persistence.NewWorkflowInstancesRepository(db)
 	typeSchemaRepo := persistence.NewTypeSchemasRepository(db)
 
-	workflowQueue := queue.NewMemoryWorkflowQueue(cfg.QueueBuffer)
-	stepQueue := queue.NewMemoryStepQueue(cfg.QueueBuffer)
+	workflowQueue := queue.NewMemoryQueue[queue.WorkflowJob](cfg.QueueBuffer)
+	stepQueue := queue.NewMemoryQueue[queue.StepJob](cfg.QueueBuffer)
 
 	workflowService := services.NewWorkflowService(workflowDefinitionsRepo, workflowInstancesRepo, workflowQueue)
 	workflowDefinitionService := services.NewWorkflowDefinitionService(workflowDefinitionsRepo)
 	workflowInstanceService := services.NewWorkflowInstanceService(workflowInstancesRepo)
 	typeSchemaService := services.NewTypeSchemaService(typeSchemaRepo)
 
-	wfExecutor := worker.NewWorkflowExecutor(workflowInstanceService, workflowDefinitionService, stepQueue, workflowQueue, cfg.MaxParallelWorkflows)
+	workflowExecutor := worker.NewWorkflowExecutor(workflowInstanceService, workflowDefinitionService, workflowQueue, stepQueue, cfg.MaxParallelWorkflows)
 	stepExecutor := worker.NewStepExecutor(stepQueue, cfg.MaxParallelSteps)
 
 	return &Container{
@@ -60,11 +57,8 @@ func NewContainer(cfg *config.Config) *Container {
 		WorkflowInstanceService:   workflowInstanceService,
 		TypeSchemaService:         typeSchemaService,
 
-		WorkflowExecutor: wfExecutor,
+		WorkflowExecutor: workflowExecutor,
 		StepExecutor:     stepExecutor,
-
-		WorkflowQueue: workflowQueue,
-		StepQueue:     stepQueue,
 
 		WorkflowDefRepo:  workflowDefinitionsRepo,
 		WorkflowInstRepo: workflowInstancesRepo,

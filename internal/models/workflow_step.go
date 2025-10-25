@@ -94,7 +94,7 @@ type SubWorkflowStep struct {
 // @Description A workflow step that waits for a specified duration before proceeding.
 type WaitWorkflowStep struct {
 	Duration   StepParameterBinding `json:"duration,omitempty"`
-	NextStepId string               `json:"nextStepId,omitempty"`
+	NextStepId *string              `json:"nextStepId,omitempty"`
 } // @name WaitWorkflowStep
 
 // TerminateWorkflowStep
