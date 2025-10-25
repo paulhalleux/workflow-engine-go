@@ -78,14 +78,15 @@ func (e *WorkflowExecutor) handleJob(job queue.WorkflowJob) {
 
 	for _, step := range *def.Steps {
 		now := time.Now()
+		inputData := step.Input.GetValueMap(nil, job.Instance.Input)
 		taskInstance := models.StepInstance{
 			Id:                 uuid.New(),
 			StepId:             step.Id,
 			Status:             models.StepInstanceStatusPending,
 			WorkflowInstanceId: job.Instance.Id,
-			Input:              datatypes.JSON("{}"),
-			Output:             datatypes.JSON("{}"),
-			Metadata:           datatypes.JSON("{}"),
+			Input:              inputData,
+			Output:             datatypes.JSONMap{},
+			Metadata:           datatypes.JSONMap{},
 			CreatedAt:          now,
 			UpdatedAt:          now,
 		}

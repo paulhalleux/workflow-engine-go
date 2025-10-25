@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"log"
 
 	"gorm.io/datatypes"
 )
@@ -24,7 +23,6 @@ type ParameterDefinitionMap map[string]ParameterDefinition
 
 func (s *ParameterDefinitionMap) Value() (driver.Value, error) {
 	if s == nil || len(*s) == 0 {
-		log.Printf("ParameterDefinitionMap is nil or empty, returning empty JSON object")
 		return "{}", nil
 	}
 	return json.Marshal(s)

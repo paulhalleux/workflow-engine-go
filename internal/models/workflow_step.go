@@ -3,6 +3,8 @@ package models
 import (
 	"database/sql/driver"
 	"encoding/json"
+
+	"gorm.io/datatypes"
 )
 
 type WorkflowStepType string // @name WorkflowStepType
@@ -21,11 +23,24 @@ const (
 // BaseWorkflowStep
 // @Description The base structure for a workflow step, containing common fields.
 type BaseWorkflowStep struct {
-	Id          string           `json:"id,omitempty" validate:"required"`
-	DisplayName string           `json:"displayName,omitempty"`
-	Description string           `json:"description,omitempty"`
-	Type        WorkflowStepType `json:"type,omitempty" validate:"required"`
+	Id          string               `json:"id,omitempty" validate:"required"`
+	DisplayName string               `json:"displayName,omitempty"`
+	Description string               `json:"description,omitempty"`
+	Input       WorkflowStepInputMap `json:"input,omitempty"`
+	Type        WorkflowStepType     `json:"type,omitempty" validate:"required"`
 } // @name BaseWorkflowStep
+
+type StepParameterBindingType string // @name StepParameterBindingType
+const (
+	StepParameterBindingTypeInput StepParameterBindingType = "input"
+	StepParameterBindingTypeValue StepParameterBindingType = "value"
+)
+
+type StepParameterBinding struct {
+	Type      StepParameterBindingType `json:"type,omitempty" validate:"required,oneof=input value"`
+	SourceKey string                   `json:"sourceKey,omitempty" validate:"required_if=Type input"`
+	Value     interface{}              `json:"value,omitempty" validate:"required_if=Type value"`
+} // @name StepParameterBinding
 
 // TaskWorkflowStep
 // @Description A simple task workflow step that performs a specific action.
@@ -78,8 +93,8 @@ type SubWorkflowStep struct {
 // WaitWorkflowStep
 // @Description A workflow step that waits for a specified duration before proceeding.
 type WaitWorkflowStep struct {
-	Duration   string `json:"duration,omitempty"` // e.g., "5m", "1h"
-	NextStepId string `json:"nextStepId,omitempty"`
+	Duration   StepParameterBinding `json:"duration,omitempty"`
+	NextStepId string               `json:"nextStepId,omitempty"`
 } // @name WaitWorkflowStep
 
 // TerminateWorkflowStep
@@ -135,4 +150,13 @@ func (s *WorkflowStepList) Scan(value interface{}) error {
 		return nil
 	}
 	return json.Unmarshal(bytes, s)
+}
+
+func (s *StepParameterBinding) GetValue(input datatypes.JSONMap) interface{} {
+	if s.Type == StepParameterBindingTypeInput {
+		return input[s.SourceKey]
+	} else if s.Type == StepParameterBindingTypeValue {
+		return s.Value
+	}
+	return nil
 }

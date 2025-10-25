@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"log"
 	"time"
 
 	"github.com/paulhalleux/workflow-engine-go/internal/queue"
@@ -15,11 +16,18 @@ func NewWaitStepExecutor() *WaitStepExecutor {
 func (w *WaitStepExecutor) execute(
 	job *queue.StepJob,
 ) (map[string]interface{}, error) {
-	durationTime, err := time.ParseDuration(job.Step.Wait.Duration)
+	value := job.Step.Wait.Duration.GetValue(job.Instance.Input)
+	parsedValue, ok := value.(string)
+	if !ok {
+		return nil, nil
+	}
+
+	durationTime, err := time.ParseDuration(parsedValue)
 	if err != nil {
 		return nil, err
 	}
 
+	log.Printf("Waiting for %s", durationTime)
 	time.Sleep(durationTime)
 	return nil, nil
 }

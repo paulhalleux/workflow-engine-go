@@ -26,7 +26,7 @@ type StepInstance struct {
 	UpdatedAt          time.Time          `gorm:"autoUpdateTime" json:"updatedAt"`
 	StartedAt          *time.Time         `json:"startedAt,omitempty"`
 	CompletedAt        *time.Time         `json:"completedAt,omitempty"`
-	Input              datatypes.JSON     `gorm:"type:text" json:"input"`
-	Output             datatypes.JSON     `gorm:"type:text" json:"output"`
-	Metadata           datatypes.JSON     `gorm:"type:jsonb" json:"metadata"`
+	Input              datatypes.JSONMap  `gorm:"type:text" json:"input"`
+	Output             datatypes.JSONMap  `gorm:"type:text" json:"output"`
+	Metadata           datatypes.JSONMap  `gorm:"type:jsonb" json:"metadata"`
 } // @name StepInstance

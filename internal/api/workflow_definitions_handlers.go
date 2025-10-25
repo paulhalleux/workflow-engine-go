@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/paulhalleux/workflow-engine-go/internal/dto"
+	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/services"
 	"github.com/paulhalleux/workflow-engine-go/internal/utils"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -119,7 +120,12 @@ func (h *WorkflowDefinitionsHandler) GetByID(c *gin.Context) {
 // @Success 201 {object} models.WorkflowDefinition
 // @Router /workflow-definitions [post]
 func (h *WorkflowDefinitionsHandler) Create(c *gin.Context) {
-	var wfr dto.CreateWorkflowDefinitionRequest
+	wfr := dto.CreateWorkflowDefinitionRequest{
+		InputParameters:  models.ParameterDefinitionMap{},
+		OutputParameters: models.ParameterDefinitionMap{},
+		Metadata:         datatypes.JSON{},
+	}
+
 	if err := c.ShouldBindJSON(&wfr); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
