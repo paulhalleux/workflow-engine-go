@@ -92,7 +92,7 @@ func (e *WorkflowExecutor) handle(job queue.WorkflowJob) {
 		UpdatedAt:          now,
 	}
 
-	finishedCh := make(chan struct{})
+	finishedCh := make(chan queue.WorkflowExecutionResult)
 	err = e.stepQueue.Enqueue(queue.StepJob{
 		WorkflowFinishedCh: finishedCh,
 		WorkflowInstance:   job.WorkflowInstance,
@@ -106,15 +106,18 @@ func (e *WorkflowExecutor) handle(job queue.WorkflowJob) {
 		return
 	}
 
-	<-finishedCh
-	log.Printf("Workflow instance %s completed", job.WorkflowInstance.Id.String())
+	result := <-finishedCh
+	if result.Error != nil {
+		log.Printf("Workflow instance %s completed with error: %v", job.WorkflowInstance.Id.String(), result.Error)
+	} else {
+		log.Printf("Workflow instance %s completed with status %s", job.WorkflowInstance.Id.String(), result.Status)
+	}
 
-	newStatus = models.WorkflowInstanceStatusCompleted
 	endTime := time.Now()
 	_, err = e.workflowInstancesService.UpdateWorkflowInstance(
 		job.WorkflowInstance.Id.String(),
 		&dto.UpdateWorkflowInstanceRequest{
-			Status:      &newStatus,
+			Status:      &result.Status,
 			CompletedAt: &endTime,
 		},
 	)

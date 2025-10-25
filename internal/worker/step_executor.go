@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -60,27 +61,39 @@ func (e *StepExecutor) handle(job *queue.StepJob) {
 	executor, exists := executors[job.StepDefinition.Type]
 	if !exists {
 		log.Printf("No executor found for step type %s", job.StepDefinition.Type)
-		job.WorkflowFinishedCh <- struct{}{}
+		job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
+			Status: models.WorkflowInstanceStatusFailed,
+			Error:  nil,
+		}
 		return
 	}
 
 	result, err := executor.execute(job)
 	if err != nil || result == nil {
 		log.Printf("Error executing step %s: %v", job.StepDefinition.Id, err)
-		job.WorkflowFinishedCh <- struct{}{}
+		job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
+			Status: models.WorkflowInstanceStatusFailed,
+			Error:  errors.Join(err, errors.New("step execution failed")),
+		}
 		return
 	}
 
 	if len(result.NextStepIds) == 0 {
 		log.Printf("Workflow %s finished", job.WorkflowInstance.Id)
-		job.WorkflowFinishedCh <- struct{}{}
+		job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
+			Status: models.WorkflowInstanceStatusCompleted,
+			Error:  nil,
+		}
 		return
 	}
 
 	for _, nextStepId := range result.NextStepIds {
 		stepDef := job.WorkflowDefinition.GetStepById(nextStepId)
 		if stepDef == nil {
-			job.WorkflowFinishedCh <- struct{}{}
+			job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
+				Status: models.WorkflowInstanceStatusFailed,
+				Error:  nil,
+			}
 			log.Printf("Next step definition %s not found", nextStepId)
 			break
 		}
@@ -106,8 +119,12 @@ func (e *StepExecutor) handle(job *queue.StepJob) {
 
 		err := e.stepQueue.Enqueue(nextJob)
 		if err != nil {
-			log.Printf("Error enqueueing next step job: %v", err)
-			continue
+			log.Printf("Error enqueueing next step %s: %v", stepDef.Id, err)
+			job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
+				Status: models.WorkflowInstanceStatusFailed,
+				Error:  errors.Join(err, errors.New("failed to enqueue next step")),
+			}
+			return
 		}
 	}
 }

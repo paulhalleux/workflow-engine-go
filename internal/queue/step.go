@@ -5,7 +5,7 @@ import (
 )
 
 type StepJob struct {
-	WorkflowFinishedCh chan<- struct{}
+	WorkflowFinishedCh chan<- WorkflowExecutionResult
 	StepDefinition     *models.WorkflowStep
 	StepInstance       *models.StepInstance
 	WorkflowDefinition *models.WorkflowDefinition
