@@ -23,6 +23,7 @@ type Container struct {
 	WorkflowDefinitionService services.WorkflowDefinitionService
 	WorkflowInstanceService   services.WorkflowInstanceService
 	TypeSchemaService         services.TypeSchemaService
+	StepInstanceService       services.StepInstanceService
 
 	WorkflowExecutor *worker.WorkflowExecutor
 	StepExecutor     *worker.StepExecutor
@@ -30,6 +31,7 @@ type Container struct {
 	WorkflowDefRepo  *persistence.WorkflowDefinitionsRepository
 	WorkflowInstRepo *persistence.WorkflowInstancesRepository
 	TypeSchemaRepo   *persistence.TypeSchemasRepository
+	StepInstanceRepo *persistence.StepInstancesRepository
 }
 
 func NewContainer(cfg *config.Config) *Container {
@@ -39,6 +41,7 @@ func NewContainer(cfg *config.Config) *Container {
 	workflowDefinitionsRepo := persistence.NewWorkflowDefinitionsRepository(db)
 	workflowInstancesRepo := persistence.NewWorkflowInstancesRepository(db)
 	typeSchemaRepo := persistence.NewTypeSchemasRepository(db)
+	stepInstancesRepo := persistence.NewStepInstancesRepository(db)
 
 	workflowQueue := queue.NewMemoryQueue[queue.WorkflowJob](cfg.QueueBuffer)
 	stepQueue := queue.NewMemoryQueue[queue.StepJob](cfg.QueueBuffer)
@@ -47,15 +50,17 @@ func NewContainer(cfg *config.Config) *Container {
 	workflowDefinitionService := services.NewWorkflowDefinitionService(workflowDefinitionsRepo)
 	workflowInstanceService := services.NewWorkflowInstanceService(workflowInstancesRepo)
 	typeSchemaService := services.NewTypeSchemaService(typeSchemaRepo)
+	stepInstanceService := services.NewStepInstanceService(stepInstancesRepo)
 
-	workflowExecutor := worker.NewWorkflowExecutor(workflowInstanceService, workflowDefinitionService, workflowQueue, stepQueue, cfg.MaxParallelWorkflows)
-	stepExecutor := worker.NewStepExecutor(stepQueue, cfg.MaxParallelSteps)
+	workflowExecutor := worker.NewWorkflowExecutor(stepInstanceService, workflowInstanceService, workflowDefinitionService, workflowQueue, stepQueue, cfg.MaxParallelWorkflows)
+	stepExecutor := worker.NewStepExecutor(stepInstanceService, stepQueue, cfg.MaxParallelSteps)
 
 	return &Container{
 		WorkflowService:           workflowService,
 		WorkflowDefinitionService: workflowDefinitionService,
 		WorkflowInstanceService:   workflowInstanceService,
 		TypeSchemaService:         typeSchemaService,
+		StepInstanceService:       stepInstanceService,
 
 		WorkflowExecutor: workflowExecutor,
 		StepExecutor:     stepExecutor,
@@ -63,6 +68,7 @@ func NewContainer(cfg *config.Config) *Container {
 		WorkflowDefRepo:  workflowDefinitionsRepo,
 		WorkflowInstRepo: workflowInstancesRepo,
 		TypeSchemaRepo:   typeSchemaRepo,
+		StepInstanceRepo: stepInstancesRepo,
 
 		Context:    ctx,
 		CancelFunc: cancel,

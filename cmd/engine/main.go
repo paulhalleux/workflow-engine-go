@@ -63,7 +63,7 @@ func startGrpcServer(ctn *container.Container) {
 	reflection.Register(grpcServer)
 
 	// Register gRPC services
-	proto.RegisterWorkflowEngineServer(grpcServer, grpcapi.NewWorkflowEngineServer(ctn.WorkflowService))
+	proto.RegisterWorkflowServiceServer(grpcServer, grpcapi.NewWorkflowServiceServer(ctn.WorkflowService))
 
 	// Start the gRPC server
 	log.Println("🚀 Engine gRPC server running on ", ctn.Config.GRPCPort)

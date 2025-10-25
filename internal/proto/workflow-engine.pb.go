@@ -9,6 +9,7 @@ package proto
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	sync "sync"
@@ -126,19 +127,196 @@ func (x *StartWorkflowResponse) GetWorkflowInstanceId() string {
 	return ""
 }
 
+type TaskCompletionNotification struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TaskId        string                 `protobuf:"bytes,2,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	Output        *structpb.Struct       `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TaskCompletionNotification) Reset() {
+	*x = TaskCompletionNotification{}
+	mi := &file_proto_workflow_engine_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TaskCompletionNotification) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskCompletionNotification) ProtoMessage() {}
+
+func (x *TaskCompletionNotification) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_workflow_engine_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskCompletionNotification.ProtoReflect.Descriptor instead.
+func (*TaskCompletionNotification) Descriptor() ([]byte, []int) {
+	return file_proto_workflow_engine_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *TaskCompletionNotification) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+func (x *TaskCompletionNotification) GetOutput() *structpb.Struct {
+	if x != nil {
+		return x.Output
+	}
+	return nil
+}
+
+type TaskFailureNotification struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TaskId        string                 `protobuf:"bytes,2,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	ErrorMessage  string                 `protobuf:"bytes,3,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TaskFailureNotification) Reset() {
+	*x = TaskFailureNotification{}
+	mi := &file_proto_workflow_engine_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TaskFailureNotification) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskFailureNotification) ProtoMessage() {}
+
+func (x *TaskFailureNotification) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_workflow_engine_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskFailureNotification.ProtoReflect.Descriptor instead.
+func (*TaskFailureNotification) Descriptor() ([]byte, []int) {
+	return file_proto_workflow_engine_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *TaskFailureNotification) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+func (x *TaskFailureNotification) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
+type TaskProgressNotification struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	TaskId             string                 `protobuf:"bytes,2,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	ProgressPercentage int32                  `protobuf:"varint,3,opt,name=progress_percentage,json=progressPercentage,proto3" json:"progress_percentage,omitempty"`
+	StatusMessage      string                 `protobuf:"bytes,4,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *TaskProgressNotification) Reset() {
+	*x = TaskProgressNotification{}
+	mi := &file_proto_workflow_engine_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TaskProgressNotification) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskProgressNotification) ProtoMessage() {}
+
+func (x *TaskProgressNotification) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_workflow_engine_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskProgressNotification.ProtoReflect.Descriptor instead.
+func (*TaskProgressNotification) Descriptor() ([]byte, []int) {
+	return file_proto_workflow_engine_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *TaskProgressNotification) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+func (x *TaskProgressNotification) GetProgressPercentage() int32 {
+	if x != nil {
+		return x.ProgressPercentage
+	}
+	return 0
+}
+
+func (x *TaskProgressNotification) GetStatusMessage() string {
+	if x != nil {
+		return x.StatusMessage
+	}
+	return ""
+}
+
 var File_proto_workflow_engine_proto protoreflect.FileDescriptor
 
 const file_proto_workflow_engine_proto_rawDesc = "" +
 	"\n" +
-	"\x1bproto/workflow-engine.proto\x12\x06engine\x1a\x1cgoogle/protobuf/struct.proto\"\xb0\x01\n" +
+	"\x1bproto/workflow-engine.proto\x12\x06engine\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xb0\x01\n" +
 	"\x14StartWorkflowRequest\x124\n" +
 	"\x16workflow_definition_id\x18\x01 \x01(\tR\x14workflowDefinitionId\x12-\n" +
 	"\x05input\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x05input\x123\n" +
 	"\bmetadata\x18\x03 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"I\n" +
 	"\x15StartWorkflowResponse\x120\n" +
-	"\x14workflow_instance_id\x18\x01 \x01(\tR\x12workflowInstanceId2^\n" +
-	"\x0eWorkflowEngine\x12L\n" +
-	"\rStartWorkflow\x12\x1c.engine.StartWorkflowRequest\x1a\x1d.engine.StartWorkflowResponseB\x10Z\x0einternal/protob\x06proto3"
+	"\x14workflow_instance_id\x18\x01 \x01(\tR\x12workflowInstanceId\"f\n" +
+	"\x1aTaskCompletionNotification\x12\x17\n" +
+	"\atask_id\x18\x02 \x01(\tR\x06taskId\x12/\n" +
+	"\x06output\x18\x03 \x01(\v2\x17.google.protobuf.StructR\x06output\"W\n" +
+	"\x17TaskFailureNotification\x12\x17\n" +
+	"\atask_id\x18\x02 \x01(\tR\x06taskId\x12#\n" +
+	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"\x8b\x01\n" +
+	"\x18TaskProgressNotification\x12\x17\n" +
+	"\atask_id\x18\x02 \x01(\tR\x06taskId\x12/\n" +
+	"\x13progress_percentage\x18\x03 \x01(\x05R\x12progressPercentage\x12%\n" +
+	"\x0estatus_message\x18\x04 \x01(\tR\rstatusMessage2\xd1\x02\n" +
+	"\x0fWorkflowService\x12L\n" +
+	"\rStartWorkflow\x12\x1c.engine.StartWorkflowRequest\x1a\x1d.engine.StartWorkflowResponse\x12R\n" +
+	"\x14NotifyTaskCompletion\x12\".engine.TaskCompletionNotification\x1a\x16.google.protobuf.Empty\x12L\n" +
+	"\x11NotifyTaskFailure\x12\x1f.engine.TaskFailureNotification\x1a\x16.google.protobuf.Empty\x12N\n" +
+	"\x12NotifyTaskProgress\x12 .engine.TaskProgressNotification\x1a\x16.google.protobuf.EmptyB\x10Z\x0einternal/protob\x06proto3"
 
 var (
 	file_proto_workflow_engine_proto_rawDescOnce sync.Once
@@ -152,22 +330,33 @@ func file_proto_workflow_engine_proto_rawDescGZIP() []byte {
 	return file_proto_workflow_engine_proto_rawDescData
 }
 
-var file_proto_workflow_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_workflow_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_workflow_engine_proto_goTypes = []any{
-	(*StartWorkflowRequest)(nil),  // 0: engine.StartWorkflowRequest
-	(*StartWorkflowResponse)(nil), // 1: engine.StartWorkflowResponse
-	(*structpb.Struct)(nil),       // 2: google.protobuf.Struct
+	(*StartWorkflowRequest)(nil),       // 0: engine.StartWorkflowRequest
+	(*StartWorkflowResponse)(nil),      // 1: engine.StartWorkflowResponse
+	(*TaskCompletionNotification)(nil), // 2: engine.TaskCompletionNotification
+	(*TaskFailureNotification)(nil),    // 3: engine.TaskFailureNotification
+	(*TaskProgressNotification)(nil),   // 4: engine.TaskProgressNotification
+	(*structpb.Struct)(nil),            // 5: google.protobuf.Struct
+	(*emptypb.Empty)(nil),              // 6: google.protobuf.Empty
 }
 var file_proto_workflow_engine_proto_depIdxs = []int32{
-	2, // 0: engine.StartWorkflowRequest.input:type_name -> google.protobuf.Struct
-	2, // 1: engine.StartWorkflowRequest.metadata:type_name -> google.protobuf.Struct
-	0, // 2: engine.WorkflowEngine.StartWorkflow:input_type -> engine.StartWorkflowRequest
-	1, // 3: engine.WorkflowEngine.StartWorkflow:output_type -> engine.StartWorkflowResponse
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	5, // 0: engine.StartWorkflowRequest.input:type_name -> google.protobuf.Struct
+	5, // 1: engine.StartWorkflowRequest.metadata:type_name -> google.protobuf.Struct
+	5, // 2: engine.TaskCompletionNotification.output:type_name -> google.protobuf.Struct
+	0, // 3: engine.WorkflowService.StartWorkflow:input_type -> engine.StartWorkflowRequest
+	2, // 4: engine.WorkflowService.NotifyTaskCompletion:input_type -> engine.TaskCompletionNotification
+	3, // 5: engine.WorkflowService.NotifyTaskFailure:input_type -> engine.TaskFailureNotification
+	4, // 6: engine.WorkflowService.NotifyTaskProgress:input_type -> engine.TaskProgressNotification
+	1, // 7: engine.WorkflowService.StartWorkflow:output_type -> engine.StartWorkflowResponse
+	6, // 8: engine.WorkflowService.NotifyTaskCompletion:output_type -> google.protobuf.Empty
+	6, // 9: engine.WorkflowService.NotifyTaskFailure:output_type -> google.protobuf.Empty
+	6, // 10: engine.WorkflowService.NotifyTaskProgress:output_type -> google.protobuf.Empty
+	7, // [7:11] is the sub-list for method output_type
+	3, // [3:7] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_proto_workflow_engine_proto_init() }
@@ -181,7 +370,7 @@ func file_proto_workflow_engine_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_workflow_engine_proto_rawDesc), len(file_proto_workflow_engine_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

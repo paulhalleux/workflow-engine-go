@@ -6,8 +6,11 @@ import (
 	"log"
 	"time"
 
+	"github.com/paulhalleux/workflow-engine-go/internal/dto"
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/queue"
+	"github.com/paulhalleux/workflow-engine-go/internal/services"
+	"gorm.io/datatypes"
 )
 
 type StepResult struct {
@@ -26,17 +29,20 @@ func RegisterStepExecutor(stepType models.WorkflowStepType, executor StepTypeExe
 }
 
 type StepExecutor struct {
-	stepQueue queue.StepQueue
-	sem       chan struct{}
+	stepInstanceService services.StepInstanceService
+	stepQueue           queue.StepQueue
+	sem                 chan struct{}
 }
 
 func NewStepExecutor(
+	stepInstanceService services.StepInstanceService,
 	stepQueue queue.StepQueue,
 	maxConcurrentWorkflows int,
 ) *StepExecutor {
 	return &StepExecutor{
-		stepQueue: stepQueue,
-		sem:       make(chan struct{}, maxConcurrentWorkflows),
+		stepInstanceService: stepInstanceService,
+		stepQueue:           stepQueue,
+		sem:                 make(chan struct{}, maxConcurrentWorkflows),
 	}
 }
 
@@ -57,6 +63,43 @@ func (e *StepExecutor) Start(ctx context.Context) {
 	}()
 }
 
+func (e *StepExecutor) failWithError(job *queue.StepJob, err error) {
+	newStatus := models.StepInstanceStatusFailed
+	_, updateErr := e.stepInstanceService.UpdateStepInstance(job.StepInstance.Id, &dto.UpdateStepInstanceRequest{
+		Status: &newStatus,
+	})
+
+	if updateErr != nil {
+		log.Printf("Error updating step instance %s to failed: %v", job.StepInstance.Id, err)
+	}
+
+	job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
+		Status: models.WorkflowInstanceStatusFailed,
+		Error:  errors.Join(err, errors.New("step execution failed")),
+	}
+}
+
+func (e *StepExecutor) markStepAsRunning(job *queue.StepJob) error {
+	newStatus := models.StepInstanceStatusRunning
+	now := time.Now()
+	_, err := e.stepInstanceService.UpdateStepInstance(job.StepInstance.Id, &dto.UpdateStepInstanceRequest{
+		Status:    &newStatus,
+		StartedAt: &now,
+	})
+	return err
+}
+
+func (e *StepExecutor) markStepAsCompleted(job *queue.StepJob, output map[string]interface{}) error {
+	newStatus := models.StepInstanceStatusCompleted
+	now := time.Now()
+	_, err := e.stepInstanceService.UpdateStepInstance(job.StepInstance.Id, &dto.UpdateStepInstanceRequest{
+		Status:      &newStatus,
+		Output:      (*datatypes.JSONMap)(&output),
+		CompletedAt: &now,
+	})
+	return err
+}
+
 func (e *StepExecutor) handle(job *queue.StepJob) {
 	executor, exists := executors[job.StepDefinition.Type]
 	if !exists {
@@ -68,13 +111,24 @@ func (e *StepExecutor) handle(job *queue.StepJob) {
 		return
 	}
 
+	err := e.markStepAsRunning(job)
+	if err != nil {
+		log.Printf("Error marking step %s as running: %v", job.StepDefinition.Id, err)
+		e.failWithError(job, err)
+		return
+	}
+
 	result, err := executor.execute(job)
 	if err != nil || result == nil {
 		log.Printf("Error executing step %s: %v", job.StepDefinition.Id, err)
-		job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
-			Status: models.WorkflowInstanceStatusFailed,
-			Error:  errors.Join(err, errors.New("step execution failed")),
-		}
+		e.failWithError(job, err)
+		return
+	}
+
+	err = e.markStepAsCompleted(job, result.Output)
+	if err != nil {
+		log.Printf("Error marking step %s as completed: %v", job.StepDefinition.Id, err)
+		e.failWithError(job, err)
 		return
 	}
 
@@ -87,6 +141,7 @@ func (e *StepExecutor) handle(job *queue.StepJob) {
 		return
 	}
 
+	// Execute next steps
 	for _, nextStepId := range result.NextStepIds {
 		stepDef := job.WorkflowDefinition.GetStepById(nextStepId)
 		if stepDef == nil {
@@ -109,15 +164,25 @@ func (e *StepExecutor) handle(job *queue.StepJob) {
 			UpdatedAt:          now,
 		}
 
+		createdInstance, err := e.stepInstanceService.CreateStepInstance(instance)
+		if err != nil {
+			log.Printf("Error creating step instance for step %s: %v", stepDef.Id, err)
+			job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
+				Status: models.WorkflowInstanceStatusFailed,
+				Error:  errors.Join(err, errors.New("failed to create step instance")),
+			}
+			return
+		}
+
 		nextJob := queue.StepJob{
 			WorkflowFinishedCh: job.WorkflowFinishedCh,
 			StepDefinition:     stepDef,
-			StepInstance:       instance,
+			StepInstance:       createdInstance,
 			WorkflowDefinition: job.WorkflowDefinition,
 			WorkflowInstance:   job.WorkflowInstance,
 		}
 
-		err := e.stepQueue.Enqueue(nextJob)
+		err = e.stepQueue.Enqueue(nextJob)
 		if err != nil {
 			log.Printf("Error enqueueing next step %s: %v", stepDef.Id, err)
 			job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{

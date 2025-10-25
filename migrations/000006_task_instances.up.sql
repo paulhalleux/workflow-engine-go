@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS step_instances
 (
-    id                   UUID PRIMARY KEY,
+    id                   UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
     workflow_instance_id UUID        NOT NULL,
     step_id              VARCHAR     NOT NULL,
     status               VARCHAR(50) NOT NULL,

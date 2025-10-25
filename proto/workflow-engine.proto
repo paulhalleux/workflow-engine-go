@@ -1,12 +1,16 @@
 syntax = "proto3";
 
 import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "internal/proto";
 package engine;
 
 service WorkflowService {
   rpc StartWorkflow (StartWorkflowRequest) returns (StartWorkflowResponse);
+  rpc NotifyTaskCompletion (TaskCompletionNotification) returns (google.protobuf.Empty);
+  rpc NotifyTaskFailure (TaskFailureNotification) returns (google.protobuf.Empty);
+  rpc NotifyTaskProgress (TaskProgressNotification) returns (google.protobuf.Empty);
 }
 
 message StartWorkflowRequest {
@@ -17,4 +21,20 @@ message StartWorkflowRequest {
 
 message StartWorkflowResponse {
   string workflow_instance_id = 1;
+}
+
+message TaskCompletionNotification {
+  string task_id = 2;
+  google.protobuf.Struct output = 3;
+}
+
+message TaskFailureNotification {
+  string task_id = 2;
+  string error_message = 3;
+}
+
+message TaskProgressNotification {
+  string task_id = 2;
+  int32 progress_percentage = 3;
+  string status_message = 4;
 }

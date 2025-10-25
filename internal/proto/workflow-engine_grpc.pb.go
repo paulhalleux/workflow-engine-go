@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,101 +20,215 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WorkflowEngine_StartWorkflow_FullMethodName = "/engine.WorkflowEngine/StartWorkflow"
+	WorkflowService_StartWorkflow_FullMethodName        = "/engine.WorkflowService/StartWorkflow"
+	WorkflowService_NotifyTaskCompletion_FullMethodName = "/engine.WorkflowService/NotifyTaskCompletion"
+	WorkflowService_NotifyTaskFailure_FullMethodName    = "/engine.WorkflowService/NotifyTaskFailure"
+	WorkflowService_NotifyTaskProgress_FullMethodName   = "/engine.WorkflowService/NotifyTaskProgress"
 )
 
-// WorkflowEngineClient is the client API for WorkflowEngine service.
+// WorkflowServiceClient is the client API for WorkflowService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type WorkflowEngineClient interface {
+type WorkflowServiceClient interface {
 	StartWorkflow(ctx context.Context, in *StartWorkflowRequest, opts ...grpc.CallOption) (*StartWorkflowResponse, error)
+	NotifyTaskCompletion(ctx context.Context, in *TaskCompletionNotification, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	NotifyTaskFailure(ctx context.Context, in *TaskFailureNotification, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	NotifyTaskProgress(ctx context.Context, in *TaskProgressNotification, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
-type workflowEngineClient struct {
+type workflowServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewWorkflowEngineClient(cc grpc.ClientConnInterface) WorkflowEngineClient {
-	return &workflowEngineClient{cc}
+func NewWorkflowServiceClient(cc grpc.ClientConnInterface) WorkflowServiceClient {
+	return &workflowServiceClient{cc}
 }
 
-func (c *workflowEngineClient) StartWorkflow(ctx context.Context, in *StartWorkflowRequest, opts ...grpc.CallOption) (*StartWorkflowResponse, error) {
+func (c *workflowServiceClient) StartWorkflow(ctx context.Context, in *StartWorkflowRequest, opts ...grpc.CallOption) (*StartWorkflowResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(StartWorkflowResponse)
-	err := c.cc.Invoke(ctx, WorkflowEngine_StartWorkflow_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, WorkflowService_StartWorkflow_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// WorkflowEngineServer is the server API for WorkflowEngine service.
-// All implementations must embed UnimplementedWorkflowEngineServer
-// for forward compatibility.
-type WorkflowEngineServer interface {
-	StartWorkflow(context.Context, *StartWorkflowRequest) (*StartWorkflowResponse, error)
-	mustEmbedUnimplementedWorkflowEngineServer()
+func (c *workflowServiceClient) NotifyTaskCompletion(ctx context.Context, in *TaskCompletionNotification, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, WorkflowService_NotifyTaskCompletion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-// UnimplementedWorkflowEngineServer must be embedded to have
+func (c *workflowServiceClient) NotifyTaskFailure(ctx context.Context, in *TaskFailureNotification, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, WorkflowService_NotifyTaskFailure_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workflowServiceClient) NotifyTaskProgress(ctx context.Context, in *TaskProgressNotification, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, WorkflowService_NotifyTaskProgress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// WorkflowServiceServer is the server API for WorkflowService service.
+// All implementations must embed UnimplementedWorkflowServiceServer
+// for forward compatibility.
+type WorkflowServiceServer interface {
+	StartWorkflow(context.Context, *StartWorkflowRequest) (*StartWorkflowResponse, error)
+	NotifyTaskCompletion(context.Context, *TaskCompletionNotification) (*emptypb.Empty, error)
+	NotifyTaskFailure(context.Context, *TaskFailureNotification) (*emptypb.Empty, error)
+	NotifyTaskProgress(context.Context, *TaskProgressNotification) (*emptypb.Empty, error)
+	mustEmbedUnimplementedWorkflowServiceServer()
+}
+
+// UnimplementedWorkflowServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedWorkflowEngineServer struct{}
+type UnimplementedWorkflowServiceServer struct{}
 
-func (UnimplementedWorkflowEngineServer) StartWorkflow(context.Context, *StartWorkflowRequest) (*StartWorkflowResponse, error) {
+func (UnimplementedWorkflowServiceServer) StartWorkflow(context.Context, *StartWorkflowRequest) (*StartWorkflowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartWorkflow not implemented")
 }
-func (UnimplementedWorkflowEngineServer) mustEmbedUnimplementedWorkflowEngineServer() {}
-func (UnimplementedWorkflowEngineServer) testEmbeddedByValue()                        {}
+func (UnimplementedWorkflowServiceServer) NotifyTaskCompletion(context.Context, *TaskCompletionNotification) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NotifyTaskCompletion not implemented")
+}
+func (UnimplementedWorkflowServiceServer) NotifyTaskFailure(context.Context, *TaskFailureNotification) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NotifyTaskFailure not implemented")
+}
+func (UnimplementedWorkflowServiceServer) NotifyTaskProgress(context.Context, *TaskProgressNotification) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NotifyTaskProgress not implemented")
+}
+func (UnimplementedWorkflowServiceServer) mustEmbedUnimplementedWorkflowServiceServer() {}
+func (UnimplementedWorkflowServiceServer) testEmbeddedByValue()                         {}
 
-// UnsafeWorkflowEngineServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to WorkflowEngineServer will
+// UnsafeWorkflowServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to WorkflowServiceServer will
 // result in compilation errors.
-type UnsafeWorkflowEngineServer interface {
-	mustEmbedUnimplementedWorkflowEngineServer()
+type UnsafeWorkflowServiceServer interface {
+	mustEmbedUnimplementedWorkflowServiceServer()
 }
 
-func RegisterWorkflowEngineServer(s grpc.ServiceRegistrar, srv WorkflowEngineServer) {
-	// If the following call pancis, it indicates UnimplementedWorkflowEngineServer was
+func RegisterWorkflowServiceServer(s grpc.ServiceRegistrar, srv WorkflowServiceServer) {
+	// If the following call pancis, it indicates UnimplementedWorkflowServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&WorkflowEngine_ServiceDesc, srv)
+	s.RegisterService(&WorkflowService_ServiceDesc, srv)
 }
 
-func _WorkflowEngine_StartWorkflow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WorkflowService_StartWorkflow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StartWorkflowRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkflowEngineServer).StartWorkflow(ctx, in)
+		return srv.(WorkflowServiceServer).StartWorkflow(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkflowEngine_StartWorkflow_FullMethodName,
+		FullMethod: WorkflowService_StartWorkflow_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowEngineServer).StartWorkflow(ctx, req.(*StartWorkflowRequest))
+		return srv.(WorkflowServiceServer).StartWorkflow(ctx, req.(*StartWorkflowRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// WorkflowEngine_ServiceDesc is the grpc.ServiceDesc for WorkflowEngine service.
+func _WorkflowService_NotifyTaskCompletion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskCompletionNotification)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).NotifyTaskCompletion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_NotifyTaskCompletion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).NotifyTaskCompletion(ctx, req.(*TaskCompletionNotification))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkflowService_NotifyTaskFailure_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskFailureNotification)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).NotifyTaskFailure(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_NotifyTaskFailure_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).NotifyTaskFailure(ctx, req.(*TaskFailureNotification))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkflowService_NotifyTaskProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskProgressNotification)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).NotifyTaskProgress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_NotifyTaskProgress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).NotifyTaskProgress(ctx, req.(*TaskProgressNotification))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// WorkflowService_ServiceDesc is the grpc.ServiceDesc for WorkflowService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var WorkflowEngine_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "engine.WorkflowEngine",
-	HandlerType: (*WorkflowEngineServer)(nil),
+var WorkflowService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "engine.WorkflowService",
+	HandlerType: (*WorkflowServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "StartWorkflow",
-			Handler:    _WorkflowEngine_StartWorkflow_Handler,
+			Handler:    _WorkflowService_StartWorkflow_Handler,
+		},
+		{
+			MethodName: "NotifyTaskCompletion",
+			Handler:    _WorkflowService_NotifyTaskCompletion_Handler,
+		},
+		{
+			MethodName: "NotifyTaskFailure",
+			Handler:    _WorkflowService_NotifyTaskFailure_Handler,
+		},
+		{
+			MethodName: "NotifyTaskProgress",
+			Handler:    _WorkflowService_NotifyTaskProgress_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

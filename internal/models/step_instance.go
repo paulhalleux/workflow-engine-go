@@ -18,7 +18,7 @@ const (
 )
 
 type StepInstance struct {
-	Id                 uuid.UUID          `gorm:"type:uuid;primaryKey" json:"id"`
+	Id                 uuid.UUID          `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
 	WorkflowInstanceId uuid.UUID          `gorm:"type:uuid;not null" json:"workflowInstanceId"`
 	StepId             string             `gorm:"type:uuid;not null" json:"stepId"`
 	Status             StepInstanceStatus `gorm:"type:varchar(50);not null" json:"status"`

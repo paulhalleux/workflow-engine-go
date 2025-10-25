@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 )
 
 type WorkflowExecutor struct {
+	stepInstanceService       services.StepInstanceService
 	workflowInstancesService  services.WorkflowInstanceService
 	workflowDefinitionService services.WorkflowDefinitionService
 	workflowQueue             queue.WorkflowQueue
@@ -20,6 +22,7 @@ type WorkflowExecutor struct {
 }
 
 func NewWorkflowExecutor(
+	stepInstanceService services.StepInstanceService,
 	workflowInstancesService services.WorkflowInstanceService,
 	workflowDefinitionService services.WorkflowDefinitionService,
 	workflowQueue queue.WorkflowQueue,
@@ -27,6 +30,7 @@ func NewWorkflowExecutor(
 	maxConcurrentWorkflows int,
 ) *WorkflowExecutor {
 	return &WorkflowExecutor{
+		stepInstanceService:       stepInstanceService,
 		workflowInstancesService:  workflowInstancesService,
 		workflowDefinitionService: workflowDefinitionService,
 		workflowQueue:             workflowQueue,
@@ -52,10 +56,30 @@ func (e *WorkflowExecutor) Start(ctx context.Context) {
 	}()
 }
 
+func (e *WorkflowExecutor) failWithError(job queue.WorkflowJob, err error) {
+	log.Printf("Workflow instance %s failed with error: %v", job.WorkflowInstance.Id.String(), err)
+
+	finishedAt := time.Now()
+	failedStatus := models.WorkflowInstanceStatusFailed
+
+	_, updateErr := e.workflowInstancesService.UpdateWorkflowInstance(
+		job.WorkflowInstance.Id.String(),
+		&dto.UpdateWorkflowInstanceRequest{
+			Status:      &failedStatus,
+			CompletedAt: &finishedAt,
+		},
+	)
+
+	if updateErr != nil {
+		log.Printf("Error updating workflow instance %s to failed status: %v", job.WorkflowInstance.Id.String(), updateErr)
+	}
+}
+
 func (e *WorkflowExecutor) handle(job queue.WorkflowJob) {
 	workflowDefinition, err := e.workflowDefinitionService.GetWorkflowDefinitionById(job.WorkflowInstance.WorkflowDefinitionId.String())
 	if err != nil {
 		log.Printf("Error loading workflow definition: %v", err)
+		e.failWithError(job, err)
 		return
 	}
 
@@ -72,18 +96,20 @@ func (e *WorkflowExecutor) handle(job queue.WorkflowJob) {
 
 	if err != nil {
 		log.Printf("Error updating workflow instance status while stating it: %v", err)
+		e.failWithError(job, err)
 		return
 	}
 
 	firstStep := workflowDefinition.GetFirstStep()
 	if firstStep == nil {
 		log.Printf("Workflow definition %s has no steps defined", workflowDefinition.Id.String())
+		e.failWithError(job, errors.New("no steps defined in workflow"))
 		return
 	}
 
 	now := time.Now()
 	inputData := firstStep.Input.GetValueMap(nil, job.WorkflowInstance.Input)
-	instance := &models.StepInstance{
+	instance := models.StepInstance{
 		WorkflowInstanceId: job.WorkflowInstance.Id,
 		StepId:             firstStep.Id,
 		Status:             models.StepInstanceStatusPending,
@@ -92,17 +118,25 @@ func (e *WorkflowExecutor) handle(job queue.WorkflowJob) {
 		UpdatedAt:          now,
 	}
 
+	_, err = e.stepInstanceService.CreateStepInstance(&instance)
+	if err != nil {
+		log.Printf("Error creating first step instance: %v", err)
+		e.failWithError(job, err)
+		return
+	}
+
 	finishedCh := make(chan queue.WorkflowExecutionResult)
 	err = e.stepQueue.Enqueue(queue.StepJob{
 		WorkflowFinishedCh: finishedCh,
 		WorkflowInstance:   job.WorkflowInstance,
 		StepDefinition:     firstStep,
-		StepInstance:       instance,
+		StepInstance:       &instance,
 		WorkflowDefinition: workflowDefinition,
 	})
 
 	if err != nil {
 		log.Printf("Error enqueueing first step of workflow instance: %v", err)
+		e.failWithError(job, err)
 		return
 	}
 

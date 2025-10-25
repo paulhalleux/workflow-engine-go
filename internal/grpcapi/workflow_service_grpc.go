@@ -8,16 +8,16 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/internal/services"
 )
 
-type WorkflowEngineServer struct {
-	proto.UnimplementedWorkflowEngineServer
+type WorkflowServiceServer struct {
+	proto.UnimplementedWorkflowServiceServer
 	svc services.WorkflowService
 }
 
-func NewWorkflowEngineServer(svc services.WorkflowService) *WorkflowEngineServer {
-	return &WorkflowEngineServer{svc: svc}
+func NewWorkflowServiceServer(svc services.WorkflowService) *WorkflowServiceServer {
+	return &WorkflowServiceServer{svc: svc}
 }
 
-func (s *WorkflowEngineServer) StartWorkflow(ctx context.Context, req *proto.StartWorkflowRequest) (*proto.StartWorkflowResponse, error) {
+func (s *WorkflowServiceServer) StartWorkflow(ctx context.Context, req *proto.StartWorkflowRequest) (*proto.StartWorkflowResponse, error) {
 	defID, err := uuid.Parse(req.WorkflowDefinitionId)
 	if err != nil {
 		return nil, err
