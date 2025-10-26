@@ -5,14 +5,7 @@ import (
 )
 
 func main() {
-	ag := agent.Agent{
-		Name: "Echo",
-		Grpc: agent.GrpcInfo{
-			Port: 50052,
-		},
-	}
-
+	ag := agent.NewAgent("Echo", nil, 50052)
 	ag.RegisterTask("echo", NewEchoTask())
-
 	ag.Start()
 }

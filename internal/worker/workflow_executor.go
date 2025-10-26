@@ -10,6 +10,7 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/internal/queue"
 	"github.com/paulhalleux/workflow-engine-go/internal/services"
+	"github.com/paulhalleux/workflow-engine-go/internal/utils"
 )
 
 type WorkflowExecutor struct {
@@ -126,13 +127,20 @@ func (e *WorkflowExecutor) handle(job queue.WorkflowJob) {
 	}
 
 	finishedCh := make(chan queue.WorkflowExecutionResult)
+	stepFinishedCh := make(chan string, len(*workflowDefinition.Steps))
+	counter := utils.NewCounter()
+
 	err = e.stepQueue.Enqueue(queue.StepJob{
 		WorkflowFinishedCh: finishedCh,
+		StepFinishedCh:     stepFinishedCh,
+		StepCounter:        counter,
 		WorkflowInstance:   job.WorkflowInstance,
 		StepDefinition:     firstStep,
 		StepInstance:       &instance,
 		WorkflowDefinition: workflowDefinition,
 	})
+
+	counter.Increment()
 
 	if err != nil {
 		log.Printf("Error enqueueing first step of workflow instance: %v", err)

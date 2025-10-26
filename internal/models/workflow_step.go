@@ -59,7 +59,8 @@ type ForkBranch struct {
 // ForkWorkflowStep
 // @Description A workflow step that forks into multiple branches.
 type ForkWorkflowStep struct {
-	Branches []ForkBranch `json:"branches,omitempty"`
+	JoinStepId string       `json:"joinStepId,omitempty"`
+	Branches   []ForkBranch `json:"branches,omitempty"`
 } // @name ForkWorkflowStep
 
 // DecisionCase
@@ -79,8 +80,8 @@ type DecisionWorkflowStep struct {
 // @Description A workflow step that joins multiple incoming steps into one.
 type JoinWorkflowStep struct {
 	OriginId        string   `json:"originId,omitempty"`
-	IncomingStepIds []string `json:"incomingSteps,omitempty"`
-	NextStepId      string   `json:"nextStepId,omitempty"`
+	IncomingStepIds []string `json:"IncomingStepIds,omitempty"`
+	NextStepId      *string  `json:"nextStepId,omitempty"`
 } // @name JoinWorkflowStep
 
 // SubWorkflowStep
@@ -125,7 +126,7 @@ type HttpWorkflowStep struct {
 type WorkflowStep struct {
 	BaseWorkflowStep
 	Task        *TaskWorkflowStep      `json:"task,omitempty" validate:"required_if=Type task"`
-	Form        *ForkWorkflowStep      `json:"fork,omitempty" validate:"required_if=Type fork"`
+	Fork        *ForkWorkflowStep      `json:"fork,omitempty" validate:"required_if=Type fork"`
 	Decision    *DecisionWorkflowStep  `json:"decision,omitempty" validate:"required_if=Type decision"`
 	Join        *JoinWorkflowStep      `json:"join,omitempty" validate:"required_if=Type join"`
 	SubWorkflow *SubWorkflowStep       `json:"subWorkflow,omitempty" validate:"required_if=Type subworkflow"`

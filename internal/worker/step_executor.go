@@ -119,6 +119,8 @@ func (e *StepExecutor) handle(job *queue.StepJob) {
 	}
 
 	result, err := executor.execute(job)
+	job.StepFinishedCh <- job.StepDefinition.Id
+
 	if err != nil || result == nil {
 		log.Printf("Error executing step %s: %v", job.StepDefinition.Id, err)
 		e.failWithError(job, err)
@@ -129,15 +131,6 @@ func (e *StepExecutor) handle(job *queue.StepJob) {
 	if err != nil {
 		log.Printf("Error marking step %s as completed: %v", job.StepDefinition.Id, err)
 		e.failWithError(job, err)
-		return
-	}
-
-	if len(result.NextStepIds) == 0 {
-		log.Printf("Workflow %s finished", job.WorkflowInstance.Id)
-		job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
-			Status: models.WorkflowInstanceStatusCompleted,
-			Error:  nil,
-		}
 		return
 	}
 
@@ -176,13 +169,19 @@ func (e *StepExecutor) handle(job *queue.StepJob) {
 
 		nextJob := queue.StepJob{
 			WorkflowFinishedCh: job.WorkflowFinishedCh,
-			StepDefinition:     stepDef,
-			StepInstance:       createdInstance,
+			StepFinishedCh:     job.StepFinishedCh,
+			StepCounter:        job.StepCounter,
 			WorkflowDefinition: job.WorkflowDefinition,
 			WorkflowInstance:   job.WorkflowInstance,
+
+			// New step to execute
+			StepDefinition: stepDef,
+			StepInstance:   createdInstance,
 		}
 
 		err = e.stepQueue.Enqueue(nextJob)
+		job.StepCounter.Increment()
+
 		if err != nil {
 			log.Printf("Error enqueueing next step %s: %v", stepDef.Id, err)
 			job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
@@ -191,5 +190,15 @@ func (e *StepExecutor) handle(job *queue.StepJob) {
 			}
 			return
 		}
+	}
+
+	job.StepCounter.Decrement()
+	if job.StepCounter.GetValue() == 0 {
+		log.Printf("Workflow %s finished", job.WorkflowInstance.Id)
+		job.WorkflowFinishedCh <- queue.WorkflowExecutionResult{
+			Status: models.WorkflowInstanceStatusCompleted,
+			Error:  nil,
+		}
+		return
 	}
 }

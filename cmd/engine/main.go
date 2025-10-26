@@ -35,6 +35,8 @@ func main() {
 }
 
 func registerTaskExecutors() {
+	worker.RegisterStepExecutor(models.WorkflowStepTypeFork, worker.NewForkStepExecutor())
+	worker.RegisterStepExecutor(models.WorkflowStepTypeJoin, worker.NewJoinStepExecutor())
 	worker.RegisterStepExecutor(models.WorkflowStepTypeWait, worker.NewWaitStepExecutor())
 }
 
