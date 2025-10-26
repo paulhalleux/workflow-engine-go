@@ -129,7 +129,7 @@ func (x *StartWorkflowResponse) GetWorkflowInstanceId() string {
 
 type TaskCompletionNotification struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TaskId        string                 `protobuf:"bytes,2,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	ExecutionId   string                 `protobuf:"bytes,2,opt,name=execution_id,json=executionId,proto3" json:"execution_id,omitempty"`
 	Output        *structpb.Struct       `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -165,9 +165,9 @@ func (*TaskCompletionNotification) Descriptor() ([]byte, []int) {
 	return file_proto_workflow_engine_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *TaskCompletionNotification) GetTaskId() string {
+func (x *TaskCompletionNotification) GetExecutionId() string {
 	if x != nil {
-		return x.TaskId
+		return x.ExecutionId
 	}
 	return ""
 }
@@ -181,7 +181,7 @@ func (x *TaskCompletionNotification) GetOutput() *structpb.Struct {
 
 type TaskFailureNotification struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TaskId        string                 `protobuf:"bytes,2,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	ExecutionId   string                 `protobuf:"bytes,2,opt,name=execution_id,json=executionId,proto3" json:"execution_id,omitempty"`
 	ErrorMessage  string                 `protobuf:"bytes,3,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -217,9 +217,9 @@ func (*TaskFailureNotification) Descriptor() ([]byte, []int) {
 	return file_proto_workflow_engine_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *TaskFailureNotification) GetTaskId() string {
+func (x *TaskFailureNotification) GetExecutionId() string {
 	if x != nil {
-		return x.TaskId
+		return x.ExecutionId
 	}
 	return ""
 }
@@ -233,7 +233,7 @@ func (x *TaskFailureNotification) GetErrorMessage() string {
 
 type TaskProgressNotification struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	TaskId             string                 `protobuf:"bytes,2,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	ExecutionId        string                 `protobuf:"bytes,2,opt,name=execution_id,json=executionId,proto3" json:"execution_id,omitempty"`
 	ProgressPercentage int32                  `protobuf:"varint,3,opt,name=progress_percentage,json=progressPercentage,proto3" json:"progress_percentage,omitempty"`
 	StatusMessage      string                 `protobuf:"bytes,4,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	unknownFields      protoimpl.UnknownFields
@@ -270,9 +270,9 @@ func (*TaskProgressNotification) Descriptor() ([]byte, []int) {
 	return file_proto_workflow_engine_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *TaskProgressNotification) GetTaskId() string {
+func (x *TaskProgressNotification) GetExecutionId() string {
 	if x != nil {
-		return x.TaskId
+		return x.ExecutionId
 	}
 	return ""
 }
@@ -301,15 +301,15 @@ const file_proto_workflow_engine_proto_rawDesc = "" +
 	"\x05input\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x05input\x123\n" +
 	"\bmetadata\x18\x03 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"I\n" +
 	"\x15StartWorkflowResponse\x120\n" +
-	"\x14workflow_instance_id\x18\x01 \x01(\tR\x12workflowInstanceId\"f\n" +
-	"\x1aTaskCompletionNotification\x12\x17\n" +
-	"\atask_id\x18\x02 \x01(\tR\x06taskId\x12/\n" +
-	"\x06output\x18\x03 \x01(\v2\x17.google.protobuf.StructR\x06output\"W\n" +
-	"\x17TaskFailureNotification\x12\x17\n" +
-	"\atask_id\x18\x02 \x01(\tR\x06taskId\x12#\n" +
-	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"\x8b\x01\n" +
-	"\x18TaskProgressNotification\x12\x17\n" +
-	"\atask_id\x18\x02 \x01(\tR\x06taskId\x12/\n" +
+	"\x14workflow_instance_id\x18\x01 \x01(\tR\x12workflowInstanceId\"p\n" +
+	"\x1aTaskCompletionNotification\x12!\n" +
+	"\fexecution_id\x18\x02 \x01(\tR\vexecutionId\x12/\n" +
+	"\x06output\x18\x03 \x01(\v2\x17.google.protobuf.StructR\x06output\"a\n" +
+	"\x17TaskFailureNotification\x12!\n" +
+	"\fexecution_id\x18\x02 \x01(\tR\vexecutionId\x12#\n" +
+	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"\x95\x01\n" +
+	"\x18TaskProgressNotification\x12!\n" +
+	"\fexecution_id\x18\x02 \x01(\tR\vexecutionId\x12/\n" +
 	"\x13progress_percentage\x18\x03 \x01(\x05R\x12progressPercentage\x12%\n" +
 	"\x0estatus_message\x18\x04 \x01(\tR\rstatusMessage2\xd1\x02\n" +
 	"\x0fWorkflowService\x12L\n" +

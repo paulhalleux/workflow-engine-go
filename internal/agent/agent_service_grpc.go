@@ -19,7 +19,17 @@ func NewAgentServiceServer(agent *Agent) *ServiceServer {
 }
 
 func (s *ServiceServer) StartTask(_ context.Context, req *proto.StartTaskRequest) (*proto.StartTaskResponse, error) {
+	task, exists := s.agent.GetTask(req.TaskId)
+	if !exists {
+		return &proto.StartTaskResponse{
+			Success: false,
+			Message: "task not registered on agent",
+		}, nil
+	}
+
 	executionContext := TaskExecutionContext{
+		TaskId:      req.TaskId,
+		Task:        *task,
 		ExecutionId: uuid.New(),
 		Input:       req.Parameters,
 	}

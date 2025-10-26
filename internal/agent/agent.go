@@ -1,9 +1,9 @@
 package agent
 
 import (
+	"context"
 	"log"
 	"net"
-	"strconv"
 
 	"github.com/paulhalleux/workflow-engine-go/internal/proto"
 	"google.golang.org/grpc"
@@ -12,25 +12,27 @@ import (
 )
 
 type GrpcInfo struct {
-	Address *string
-	Port    int
+	Address string
+	Port    string
 }
 
 type Agent struct {
 	Name           string
+	Context        context.Context
 	Grpc           GrpcInfo
 	WorkflowClient proto.WorkflowServiceClient
 	Tasks          map[string]*Task
 	Queue          *TaskQueue
 }
 
-func NewAgent(name string, grpcAddress *string, grpcPort int) *Agent {
-	conn, err := grpc.NewClient("127.0.0.1", grpc.WithTransportCredentials(insecure.NewCredentials()))
+func NewAgent(name string, grpcAddress string, grpcPort string) *Agent {
+	conn, err := grpc.NewClient("engine:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("failed to connect to workflow server: %v", err)
 	}
 
 	workflowClient := proto.NewWorkflowServiceClient(conn)
+	ctx := context.Background()
 
 	return &Agent{
 		Name: name,
@@ -38,6 +40,7 @@ func NewAgent(name string, grpcAddress *string, grpcPort int) *Agent {
 			Address: grpcAddress,
 			Port:    grpcPort,
 		},
+		Context:        ctx,
 		Tasks:          make(map[string]*Task),
 		Queue:          NewTaskQueue(100),
 		WorkflowClient: workflowClient,
@@ -45,9 +48,8 @@ func NewAgent(name string, grpcAddress *string, grpcPort int) *Agent {
 }
 
 func (a *Agent) Start() {
-	taskExecutor := NewTaskExecutor(a.Queue, 10)
-	taskExecutor.Start()
-
+	taskExecutor := NewTaskExecutor(a, 10)
+	taskExecutor.Start(a.Context)
 	go startGrpcServer(a)
 }
 
@@ -61,12 +63,8 @@ func (a *Agent) GetTask(name string) (*Task, bool) {
 }
 
 func startGrpcServer(a *Agent) {
-	var lis net.Listener
-	if a.Grpc.Address != nil {
-		lis, _ = net.Listen("tcp", *a.Grpc.Address+":"+strconv.Itoa(a.Grpc.Port))
-	} else {
-		lis, _ = net.Listen("tcp", ":"+strconv.Itoa(a.Grpc.Port))
-	}
+	addr := net.JoinHostPort(a.Grpc.Address, a.Grpc.Port)
+	lis, _ := net.Listen("tcp", addr)
 
 	grpcServer := grpc.NewServer()
 	reflection.Register(grpcServer)

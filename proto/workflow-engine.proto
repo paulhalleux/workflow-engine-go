@@ -24,17 +24,17 @@ message StartWorkflowResponse {
 }
 
 message TaskCompletionNotification {
-  string task_id = 2;
+  string execution_id = 2;
   google.protobuf.Struct output = 3;
 }
 
 message TaskFailureNotification {
-  string task_id = 2;
+  string execution_id = 2;
   string error_message = 3;
 }
 
 message TaskProgressNotification {
-  string task_id = 2;
+  string execution_id = 2;
   int32 progress_percentage = 3;
   string status_message = 4;
 }

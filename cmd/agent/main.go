@@ -5,7 +5,9 @@ import (
 )
 
 func main() {
-	ag := agent.NewAgent("Echo", nil, 50052)
+	ag := agent.NewAgent("Echo", "", "50052")
 	ag.RegisterTask("echo", NewEchoTask())
 	ag.Start()
+
+	<-ag.Context.Done()
 }

@@ -1,6 +1,9 @@
 package agent
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
 
 type TaskQueue struct {
 	tasksChannel chan *TaskExecutionContext
@@ -15,6 +18,7 @@ func NewTaskQueue(buffer int) *TaskQueue {
 func (q *TaskQueue) Enqueue(taskContext *TaskExecutionContext) error {
 	select {
 	case q.tasksChannel <- taskContext:
+		log.Printf("[TaskQueue] Enqueue task execution context %v", taskContext)
 		return nil
 	default:
 		return errors.New("task queue is full")
