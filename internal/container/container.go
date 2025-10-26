@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/paulhalleux/workflow-engine-go/internal/config"
+	"github.com/paulhalleux/workflow-engine-go/internal/grpcapi"
 	"github.com/paulhalleux/workflow-engine-go/internal/persistence"
 	"github.com/paulhalleux/workflow-engine-go/internal/queue"
 	"github.com/paulhalleux/workflow-engine-go/internal/services"
@@ -18,6 +19,8 @@ type Container struct {
 	CancelFunc context.CancelFunc
 
 	Config *config.Config
+
+	AgentTaskExecutionChan chan grpcapi.TaskExecutionResult
 
 	WorkflowService           services.WorkflowService
 	WorkflowDefinitionService services.WorkflowDefinitionService
@@ -55,6 +58,8 @@ func NewContainer(cfg *config.Config) *Container {
 	workflowExecutor := worker.NewWorkflowExecutor(stepInstanceService, workflowInstanceService, workflowDefinitionService, workflowQueue, stepQueue, cfg.MaxParallelWorkflows)
 	stepExecutor := worker.NewStepExecutor(stepInstanceService, stepQueue, cfg.MaxParallelSteps)
 
+	agentTaskExecutionChan := make(chan grpcapi.TaskExecutionResult, cfg.QueueBuffer)
+
 	return &Container{
 		WorkflowService:           workflowService,
 		WorkflowDefinitionService: workflowDefinitionService,
@@ -73,6 +78,8 @@ func NewContainer(cfg *config.Config) *Container {
 		Context:    ctx,
 		CancelFunc: cancel,
 		Config:     cfg,
+
+		AgentTaskExecutionChan: agentTaskExecutionChan,
 	}
 }
 

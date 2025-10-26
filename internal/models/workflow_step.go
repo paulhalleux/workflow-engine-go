@@ -45,8 +45,8 @@ type StepParameterBinding struct {
 // TaskWorkflowStep
 // @Description A simple task workflow step that performs a specific action.
 type TaskWorkflowStep struct {
-	TaskDefinitionId string `json:"taskDefinitionId,omitempty" validate:"required"`
-	NextStepId       string `json:"nextStepId,omitempty"`
+	TaskDefinitionId string  `json:"taskDefinitionId,omitempty" validate:"required"`
+	NextStepId       *string `json:"nextStepId,omitempty"`
 } // @name TaskWorkflowStep
 
 // ForkBranch

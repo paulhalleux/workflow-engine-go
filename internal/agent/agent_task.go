@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type TaskExecutionContext struct {
 	ExecutionId uuid.UUID
-	Input       interface{}
+	Input       map[string]interface{}
 	TaskId      string
 	Task        Task
 }

@@ -2,6 +2,7 @@ package agent
 
 import (
 	"context"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/paulhalleux/workflow-engine-go/internal/proto"
@@ -27,11 +28,12 @@ func (s *ServiceServer) StartTask(_ context.Context, req *proto.StartTaskRequest
 		}, nil
 	}
 
+	log.Printf("task %v started", req.Parameters.GetFields())
 	executionContext := TaskExecutionContext{
 		TaskId:      req.TaskId,
 		Task:        *task,
 		ExecutionId: uuid.New(),
-		Input:       req.Parameters,
+		Input:       req.Parameters.AsMap(),
 	}
 
 	err := s.agent.Queue.Enqueue(&executionContext)

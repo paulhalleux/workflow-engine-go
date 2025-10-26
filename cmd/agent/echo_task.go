@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"errors"
+	"time"
 
 	"github.com/paulhalleux/workflow-engine-go/internal/agent"
 )
@@ -17,14 +18,13 @@ func NewEchoTask() *EchoTask {
 }
 
 func (t *EchoTask) Execute(context agent.TaskExecutionContext) (map[string]interface{}, error) {
-	log.Printf("EchoTask Execute")
+	time.Sleep(3 * time.Second)
 
-	input, ok := context.Input.(EchoInput)
-	if !ok {
-		return nil, nil
+	if context.Input["message"] == nil {
+		return nil, errors.New("message is empty")
 	}
 
 	return map[string]interface{}{
-		"EchoedMessage": input.Message,
+		"EchoedMessage": context.Input["message"],
 	}, nil
 }

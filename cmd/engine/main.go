@@ -24,7 +24,7 @@ func main() {
 	ctn := container.NewContainer(config.Default())
 	defer ctn.CancelFunc()
 
-	registerTaskExecutors()
+	registerTaskExecutors(ctn)
 	ctn.StepExecutor.Start(ctn.Context)
 	ctn.WorkflowExecutor.Start(ctn.Context)
 
@@ -34,10 +34,11 @@ func main() {
 	<-ctn.Context.Done()
 }
 
-func registerTaskExecutors() {
+func registerTaskExecutors(ctn *container.Container) {
 	worker.RegisterStepExecutor(models.WorkflowStepTypeFork, worker.NewForkStepExecutor())
 	worker.RegisterStepExecutor(models.WorkflowStepTypeJoin, worker.NewJoinStepExecutor())
 	worker.RegisterStepExecutor(models.WorkflowStepTypeWait, worker.NewWaitStepExecutor())
+	worker.RegisterStepExecutor(models.WorkflowStepTypeTask, worker.NewAgentStepExecutor(ctn.AgentTaskExecutionChan))
 }
 
 func startHttpServer(ctn *container.Container) {
@@ -65,7 +66,7 @@ func startGrpcServer(ctn *container.Container) {
 	reflection.Register(grpcServer)
 
 	// Register gRPC services
-	proto.RegisterWorkflowServiceServer(grpcServer, grpcapi.NewWorkflowServiceServer(ctn.WorkflowService))
+	proto.RegisterWorkflowServiceServer(grpcServer, grpcapi.NewWorkflowServiceServer(ctn.WorkflowService, ctn.AgentTaskExecutionChan))
 
 	// Start the gRPC server
 	log.Println("🚀 Engine gRPC server running on ", ctn.Config.GRPCPort)

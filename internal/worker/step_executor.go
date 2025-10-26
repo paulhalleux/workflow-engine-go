@@ -90,6 +90,7 @@ func (e *StepExecutor) markStepAsRunning(job *queue.StepJob) error {
 }
 
 func (e *StepExecutor) markStepAsCompleted(job *queue.StepJob, output map[string]interface{}) error {
+	log.Printf("Marking step %s as completed with output: %v", job.StepDefinition.Id, output)
 	newStatus := models.StepInstanceStatusCompleted
 	now := time.Now()
 	_, err := e.stepInstanceService.UpdateStepInstance(job.StepInstance.Id, &dto.UpdateStepInstanceRequest{
