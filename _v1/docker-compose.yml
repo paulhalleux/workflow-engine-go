@@ -14,7 +14,7 @@ services:
 
   engine:
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile
     container_name: wf-engine-main
     restart: always
@@ -29,7 +29,7 @@ services:
 
   agent:
     build:
-      context: .
+      context: ..
       dockerfile: DockerfileAgent
     container_name: wf-engine-agent
     restart: always
