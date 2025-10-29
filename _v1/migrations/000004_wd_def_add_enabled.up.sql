@@ -1,2 +1,0 @@
-ALTER TABLE workflow_definitions
-    ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT FALSE;

@@ -1,1 +1,0 @@
-swag init -g ./cmd/engine/main.go -o docs --parseDependency true
