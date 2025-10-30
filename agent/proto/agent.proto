@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+option go_package = "internal/proto";
+
+package agent;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+
+service AgentService {
+  rpc StartTask(StartTaskRequest) returns (TaskActionResponse);
+  rpc GetTaskStatus(TaskActionRequest) returns (GetTaskStatusResponse);
+  rpc StopTask(TaskActionRequest) returns (TaskActionResponse);
+  rpc PauseTask(TaskActionRequest) returns (TaskActionResponse);
+  rpc ResumeTask(TaskActionRequest) returns (TaskActionResponse);
+  rpc Ping(google.protobuf.Empty) returns (PingAgentResponse);
+}
+
+enum TaskStatus {
+  UNKNOWN = 0;
+  PENDING = 1;
+  RUNNING = 2;
+  COMPLETED = 3;
+  FAILED = 4;
+  PAUSED = 5;
+  STOPPED = 6;
+}
+
+message TaskDefinition {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  google.protobuf.Struct input_parameters = 4;
+  google.protobuf.Struct output_parameters = 5;
+}
+
+message PingAgentResponse {
+  string name = 1;
+  string version = 2;
+  repeated TaskDefinition supported_tasks = 3;
+}
+
+message StartTaskRequest {
+  string task_name = 1;
+  google.protobuf.Struct input_parameters = 2;
+  int32 timeout_seconds = 3;
+}
+
+message TaskActionRequest {
+  string task_id = 1;
+}
+
+message TaskActionResponse {
+  string task_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetTaskStatusResponse {
+  string task_id = 1;
+  TaskStatus status = 2;
+  float progress = 3;
+  string message = 4;
+  google.protobuf.Struct output = 5;
+}
