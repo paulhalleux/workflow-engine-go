@@ -1,5 +1,5 @@
 build:
-	go build -o echo-agent ./cmd/echo-agent
+	go build -o ./out/echo-agent ./cmd/echo-agent
 
 run: build
-	./echo-agent
+	./out/echo-agent

@@ -14,26 +14,41 @@ import (
 
 type WorkflowAgentConfig = internal.WorkflowAgentConfig
 type TaskDefinition = internal.TaskDefinition
+type TaskExecutionRequest = internal.TaskExecutionRequest
+type TaskExecutionResult = internal.TaskExecutionResult
 
 type WorkflowAgent struct {
 	Config  *internal.WorkflowAgentConfig
 	Context context.Context
 
+	taskExecutor           *internal.TaskExecutor
+	taskExecutionService   *internal.TaskExecutionService
 	taskDefinitionRegistry *internal.TaskDefinitionRegistry
 }
 
 func NewWorkflowAgent(config *internal.WorkflowAgentConfig) *WorkflowAgent {
 	ctx := context.Background()
+
+	taskDefinitionRegistry := internal.NewTaskDefinitionRegistry()
+	taskExecutor := internal.NewTaskExecutor(taskDefinitionRegistry)
+	taskExecutionService := internal.NewTaskExecutionService(
+		taskExecutor,
+	)
+
 	return &WorkflowAgent{
-		Context:                ctx,
-		Config:                 config,
-		taskDefinitionRegistry: internal.NewTaskDefinitionRegistry(),
+		Context: ctx,
+		Config:  config,
+
+		taskExecutor:           taskExecutor,
+		taskExecutionService:   taskExecutionService,
+		taskDefinitionRegistry: taskDefinitionRegistry,
 	}
 }
 
 func (a *WorkflowAgent) Start() {
 	log.Printf("[Agent: %s] Starting workflow agent...", a.Config.Name)
 
+	a.taskExecutor.Start(a.Context)
 	go func() {
 		addr := joinHostPort(a.Config.Address, a.Config.Port)
 		lis, err := net.Listen("tcp", addr)
@@ -48,6 +63,7 @@ func (a *WorkflowAgent) Start() {
 		proto.RegisterAgentServiceServer(grpcServer, internal.NewAgentServiceServer(
 			a.Config,
 			a.taskDefinitionRegistry,
+			a.taskExecutionService,
 		))
 
 		// Start the gRPC server

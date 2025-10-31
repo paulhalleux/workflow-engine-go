@@ -224,7 +224,7 @@ type StartTaskRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	TaskName        string                 `protobuf:"bytes,1,opt,name=task_name,json=taskName,proto3" json:"task_name,omitempty"`
 	InputParameters *structpb.Struct       `protobuf:"bytes,2,opt,name=input_parameters,json=inputParameters,proto3" json:"input_parameters,omitempty"`
-	TimeoutSeconds  int32                  `protobuf:"varint,3,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"`
+	TimeoutSeconds  *int32                 `protobuf:"varint,3,opt,name=timeout_seconds,json=timeoutSeconds,proto3,oneof" json:"timeout_seconds,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -274,8 +274,8 @@ func (x *StartTaskRequest) GetInputParameters() *structpb.Struct {
 }
 
 func (x *StartTaskRequest) GetTimeoutSeconds() int32 {
-	if x != nil {
-		return x.TimeoutSeconds
+	if x != nil && x.TimeoutSeconds != nil {
+		return *x.TimeoutSeconds
 	}
 	return 0
 }
@@ -328,7 +328,7 @@ type TaskActionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	TaskId        string                 `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
 	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
-	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Message       *string                `protobuf:"bytes,3,opt,name=message,proto3,oneof" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -378,8 +378,8 @@ func (x *TaskActionResponse) GetSuccess() bool {
 }
 
 func (x *TaskActionResponse) GetMessage() string {
-	if x != nil {
-		return x.Message
+	if x != nil && x.Message != nil {
+		return *x.Message
 	}
 	return ""
 }
@@ -474,17 +474,20 @@ const file_proto_agent_proto_rawDesc = "" +
 	"\x11PingAgentResponse\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12>\n" +
-	"\x0fsupported_tasks\x18\x03 \x03(\v2\x15.agent.TaskDefinitionR\x0esupportedTasks\"\x9c\x01\n" +
+	"\x0fsupported_tasks\x18\x03 \x03(\v2\x15.agent.TaskDefinitionR\x0esupportedTasks\"\xb5\x01\n" +
 	"\x10StartTaskRequest\x12\x1b\n" +
 	"\ttask_name\x18\x01 \x01(\tR\btaskName\x12B\n" +
-	"\x10input_parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x0finputParameters\x12'\n" +
-	"\x0ftimeout_seconds\x18\x03 \x01(\x05R\x0etimeoutSeconds\",\n" +
+	"\x10input_parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x0finputParameters\x12,\n" +
+	"\x0ftimeout_seconds\x18\x03 \x01(\x05H\x00R\x0etimeoutSeconds\x88\x01\x01B\x12\n" +
+	"\x10_timeout_seconds\",\n" +
 	"\x11TaskActionRequest\x12\x17\n" +
-	"\atask_id\x18\x01 \x01(\tR\x06taskId\"a\n" +
+	"\atask_id\x18\x01 \x01(\tR\x06taskId\"r\n" +
 	"\x12TaskActionResponse\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x18\n" +
-	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\"\xc2\x01\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x1d\n" +
+	"\amessage\x18\x03 \x01(\tH\x00R\amessage\x88\x01\x01B\n" +
+	"\n" +
+	"\b_message\"\xc2\x01\n" +
 	"\x15GetTaskStatusResponse\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12)\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x11.agent.TaskStatusR\x06status\x12\x1a\n" +
@@ -567,6 +570,8 @@ func file_proto_agent_proto_init() {
 	if File_proto_agent_proto != nil {
 		return
 	}
+	file_proto_agent_proto_msgTypes[2].OneofWrappers = []any{}
+	file_proto_agent_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

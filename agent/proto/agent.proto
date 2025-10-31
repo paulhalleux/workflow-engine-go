@@ -43,7 +43,7 @@ message PingAgentResponse {
 message StartTaskRequest {
   string task_name = 1;
   google.protobuf.Struct input_parameters = 2;
-  int32 timeout_seconds = 3;
+  optional int32 timeout_seconds = 3;
 }
 
 message TaskActionRequest {
@@ -53,7 +53,7 @@ message TaskActionRequest {
 message TaskActionResponse {
   string task_id = 1;
   bool success = 2;
-  string message = 3;
+  optional string message = 3;
 }
 
 message GetTaskStatusResponse {

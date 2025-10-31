@@ -14,20 +14,28 @@ type AgentServiceServer struct {
 
 	config                 *WorkflowAgentConfig
 	taskDefinitionRegistry *TaskDefinitionRegistry
+	taskExecutionService   *TaskExecutionService
 }
 
 func NewAgentServiceServer(
 	config *WorkflowAgentConfig,
 	taskDefinitionRegistry *TaskDefinitionRegistry,
+	taskExecutionService *TaskExecutionService,
 ) *AgentServiceServer {
 	return &AgentServiceServer{
 		config:                 config,
 		taskDefinitionRegistry: taskDefinitionRegistry,
+		taskExecutionService:   taskExecutionService,
 	}
 }
 
-func (a *AgentServiceServer) StartTask(context.Context, *proto.StartTaskRequest) (*proto.TaskActionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StartTask not implemented")
+func (a *AgentServiceServer) StartTask(_ context.Context, req *proto.StartTaskRequest) (*proto.TaskActionResponse, error) {
+	id := a.taskExecutionService.ExecuteTask(req)
+	return &proto.TaskActionResponse{
+		TaskId:  id,
+		Success: true,
+		Message: nil,
+	}, nil
 }
 
 func (a *AgentServiceServer) GetTaskStatus(context.Context, *proto.TaskActionRequest) (*proto.GetTaskStatusResponse, error) {

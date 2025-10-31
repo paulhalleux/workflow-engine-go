@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-type TaskHandler func()
+type TaskHandler func(req *TaskExecutionRequest) TaskExecutionResult
 type TaskDefinition struct {
 	ID               string
 	Name             string
