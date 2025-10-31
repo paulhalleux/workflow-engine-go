@@ -76,9 +76,10 @@ type RegisterAgentRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Name           string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Version        string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
-	Address        string                 `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
-	Protocol       AgentProtocol          `protobuf:"varint,4,opt,name=protocol,proto3,enum=engine.AgentProtocol" json:"protocol,omitempty"`
-	SupportedTasks []*TaskDefinition      `protobuf:"bytes,5,rep,name=supported_tasks,json=supportedTasks,proto3" json:"supported_tasks,omitempty"`
+	Address        *string                `protobuf:"bytes,3,opt,name=address,proto3,oneof" json:"address,omitempty"`
+	Port           string                 `protobuf:"bytes,4,opt,name=port,proto3" json:"port,omitempty"`
+	Protocol       AgentProtocol          `protobuf:"varint,5,opt,name=protocol,proto3,enum=engine.AgentProtocol" json:"protocol,omitempty"`
+	SupportedTasks []*TaskDefinition      `protobuf:"bytes,6,rep,name=supported_tasks,json=supportedTasks,proto3" json:"supported_tasks,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -128,8 +129,15 @@ func (x *RegisterAgentRequest) GetVersion() string {
 }
 
 func (x *RegisterAgentRequest) GetAddress() string {
+	if x != nil && x.Address != nil {
+		return *x.Address
+	}
+	return ""
+}
+
+func (x *RegisterAgentRequest) GetPort() string {
 	if x != nil {
-		return x.Address
+		return x.Port
 	}
 	return ""
 }
@@ -324,13 +332,16 @@ var File_definition_engine_proto protoreflect.FileDescriptor
 
 const file_definition_engine_proto_rawDesc = "" +
 	"\n" +
-	"\x17definition/engine.proto\x12\x06engine\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x16definition/agent.proto\"\xd1\x01\n" +
+	"\x17definition/engine.proto\x12\x06engine\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x16definition/agent.proto\"\xf6\x01\n" +
 	"\x14RegisterAgentRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
-	"\aversion\x18\x02 \x01(\tR\aversion\x12\x18\n" +
-	"\aaddress\x18\x03 \x01(\tR\aaddress\x121\n" +
-	"\bprotocol\x18\x04 \x01(\x0e2\x15.engine.AgentProtocolR\bprotocol\x12>\n" +
-	"\x0fsupported_tasks\x18\x05 \x03(\v2\x15.agent.TaskDefinitionR\x0esupportedTasks\"\\\n" +
+	"\aversion\x18\x02 \x01(\tR\aversion\x12\x1d\n" +
+	"\aaddress\x18\x03 \x01(\tH\x00R\aaddress\x88\x01\x01\x12\x12\n" +
+	"\x04port\x18\x04 \x01(\tR\x04port\x121\n" +
+	"\bprotocol\x18\x05 \x01(\x0e2\x15.engine.AgentProtocolR\bprotocol\x12>\n" +
+	"\x0fsupported_tasks\x18\x06 \x03(\v2\x15.agent.TaskDefinitionR\x0esupportedTasksB\n" +
+	"\n" +
+	"\b_address\"\\\n" +
 	"\x15RegisterAgentResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x1d\n" +
 	"\amessage\x18\x02 \x01(\tH\x00R\amessage\x88\x01\x01B\n" +
@@ -406,6 +417,7 @@ func file_definition_engine_proto_init() {
 		return
 	}
 	file_definition_agent_proto_init()
+	file_definition_engine_proto_msgTypes[0].OneofWrappers = []any{}
 	file_definition_engine_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

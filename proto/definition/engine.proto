@@ -27,9 +27,10 @@ enum AgentProtocol {
 message RegisterAgentRequest {
   string name = 1;
   string version = 2;
-  string address = 3;
-  AgentProtocol protocol = 4;
-  repeated agent.TaskDefinition supported_tasks = 5;
+  optional string address = 3;
+  string port = 4;
+  AgentProtocol protocol = 5;
+  repeated agent.TaskDefinition supported_tasks = 6;
 }
 
 message RegisterAgentResponse {

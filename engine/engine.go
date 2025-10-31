@@ -18,6 +18,8 @@ type WorkflowEngineConfig = internal.WorkflowEngineConfig
 type Engine struct {
 	Config  *internal.WorkflowEngineConfig
 	Context context.Context
+
+	agentRegistry *internal.AgentRegistry
 }
 
 func NewEngine(
@@ -25,9 +27,13 @@ func NewEngine(
 ) *Engine {
 	ctx := context.Background()
 
+	agentRegistry := internal.NewAgentRegistry()
+
 	return &Engine{
 		Config:  config,
 		Context: ctx,
+
+		agentRegistry: agentRegistry,
 	}
 }
 
@@ -51,7 +57,7 @@ func (e *Engine) startGrpcServer() {
 	reflection.Register(grpcServer)
 
 	// Register gRPC services
-	proto.RegisterEngineServiceServer(grpcServer, grpcapi.NewEngineServiceServer())
+	proto.RegisterEngineServiceServer(grpcServer, grpcapi.NewEngineServiceServer(e.agentRegistry))
 	proto.RegisterTaskServiceServer(grpcServer, grpcapi.NewTaskServiceServer())
 
 	// Start the gRPC server

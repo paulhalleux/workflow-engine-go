@@ -73,7 +73,8 @@ func (a *WorkflowAgent) Start() {
 		a.Context,
 		&proto.RegisterAgentRequest{
 			Name:           a.Config.Name,
-			Address:        joinHostPort(a.Config.GrpcAddress, a.Config.GrpcPort),
+			Address:        a.Config.GrpcAddress,
+			Port:           a.Config.GrpcPort,
 			Protocol:       proto.AgentProtocol_GRPC,
 			Version:        a.Config.Version,
 			SupportedTasks: a.taskDefinitionRegistry.ToProto(),
@@ -82,6 +83,8 @@ func (a *WorkflowAgent) Start() {
 
 	if err != nil {
 		log.Fatalf("Failed to register agent with engine: %v", err)
+	} else {
+		log.Printf("[Agent: %s] Registered with engine at %s", a.Config.Name, a.Config.EngineGrpcUrl)
 	}
 
 	<-a.Context.Done()
