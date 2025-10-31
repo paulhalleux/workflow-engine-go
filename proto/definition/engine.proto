@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+option go_package = "./proto";
+
+package engine;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "definition/agent.proto";
+
+service TaskService {
+  rpc NotifyTaskStatus(NotifyTaskStatusRequest) returns (google.protobuf.Empty);
+  rpc NotifyTaskProgress(NotifyTaskProgressRequest) returns (google.protobuf.Empty);
+}
+
+service EngineService {
+  rpc RegisterAgent(RegisterAgentRequest) returns (RegisterAgentResponse);
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
+enum AgentProtocol {
+  UNKNOWN = 0;
+  GRPC = 1;
+  HTTP = 2;
+}
+
+message RegisterAgentRequest {
+  string name = 1;
+  string version = 2;
+  string address = 3;
+  AgentProtocol protocol = 4;
+  repeated agent.TaskDefinition supported_tasks = 5;
+}
+
+message RegisterAgentResponse {
+  bool success = 1;
+  optional string message = 2;
+}
+
+message NotifyTaskStatusRequest {
+  string task_id = 1;
+  agent.TaskStatus status = 2;
+  google.protobuf.Struct output_parameters = 3;
+  string message = 4;
+}
+
+message NotifyTaskProgressRequest {
+  string task_id = 1;
+  float progress = 2;
+}

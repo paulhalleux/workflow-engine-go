@@ -3,7 +3,7 @@ package internal
 import (
 	"context"
 
-	"github.com/paulhalleux/workflow-engine-go/agent/internal/proto"
+	"github.com/paulhalleux/workflow-engine-go/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -54,10 +54,6 @@ func (a *AgentServiceServer) ResumeTask(context.Context, *proto.TaskActionReques
 	return nil, status.Errorf(codes.Unimplemented, "method ResumeTask not implemented")
 }
 
-func (a *AgentServiceServer) Ping(context.Context, *emptypb.Empty) (*proto.PingAgentResponse, error) {
-	return &proto.PingAgentResponse{
-		Name:           a.config.Name,
-		Version:        a.config.Version,
-		SupportedTasks: a.taskDefinitionRegistry.ToProto(),
-	}, nil
+func (a *AgentServiceServer) Ping(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, nil
 }

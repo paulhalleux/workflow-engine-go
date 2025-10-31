@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import "github.com/paulhalleux/workflow-engine-go/engine"
 
 func main() {
-	fmt.Println("Hello, World!")
+	eng := engine.NewEngine(&engine.WorkflowEngineConfig{
+		GrpcAddress: nil,
+		GrpcPort:    "50051",
+	})
+	eng.Start()
 }

@@ -1,8 +1,6 @@
 package internal
 
 import (
-	"log"
-
 	"github.com/paulhalleux/workflow-engine-go/agent"
 )
 
@@ -22,7 +20,6 @@ func NewEchoTaskDefinition() agent.TaskDefinition {
 		InputParameters:  agent.ReflectJsonSchema(inputParameters{}),
 		OutputParameters: agent.ReflectJsonSchema(outputParameters{}),
 		Handle: func(req *agent.TaskExecutionRequest) agent.TaskExecutionResult {
-			log.Printf("Echo Task executed")
 			return agent.TaskExecutionResult{
 				Output: &map[string]interface{}{
 					"message": req.Input["message"],

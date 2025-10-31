@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        v6.32.1
-// source: proto/agent.proto
+// source: definition/agent.proto
 
 package proto
 
@@ -68,11 +68,11 @@ func (x TaskStatus) String() string {
 }
 
 func (TaskStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_agent_proto_enumTypes[0].Descriptor()
+	return file_definition_agent_proto_enumTypes[0].Descriptor()
 }
 
 func (TaskStatus) Type() protoreflect.EnumType {
-	return &file_proto_agent_proto_enumTypes[0]
+	return &file_definition_agent_proto_enumTypes[0]
 }
 
 func (x TaskStatus) Number() protoreflect.EnumNumber {
@@ -81,7 +81,7 @@ func (x TaskStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TaskStatus.Descriptor instead.
 func (TaskStatus) EnumDescriptor() ([]byte, []int) {
-	return file_proto_agent_proto_rawDescGZIP(), []int{0}
+	return file_definition_agent_proto_rawDescGZIP(), []int{0}
 }
 
 type TaskDefinition struct {
@@ -97,7 +97,7 @@ type TaskDefinition struct {
 
 func (x *TaskDefinition) Reset() {
 	*x = TaskDefinition{}
-	mi := &file_proto_agent_proto_msgTypes[0]
+	mi := &file_definition_agent_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -109,7 +109,7 @@ func (x *TaskDefinition) String() string {
 func (*TaskDefinition) ProtoMessage() {}
 
 func (x *TaskDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_agent_proto_msgTypes[0]
+	mi := &file_definition_agent_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -122,7 +122,7 @@ func (x *TaskDefinition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskDefinition.ProtoReflect.Descriptor instead.
 func (*TaskDefinition) Descriptor() ([]byte, []int) {
-	return file_proto_agent_proto_rawDescGZIP(), []int{0}
+	return file_definition_agent_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *TaskDefinition) GetId() string {
@@ -160,66 +160,6 @@ func (x *TaskDefinition) GetOutputParameters() *structpb.Struct {
 	return nil
 }
 
-type PingAgentResponse struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Name           string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Version        string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
-	SupportedTasks []*TaskDefinition      `protobuf:"bytes,3,rep,name=supported_tasks,json=supportedTasks,proto3" json:"supported_tasks,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
-}
-
-func (x *PingAgentResponse) Reset() {
-	*x = PingAgentResponse{}
-	mi := &file_proto_agent_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PingAgentResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PingAgentResponse) ProtoMessage() {}
-
-func (x *PingAgentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_agent_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PingAgentResponse.ProtoReflect.Descriptor instead.
-func (*PingAgentResponse) Descriptor() ([]byte, []int) {
-	return file_proto_agent_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *PingAgentResponse) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *PingAgentResponse) GetVersion() string {
-	if x != nil {
-		return x.Version
-	}
-	return ""
-}
-
-func (x *PingAgentResponse) GetSupportedTasks() []*TaskDefinition {
-	if x != nil {
-		return x.SupportedTasks
-	}
-	return nil
-}
-
 type StartTaskRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	TaskName        string                 `protobuf:"bytes,1,opt,name=task_name,json=taskName,proto3" json:"task_name,omitempty"`
@@ -231,7 +171,7 @@ type StartTaskRequest struct {
 
 func (x *StartTaskRequest) Reset() {
 	*x = StartTaskRequest{}
-	mi := &file_proto_agent_proto_msgTypes[2]
+	mi := &file_definition_agent_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -243,7 +183,7 @@ func (x *StartTaskRequest) String() string {
 func (*StartTaskRequest) ProtoMessage() {}
 
 func (x *StartTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_agent_proto_msgTypes[2]
+	mi := &file_definition_agent_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -256,7 +196,7 @@ func (x *StartTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartTaskRequest.ProtoReflect.Descriptor instead.
 func (*StartTaskRequest) Descriptor() ([]byte, []int) {
-	return file_proto_agent_proto_rawDescGZIP(), []int{2}
+	return file_definition_agent_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *StartTaskRequest) GetTaskName() string {
@@ -289,7 +229,7 @@ type TaskActionRequest struct {
 
 func (x *TaskActionRequest) Reset() {
 	*x = TaskActionRequest{}
-	mi := &file_proto_agent_proto_msgTypes[3]
+	mi := &file_definition_agent_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -301,7 +241,7 @@ func (x *TaskActionRequest) String() string {
 func (*TaskActionRequest) ProtoMessage() {}
 
 func (x *TaskActionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_agent_proto_msgTypes[3]
+	mi := &file_definition_agent_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -314,7 +254,7 @@ func (x *TaskActionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskActionRequest.ProtoReflect.Descriptor instead.
 func (*TaskActionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_agent_proto_rawDescGZIP(), []int{3}
+	return file_definition_agent_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *TaskActionRequest) GetTaskId() string {
@@ -335,7 +275,7 @@ type TaskActionResponse struct {
 
 func (x *TaskActionResponse) Reset() {
 	*x = TaskActionResponse{}
-	mi := &file_proto_agent_proto_msgTypes[4]
+	mi := &file_definition_agent_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -347,7 +287,7 @@ func (x *TaskActionResponse) String() string {
 func (*TaskActionResponse) ProtoMessage() {}
 
 func (x *TaskActionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_agent_proto_msgTypes[4]
+	mi := &file_definition_agent_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -360,7 +300,7 @@ func (x *TaskActionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskActionResponse.ProtoReflect.Descriptor instead.
 func (*TaskActionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_agent_proto_rawDescGZIP(), []int{4}
+	return file_definition_agent_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *TaskActionResponse) GetTaskId() string {
@@ -397,7 +337,7 @@ type GetTaskStatusResponse struct {
 
 func (x *GetTaskStatusResponse) Reset() {
 	*x = GetTaskStatusResponse{}
-	mi := &file_proto_agent_proto_msgTypes[5]
+	mi := &file_definition_agent_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -409,7 +349,7 @@ func (x *GetTaskStatusResponse) String() string {
 func (*GetTaskStatusResponse) ProtoMessage() {}
 
 func (x *GetTaskStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_agent_proto_msgTypes[5]
+	mi := &file_definition_agent_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -422,7 +362,7 @@ func (x *GetTaskStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskStatusResponse.ProtoReflect.Descriptor instead.
 func (*GetTaskStatusResponse) Descriptor() ([]byte, []int) {
-	return file_proto_agent_proto_rawDescGZIP(), []int{5}
+	return file_definition_agent_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetTaskStatusResponse) GetTaskId() string {
@@ -460,21 +400,17 @@ func (x *GetTaskStatusResponse) GetOutput() *structpb.Struct {
 	return nil
 }
 
-var File_proto_agent_proto protoreflect.FileDescriptor
+var File_definition_agent_proto protoreflect.FileDescriptor
 
-const file_proto_agent_proto_rawDesc = "" +
+const file_definition_agent_proto_rawDesc = "" +
 	"\n" +
-	"\x11proto/agent.proto\x12\x05agent\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xe0\x01\n" +
+	"\x16definition/agent.proto\x12\x05agent\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xe0\x01\n" +
 	"\x0eTaskDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12B\n" +
 	"\x10input_parameters\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x0finputParameters\x12D\n" +
-	"\x11output_parameters\x18\x05 \x01(\v2\x17.google.protobuf.StructR\x10outputParameters\"\x81\x01\n" +
-	"\x11PingAgentResponse\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
-	"\aversion\x18\x02 \x01(\tR\aversion\x12>\n" +
-	"\x0fsupported_tasks\x18\x03 \x03(\v2\x15.agent.TaskDefinitionR\x0esupportedTasks\"\xb5\x01\n" +
+	"\x11output_parameters\x18\x05 \x01(\v2\x17.google.protobuf.StructR\x10outputParameters\"\xb5\x01\n" +
 	"\x10StartTaskRequest\x12\x1b\n" +
 	"\ttask_name\x18\x01 \x01(\tR\btaskName\x12B\n" +
 	"\x10input_parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x0finputParameters\x12,\n" +
@@ -504,90 +440,88 @@ const file_proto_agent_proto_rawDesc = "" +
 	"\x06FAILED\x10\x04\x12\n" +
 	"\n" +
 	"\x06PAUSED\x10\x05\x12\v\n" +
-	"\aSTOPPED\x10\x062\x98\x03\n" +
+	"\aSTOPPED\x10\x062\x96\x03\n" +
 	"\fAgentService\x12?\n" +
 	"\tStartTask\x12\x17.agent.StartTaskRequest\x1a\x19.agent.TaskActionResponse\x12G\n" +
 	"\rGetTaskStatus\x12\x18.agent.TaskActionRequest\x1a\x1c.agent.GetTaskStatusResponse\x12?\n" +
 	"\bStopTask\x12\x18.agent.TaskActionRequest\x1a\x19.agent.TaskActionResponse\x12@\n" +
 	"\tPauseTask\x12\x18.agent.TaskActionRequest\x1a\x19.agent.TaskActionResponse\x12A\n" +
 	"\n" +
-	"ResumeTask\x12\x18.agent.TaskActionRequest\x1a\x19.agent.TaskActionResponse\x128\n" +
-	"\x04Ping\x12\x16.google.protobuf.Empty\x1a\x18.agent.PingAgentResponseB\x10Z\x0einternal/protob\x06proto3"
+	"ResumeTask\x12\x18.agent.TaskActionRequest\x1a\x19.agent.TaskActionResponse\x126\n" +
+	"\x04Ping\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.EmptyB\tZ\a./protob\x06proto3"
 
 var (
-	file_proto_agent_proto_rawDescOnce sync.Once
-	file_proto_agent_proto_rawDescData []byte
+	file_definition_agent_proto_rawDescOnce sync.Once
+	file_definition_agent_proto_rawDescData []byte
 )
 
-func file_proto_agent_proto_rawDescGZIP() []byte {
-	file_proto_agent_proto_rawDescOnce.Do(func() {
-		file_proto_agent_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_agent_proto_rawDesc), len(file_proto_agent_proto_rawDesc)))
+func file_definition_agent_proto_rawDescGZIP() []byte {
+	file_definition_agent_proto_rawDescOnce.Do(func() {
+		file_definition_agent_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_definition_agent_proto_rawDesc), len(file_definition_agent_proto_rawDesc)))
 	})
-	return file_proto_agent_proto_rawDescData
+	return file_definition_agent_proto_rawDescData
 }
 
-var file_proto_agent_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_proto_agent_proto_goTypes = []any{
+var file_definition_agent_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_definition_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_definition_agent_proto_goTypes = []any{
 	(TaskStatus)(0),               // 0: agent.TaskStatus
 	(*TaskDefinition)(nil),        // 1: agent.TaskDefinition
-	(*PingAgentResponse)(nil),     // 2: agent.PingAgentResponse
-	(*StartTaskRequest)(nil),      // 3: agent.StartTaskRequest
-	(*TaskActionRequest)(nil),     // 4: agent.TaskActionRequest
-	(*TaskActionResponse)(nil),    // 5: agent.TaskActionResponse
-	(*GetTaskStatusResponse)(nil), // 6: agent.GetTaskStatusResponse
-	(*structpb.Struct)(nil),       // 7: google.protobuf.Struct
-	(*emptypb.Empty)(nil),         // 8: google.protobuf.Empty
+	(*StartTaskRequest)(nil),      // 2: agent.StartTaskRequest
+	(*TaskActionRequest)(nil),     // 3: agent.TaskActionRequest
+	(*TaskActionResponse)(nil),    // 4: agent.TaskActionResponse
+	(*GetTaskStatusResponse)(nil), // 5: agent.GetTaskStatusResponse
+	(*structpb.Struct)(nil),       // 6: google.protobuf.Struct
+	(*emptypb.Empty)(nil),         // 7: google.protobuf.Empty
 }
-var file_proto_agent_proto_depIdxs = []int32{
-	7,  // 0: agent.TaskDefinition.input_parameters:type_name -> google.protobuf.Struct
-	7,  // 1: agent.TaskDefinition.output_parameters:type_name -> google.protobuf.Struct
-	1,  // 2: agent.PingAgentResponse.supported_tasks:type_name -> agent.TaskDefinition
-	7,  // 3: agent.StartTaskRequest.input_parameters:type_name -> google.protobuf.Struct
-	0,  // 4: agent.GetTaskStatusResponse.status:type_name -> agent.TaskStatus
-	7,  // 5: agent.GetTaskStatusResponse.output:type_name -> google.protobuf.Struct
-	3,  // 6: agent.AgentService.StartTask:input_type -> agent.StartTaskRequest
-	4,  // 7: agent.AgentService.GetTaskStatus:input_type -> agent.TaskActionRequest
-	4,  // 8: agent.AgentService.StopTask:input_type -> agent.TaskActionRequest
-	4,  // 9: agent.AgentService.PauseTask:input_type -> agent.TaskActionRequest
-	4,  // 10: agent.AgentService.ResumeTask:input_type -> agent.TaskActionRequest
-	8,  // 11: agent.AgentService.Ping:input_type -> google.protobuf.Empty
-	5,  // 12: agent.AgentService.StartTask:output_type -> agent.TaskActionResponse
-	6,  // 13: agent.AgentService.GetTaskStatus:output_type -> agent.GetTaskStatusResponse
-	5,  // 14: agent.AgentService.StopTask:output_type -> agent.TaskActionResponse
-	5,  // 15: agent.AgentService.PauseTask:output_type -> agent.TaskActionResponse
-	5,  // 16: agent.AgentService.ResumeTask:output_type -> agent.TaskActionResponse
-	2,  // 17: agent.AgentService.Ping:output_type -> agent.PingAgentResponse
-	12, // [12:18] is the sub-list for method output_type
-	6,  // [6:12] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+var file_definition_agent_proto_depIdxs = []int32{
+	6,  // 0: agent.TaskDefinition.input_parameters:type_name -> google.protobuf.Struct
+	6,  // 1: agent.TaskDefinition.output_parameters:type_name -> google.protobuf.Struct
+	6,  // 2: agent.StartTaskRequest.input_parameters:type_name -> google.protobuf.Struct
+	0,  // 3: agent.GetTaskStatusResponse.status:type_name -> agent.TaskStatus
+	6,  // 4: agent.GetTaskStatusResponse.output:type_name -> google.protobuf.Struct
+	2,  // 5: agent.AgentService.StartTask:input_type -> agent.StartTaskRequest
+	3,  // 6: agent.AgentService.GetTaskStatus:input_type -> agent.TaskActionRequest
+	3,  // 7: agent.AgentService.StopTask:input_type -> agent.TaskActionRequest
+	3,  // 8: agent.AgentService.PauseTask:input_type -> agent.TaskActionRequest
+	3,  // 9: agent.AgentService.ResumeTask:input_type -> agent.TaskActionRequest
+	7,  // 10: agent.AgentService.Ping:input_type -> google.protobuf.Empty
+	4,  // 11: agent.AgentService.StartTask:output_type -> agent.TaskActionResponse
+	5,  // 12: agent.AgentService.GetTaskStatus:output_type -> agent.GetTaskStatusResponse
+	4,  // 13: agent.AgentService.StopTask:output_type -> agent.TaskActionResponse
+	4,  // 14: agent.AgentService.PauseTask:output_type -> agent.TaskActionResponse
+	4,  // 15: agent.AgentService.ResumeTask:output_type -> agent.TaskActionResponse
+	7,  // 16: agent.AgentService.Ping:output_type -> google.protobuf.Empty
+	11, // [11:17] is the sub-list for method output_type
+	5,  // [5:11] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_proto_agent_proto_init() }
-func file_proto_agent_proto_init() {
-	if File_proto_agent_proto != nil {
+func init() { file_definition_agent_proto_init() }
+func file_definition_agent_proto_init() {
+	if File_definition_agent_proto != nil {
 		return
 	}
-	file_proto_agent_proto_msgTypes[2].OneofWrappers = []any{}
-	file_proto_agent_proto_msgTypes[4].OneofWrappers = []any{}
+	file_definition_agent_proto_msgTypes[1].OneofWrappers = []any{}
+	file_definition_agent_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_agent_proto_rawDesc), len(file_proto_agent_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_definition_agent_proto_rawDesc), len(file_definition_agent_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   6,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_agent_proto_goTypes,
-		DependencyIndexes: file_proto_agent_proto_depIdxs,
-		EnumInfos:         file_proto_agent_proto_enumTypes,
-		MessageInfos:      file_proto_agent_proto_msgTypes,
+		GoTypes:           file_definition_agent_proto_goTypes,
+		DependencyIndexes: file_definition_agent_proto_depIdxs,
+		EnumInfos:         file_definition_agent_proto_enumTypes,
+		MessageInfos:      file_definition_agent_proto_msgTypes,
 	}.Build()
-	File_proto_agent_proto = out.File
-	file_proto_agent_proto_goTypes = nil
-	file_proto_agent_proto_depIdxs = nil
+	File_definition_agent_proto = out.File
+	file_definition_agent_proto_goTypes = nil
+	file_definition_agent_proto_depIdxs = nil
 }

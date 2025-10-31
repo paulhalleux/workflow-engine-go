@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.32.1
-// source: proto/agent.proto
+// source: definition/agent.proto
 
 package proto
 
@@ -37,7 +37,7 @@ type AgentServiceClient interface {
 	StopTask(ctx context.Context, in *TaskActionRequest, opts ...grpc.CallOption) (*TaskActionResponse, error)
 	PauseTask(ctx context.Context, in *TaskActionRequest, opts ...grpc.CallOption) (*TaskActionResponse, error)
 	ResumeTask(ctx context.Context, in *TaskActionRequest, opts ...grpc.CallOption) (*TaskActionResponse, error)
-	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PingAgentResponse, error)
+	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type agentServiceClient struct {
@@ -98,9 +98,9 @@ func (c *agentServiceClient) ResumeTask(ctx context.Context, in *TaskActionReque
 	return out, nil
 }
 
-func (c *agentServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PingAgentResponse, error) {
+func (c *agentServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PingAgentResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, AgentService_Ping_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ type AgentServiceServer interface {
 	StopTask(context.Context, *TaskActionRequest) (*TaskActionResponse, error)
 	PauseTask(context.Context, *TaskActionRequest) (*TaskActionResponse, error)
 	ResumeTask(context.Context, *TaskActionRequest) (*TaskActionResponse, error)
-	Ping(context.Context, *emptypb.Empty) (*PingAgentResponse, error)
+	Ping(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAgentServiceServer()
 }
 
@@ -143,7 +143,7 @@ func (UnimplementedAgentServiceServer) PauseTask(context.Context, *TaskActionReq
 func (UnimplementedAgentServiceServer) ResumeTask(context.Context, *TaskActionRequest) (*TaskActionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResumeTask not implemented")
 }
-func (UnimplementedAgentServiceServer) Ping(context.Context, *emptypb.Empty) (*PingAgentResponse, error) {
+func (UnimplementedAgentServiceServer) Ping(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (UnimplementedAgentServiceServer) mustEmbedUnimplementedAgentServiceServer() {}
@@ -308,5 +308,5 @@ var AgentService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/agent.proto",
+	Metadata: "definition/agent.proto",
 }

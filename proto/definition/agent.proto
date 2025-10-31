@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "internal/proto";
+option go_package = "./proto";
 
 package agent;
 
@@ -13,7 +13,7 @@ service AgentService {
   rpc StopTask(TaskActionRequest) returns (TaskActionResponse);
   rpc PauseTask(TaskActionRequest) returns (TaskActionResponse);
   rpc ResumeTask(TaskActionRequest) returns (TaskActionResponse);
-  rpc Ping(google.protobuf.Empty) returns (PingAgentResponse);
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
 enum TaskStatus {
@@ -32,12 +32,6 @@ message TaskDefinition {
   string description = 3;
   google.protobuf.Struct input_parameters = 4;
   google.protobuf.Struct output_parameters = 5;
-}
-
-message PingAgentResponse {
-  string name = 1;
-  string version = 2;
-  repeated TaskDefinition supported_tasks = 3;
 }
 
 message StartTaskRequest {

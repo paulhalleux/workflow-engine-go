@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/paulhalleux/workflow-engine-go/agent/internal/proto"
+	"github.com/paulhalleux/workflow-engine-go/proto"
 	"github.com/swaggest/jsonschema-go"
 	"google.golang.org/protobuf/types/known/structpb"
 )

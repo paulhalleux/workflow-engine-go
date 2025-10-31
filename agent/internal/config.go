@@ -1,8 +1,9 @@
 package internal
 
 type WorkflowAgentConfig struct {
-	Name    string
-	Version string
-	Address *string
-	Port    string
+	Name          string
+	Version       string
+	GrpcPort      string
+	GrpcAddress   *string
+	EngineGrpcUrl string
 }
