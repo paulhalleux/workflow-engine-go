@@ -45,3 +45,10 @@ func (e EngineServiceServer) RegisterAgent(_ context.Context, req *proto.Registe
 		Success: true,
 	}, nil
 }
+
+func (e EngineServiceServer) Ping(_ context.Context, req *proto.EnginePingRequest) (*proto.EnginePingResponse, error) {
+	_, know := e.agentRegistry.GetAgent(req.Name)
+	return &proto.EnginePingResponse{
+		KnowAgent: know,
+	}, nil
+}

@@ -37,7 +37,7 @@ func (ar *AgentRegistry) RegisterAgent(name string, agent RegisteredAgent) error
 
 		ar.agents[name] = agent
 		ar.agentsConnectors[name] = &agentConnector
-		log.Printf("Registered agent %s at %s:%s using protocol %s", name, agent.Address, agent.Port, agent.Protocol.String())
+		log.Printf("Registered agent %s at %v:%s using protocol %s", name, agent.Address, agent.Port, agent.Protocol.String())
 	} else {
 		log.Printf("Failed to register agent %s: %v", name, err)
 	}

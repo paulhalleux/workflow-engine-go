@@ -6,6 +6,8 @@ import (
 	"net"
 
 	"github.com/paulhalleux/workflow-engine-go/agent/internal"
+	"github.com/paulhalleux/workflow-engine-go/agent/internal/connector"
+	"github.com/paulhalleux/workflow-engine-go/agent/internal/ticker"
 	"github.com/paulhalleux/workflow-engine-go/proto"
 	"github.com/swaggest/jsonschema-go"
 	"google.golang.org/grpc"
@@ -27,6 +29,9 @@ type WorkflowAgent struct {
 	taskExecutor           *internal.TaskExecutor
 	taskExecutionService   *internal.TaskExecutionService
 	taskDefinitionRegistry *internal.TaskDefinitionRegistry
+
+	engineTicker    *ticker.EngineTicker
+	engineConnector connector.EngineConnector
 }
 
 func NewWorkflowAgent(config *internal.WorkflowAgentConfig) *WorkflowAgent {
@@ -44,6 +49,18 @@ func NewWorkflowAgent(config *internal.WorkflowAgentConfig) *WorkflowAgent {
 		engineGrpcConnection,
 	)
 
+	engineConnector, err := connector.NewEngineConnector(proto.AgentProtocol_GRPC, config.EngineGrpcUrl)
+	if err != nil {
+		log.Fatalf("Failed to create engine connector: %v", err)
+	}
+
+	engineTicker := ticker.NewEngineTicker(
+		10,
+		config,
+		taskDefinitionRegistry,
+		engineConnector,
+	)
+
 	return &WorkflowAgent{
 		Context: ctx,
 		Config:  config,
@@ -53,36 +70,29 @@ func NewWorkflowAgent(config *internal.WorkflowAgentConfig) *WorkflowAgent {
 		taskExecutor:           taskExecutor,
 		taskExecutionService:   taskExecutionService,
 		taskDefinitionRegistry: taskDefinitionRegistry,
+
+		engineTicker:    engineTicker,
+		engineConnector: engineConnector,
 	}
 }
 
 func (a *WorkflowAgent) Start() {
 	log.Printf("[Agent: %s] Starting workflow agent...", a.Config.Name)
 	defer func(engineGrpcConnection *grpc.ClientConn) {
+		a.engineTicker.Stop()
 		err := engineGrpcConnection.Close()
 		if err != nil {
-			log.Printf("Error closing engine gRPC connection: %v", err)
+			log.Printf("[Agent: %s] Error closing engine gRPC connection: %v", a.Config.Name, err)
 		}
 	}(a.engineGrpcConnection)
 
+	go a.engineTicker.Start()
 	go a.taskExecutor.Start(a.Context)
 	go a.startGrpcServer()
 
-	engineClient := proto.NewEngineServiceClient(a.engineGrpcConnection)
-	_, err := engineClient.RegisterAgent(
-		a.Context,
-		&proto.RegisterAgentRequest{
-			Name:           a.Config.Name,
-			Address:        a.Config.GrpcAddress,
-			Port:           a.Config.GrpcPort,
-			Protocol:       proto.AgentProtocol_GRPC,
-			Version:        a.Config.Version,
-			SupportedTasks: a.taskDefinitionRegistry.ToProto(),
-		},
-	)
-
+	_, err := a.engineConnector.RegisterAgent(a.Config, a.taskDefinitionRegistry)
 	if err != nil {
-		log.Fatalf("Failed to register agent with engine: %v", err)
+		log.Fatalf("[Agent: %s] Failed to register agent with engine: %v", a.Config.Name, err)
 	} else {
 		log.Printf("[Agent: %s] Registered with engine at %s", a.Config.Name, a.Config.EngineGrpcUrl)
 	}

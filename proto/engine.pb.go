@@ -72,6 +72,94 @@ func (AgentProtocol) EnumDescriptor() ([]byte, []int) {
 	return file_definition_engine_proto_rawDescGZIP(), []int{0}
 }
 
+type EnginePingRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EnginePingRequest) Reset() {
+	*x = EnginePingRequest{}
+	mi := &file_definition_engine_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnginePingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnginePingRequest) ProtoMessage() {}
+
+func (x *EnginePingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_definition_engine_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnginePingRequest.ProtoReflect.Descriptor instead.
+func (*EnginePingRequest) Descriptor() ([]byte, []int) {
+	return file_definition_engine_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *EnginePingRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type EnginePingResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	KnowAgent     bool                   `protobuf:"varint,1,opt,name=know_agent,json=knowAgent,proto3" json:"know_agent,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EnginePingResponse) Reset() {
+	*x = EnginePingResponse{}
+	mi := &file_definition_engine_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnginePingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnginePingResponse) ProtoMessage() {}
+
+func (x *EnginePingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_definition_engine_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnginePingResponse.ProtoReflect.Descriptor instead.
+func (*EnginePingResponse) Descriptor() ([]byte, []int) {
+	return file_definition_engine_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *EnginePingResponse) GetKnowAgent() bool {
+	if x != nil {
+		return x.KnowAgent
+	}
+	return false
+}
+
 type RegisterAgentRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Name           string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -86,7 +174,7 @@ type RegisterAgentRequest struct {
 
 func (x *RegisterAgentRequest) Reset() {
 	*x = RegisterAgentRequest{}
-	mi := &file_definition_engine_proto_msgTypes[0]
+	mi := &file_definition_engine_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -98,7 +186,7 @@ func (x *RegisterAgentRequest) String() string {
 func (*RegisterAgentRequest) ProtoMessage() {}
 
 func (x *RegisterAgentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_definition_engine_proto_msgTypes[0]
+	mi := &file_definition_engine_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -111,7 +199,7 @@ func (x *RegisterAgentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterAgentRequest.ProtoReflect.Descriptor instead.
 func (*RegisterAgentRequest) Descriptor() ([]byte, []int) {
-	return file_definition_engine_proto_rawDescGZIP(), []int{0}
+	return file_definition_engine_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *RegisterAgentRequest) GetName() string {
@@ -166,7 +254,7 @@ type RegisterAgentResponse struct {
 
 func (x *RegisterAgentResponse) Reset() {
 	*x = RegisterAgentResponse{}
-	mi := &file_definition_engine_proto_msgTypes[1]
+	mi := &file_definition_engine_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -178,7 +266,7 @@ func (x *RegisterAgentResponse) String() string {
 func (*RegisterAgentResponse) ProtoMessage() {}
 
 func (x *RegisterAgentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_definition_engine_proto_msgTypes[1]
+	mi := &file_definition_engine_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -191,7 +279,7 @@ func (x *RegisterAgentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterAgentResponse.ProtoReflect.Descriptor instead.
 func (*RegisterAgentResponse) Descriptor() ([]byte, []int) {
-	return file_definition_engine_proto_rawDescGZIP(), []int{1}
+	return file_definition_engine_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *RegisterAgentResponse) GetSuccess() bool {
@@ -220,7 +308,7 @@ type NotifyTaskStatusRequest struct {
 
 func (x *NotifyTaskStatusRequest) Reset() {
 	*x = NotifyTaskStatusRequest{}
-	mi := &file_definition_engine_proto_msgTypes[2]
+	mi := &file_definition_engine_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -232,7 +320,7 @@ func (x *NotifyTaskStatusRequest) String() string {
 func (*NotifyTaskStatusRequest) ProtoMessage() {}
 
 func (x *NotifyTaskStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_definition_engine_proto_msgTypes[2]
+	mi := &file_definition_engine_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -245,7 +333,7 @@ func (x *NotifyTaskStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotifyTaskStatusRequest.ProtoReflect.Descriptor instead.
 func (*NotifyTaskStatusRequest) Descriptor() ([]byte, []int) {
-	return file_definition_engine_proto_rawDescGZIP(), []int{2}
+	return file_definition_engine_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *NotifyTaskStatusRequest) GetTaskId() string {
@@ -286,7 +374,7 @@ type NotifyTaskProgressRequest struct {
 
 func (x *NotifyTaskProgressRequest) Reset() {
 	*x = NotifyTaskProgressRequest{}
-	mi := &file_definition_engine_proto_msgTypes[3]
+	mi := &file_definition_engine_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -298,7 +386,7 @@ func (x *NotifyTaskProgressRequest) String() string {
 func (*NotifyTaskProgressRequest) ProtoMessage() {}
 
 func (x *NotifyTaskProgressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_definition_engine_proto_msgTypes[3]
+	mi := &file_definition_engine_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -311,7 +399,7 @@ func (x *NotifyTaskProgressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotifyTaskProgressRequest.ProtoReflect.Descriptor instead.
 func (*NotifyTaskProgressRequest) Descriptor() ([]byte, []int) {
-	return file_definition_engine_proto_rawDescGZIP(), []int{3}
+	return file_definition_engine_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *NotifyTaskProgressRequest) GetTaskId() string {
@@ -332,7 +420,12 @@ var File_definition_engine_proto protoreflect.FileDescriptor
 
 const file_definition_engine_proto_rawDesc = "" +
 	"\n" +
-	"\x17definition/engine.proto\x12\x06engine\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x16definition/agent.proto\"\xf6\x01\n" +
+	"\x17definition/engine.proto\x12\x06engine\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x16definition/agent.proto\"'\n" +
+	"\x11EnginePingRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\"3\n" +
+	"\x12EnginePingResponse\x12\x1d\n" +
+	"\n" +
+	"know_agent\x18\x01 \x01(\bR\tknowAgent\"\xf6\x01\n" +
 	"\x14RegisterAgentRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x1d\n" +
@@ -361,10 +454,10 @@ const file_definition_engine_proto_rawDesc = "" +
 	"\x04HTTP\x10\x022\xab\x01\n" +
 	"\vTaskService\x12K\n" +
 	"\x10NotifyTaskStatus\x12\x1f.engine.NotifyTaskStatusRequest\x1a\x16.google.protobuf.Empty\x12O\n" +
-	"\x12NotifyTaskProgress\x12!.engine.NotifyTaskProgressRequest\x1a\x16.google.protobuf.Empty2\x95\x01\n" +
+	"\x12NotifyTaskProgress\x12!.engine.NotifyTaskProgressRequest\x1a\x16.google.protobuf.Empty2\x9c\x01\n" +
 	"\rEngineService\x12L\n" +
-	"\rRegisterAgent\x12\x1c.engine.RegisterAgentRequest\x1a\x1d.engine.RegisterAgentResponse\x126\n" +
-	"\x04Ping\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.EmptyB\tZ\a./protob\x06proto3"
+	"\rRegisterAgent\x12\x1c.engine.RegisterAgentRequest\x1a\x1d.engine.RegisterAgentResponse\x12=\n" +
+	"\x04Ping\x12\x19.engine.EnginePingRequest\x1a\x1a.engine.EnginePingResponseB\tZ\a./protob\x06proto3"
 
 var (
 	file_definition_engine_proto_rawDescOnce sync.Once
@@ -379,36 +472,38 @@ func file_definition_engine_proto_rawDescGZIP() []byte {
 }
 
 var file_definition_engine_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_definition_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_definition_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_definition_engine_proto_goTypes = []any{
 	(AgentProtocol)(0),                // 0: engine.AgentProtocol
-	(*RegisterAgentRequest)(nil),      // 1: engine.RegisterAgentRequest
-	(*RegisterAgentResponse)(nil),     // 2: engine.RegisterAgentResponse
-	(*NotifyTaskStatusRequest)(nil),   // 3: engine.NotifyTaskStatusRequest
-	(*NotifyTaskProgressRequest)(nil), // 4: engine.NotifyTaskProgressRequest
-	(*TaskDefinition)(nil),            // 5: agent.TaskDefinition
-	(TaskStatus)(0),                   // 6: agent.TaskStatus
-	(*structpb.Struct)(nil),           // 7: google.protobuf.Struct
-	(*emptypb.Empty)(nil),             // 8: google.protobuf.Empty
+	(*EnginePingRequest)(nil),         // 1: engine.EnginePingRequest
+	(*EnginePingResponse)(nil),        // 2: engine.EnginePingResponse
+	(*RegisterAgentRequest)(nil),      // 3: engine.RegisterAgentRequest
+	(*RegisterAgentResponse)(nil),     // 4: engine.RegisterAgentResponse
+	(*NotifyTaskStatusRequest)(nil),   // 5: engine.NotifyTaskStatusRequest
+	(*NotifyTaskProgressRequest)(nil), // 6: engine.NotifyTaskProgressRequest
+	(*TaskDefinition)(nil),            // 7: agent.TaskDefinition
+	(TaskStatus)(0),                   // 8: agent.TaskStatus
+	(*structpb.Struct)(nil),           // 9: google.protobuf.Struct
+	(*emptypb.Empty)(nil),             // 10: google.protobuf.Empty
 }
 var file_definition_engine_proto_depIdxs = []int32{
-	0, // 0: engine.RegisterAgentRequest.protocol:type_name -> engine.AgentProtocol
-	5, // 1: engine.RegisterAgentRequest.supported_tasks:type_name -> agent.TaskDefinition
-	6, // 2: engine.NotifyTaskStatusRequest.status:type_name -> agent.TaskStatus
-	7, // 3: engine.NotifyTaskStatusRequest.output_parameters:type_name -> google.protobuf.Struct
-	3, // 4: engine.TaskService.NotifyTaskStatus:input_type -> engine.NotifyTaskStatusRequest
-	4, // 5: engine.TaskService.NotifyTaskProgress:input_type -> engine.NotifyTaskProgressRequest
-	1, // 6: engine.EngineService.RegisterAgent:input_type -> engine.RegisterAgentRequest
-	8, // 7: engine.EngineService.Ping:input_type -> google.protobuf.Empty
-	8, // 8: engine.TaskService.NotifyTaskStatus:output_type -> google.protobuf.Empty
-	8, // 9: engine.TaskService.NotifyTaskProgress:output_type -> google.protobuf.Empty
-	2, // 10: engine.EngineService.RegisterAgent:output_type -> engine.RegisterAgentResponse
-	8, // 11: engine.EngineService.Ping:output_type -> google.protobuf.Empty
-	8, // [8:12] is the sub-list for method output_type
-	4, // [4:8] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0,  // 0: engine.RegisterAgentRequest.protocol:type_name -> engine.AgentProtocol
+	7,  // 1: engine.RegisterAgentRequest.supported_tasks:type_name -> agent.TaskDefinition
+	8,  // 2: engine.NotifyTaskStatusRequest.status:type_name -> agent.TaskStatus
+	9,  // 3: engine.NotifyTaskStatusRequest.output_parameters:type_name -> google.protobuf.Struct
+	5,  // 4: engine.TaskService.NotifyTaskStatus:input_type -> engine.NotifyTaskStatusRequest
+	6,  // 5: engine.TaskService.NotifyTaskProgress:input_type -> engine.NotifyTaskProgressRequest
+	3,  // 6: engine.EngineService.RegisterAgent:input_type -> engine.RegisterAgentRequest
+	1,  // 7: engine.EngineService.Ping:input_type -> engine.EnginePingRequest
+	10, // 8: engine.TaskService.NotifyTaskStatus:output_type -> google.protobuf.Empty
+	10, // 9: engine.TaskService.NotifyTaskProgress:output_type -> google.protobuf.Empty
+	4,  // 10: engine.EngineService.RegisterAgent:output_type -> engine.RegisterAgentResponse
+	2,  // 11: engine.EngineService.Ping:output_type -> engine.EnginePingResponse
+	8,  // [8:12] is the sub-list for method output_type
+	4,  // [4:8] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_definition_engine_proto_init() }
@@ -417,15 +512,15 @@ func file_definition_engine_proto_init() {
 		return
 	}
 	file_definition_agent_proto_init()
-	file_definition_engine_proto_msgTypes[0].OneofWrappers = []any{}
-	file_definition_engine_proto_msgTypes[1].OneofWrappers = []any{}
+	file_definition_engine_proto_msgTypes[2].OneofWrappers = []any{}
+	file_definition_engine_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_definition_engine_proto_rawDesc), len(file_definition_engine_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

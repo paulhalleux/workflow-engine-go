@@ -15,13 +15,21 @@ service TaskService {
 
 service EngineService {
   rpc RegisterAgent(RegisterAgentRequest) returns (RegisterAgentResponse);
-  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc Ping(EnginePingRequest) returns (EnginePingResponse);
 }
 
 enum AgentProtocol {
   UNKNOWN = 0;
   GRPC = 1;
   HTTP = 2;
+}
+
+message EnginePingRequest {
+  string name = 1;
+}
+
+message EnginePingResponse {
+  bool know_agent = 1;
 }
 
 message RegisterAgentRequest {
