@@ -32,6 +32,9 @@ type Engine struct {
 
 	workflowDefinitionService *service.WorkflowDefinitionsService
 	workflowService           *service.WorkflowService
+	workflowInstanceService   *service.WorkflowInstanceService
+
+	workflowExecutor *service.WorkflowExecutor
 }
 
 func NewEngine(
@@ -51,9 +54,14 @@ func NewEngine(
 	}
 
 	workflowDefinitionService := service.NewWorkflowDefinitionsService(pers)
+	workflowInstanceService := service.NewWorkflowInstanceService(workflowDefinitionService, pers)
+
+	exec := service.NewWorkflowExecutor(config, workflowInstanceService)
+
 	workflowService := service.NewWorkflowService(
 		workflowDefinitionService,
 		pers,
+		exec,
 	)
 
 	return &Engine{
@@ -66,6 +74,9 @@ func NewEngine(
 
 		workflowDefinitionService: workflowDefinitionService,
 		workflowService:           workflowService,
+		workflowInstanceService:   workflowInstanceService,
+
+		workflowExecutor: exec,
 	}
 }
 
@@ -74,6 +85,7 @@ func (e *Engine) Start() {
 
 	go e.startGrpcServer()
 	go e.startHttpServer()
+	go e.workflowExecutor.Start(e.Context)
 
 	<-e.Context.Done()
 	log.Printf("[Engine] Shutting down workflow engine...")
@@ -105,7 +117,7 @@ func (e *Engine) startHttpServer() {
 	api := r.Group("/api")
 
 	workflowDefinitionHandlers := httpapi.NewWorkflowDefinitionsHandlers(e.workflowDefinitionService)
-	workflowInstanceHandlers := httpapi.NewWorkflowInstancesHandlers(e.workflowService)
+	workflowInstanceHandlers := httpapi.NewWorkflowInstancesHandlers(e.workflowInstanceService)
 
 	// Define HTTP routes and handlers here
 	workflowDefinitionHandlers.Register(api)

@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
@@ -23,7 +24,7 @@ type WorkflowDefinition struct {
 
 func (def *WorkflowDefinition) NewInstance(input *map[string]interface{}) *WorkflowInstance {
 	return &WorkflowInstance{
-		ID:                   def.ID,
+		ID:                   uuid.New().String(),
 		WorkflowDefinitionID: def.ID,
 		Status:               WorkflowStatusPending,
 		Input:                utils.UnknownJsonFromMap(input),

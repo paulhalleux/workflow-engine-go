@@ -7,3 +7,11 @@ func (e *UnsupportedProtocolError) Error() string {
 }
 
 var ErrUnsupportedProtocol = &UnsupportedProtocolError{}
+
+type WorkflowQueueFullError struct{}
+
+func (e *WorkflowQueueFullError) Error() string {
+	return "workflow queue is full"
+}
+
+var ErrWorkflowQueueFull = &WorkflowQueueFullError{}

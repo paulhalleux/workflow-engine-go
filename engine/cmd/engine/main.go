@@ -24,6 +24,12 @@ func main() {
 		DbHost:     os.Getenv("DB_HOST"),
 		DbPort:     os.Getenv("DB_PORT"),
 		DbSSLMode:  os.Getenv("DB_SSLMODE"),
+
+		MaxWorkflowQueueSize: 10,
+		MaxParallelWorkflows: 1,
+
+		MaxStepQueueSize: 100,
+		MaxParallelSteps: 5,
 	})
 
 	eng.Start()

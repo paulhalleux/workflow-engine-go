@@ -36,14 +36,15 @@ type TaskExecutor struct {
 }
 
 func NewTaskExecutor(
+	config *WorkflowAgentConfig,
 	taskDefinitionRegistry *TaskDefinitionRegistry,
 	engineConnection *grpc.ClientConn,
 ) *TaskExecutor {
 	return &TaskExecutor{
 		engineConnection:       engineConnection,
 		taskDefinitionRegistry: taskDefinitionRegistry,
-		taskQueue:              make(chan *TaskExecution, 100),
-		sem:                    make(chan struct{}, 1),
+		taskQueue:              make(chan *TaskExecution, config.MaxQueueSize),
+		sem:                    make(chan struct{}, config.MaxParallelTasks),
 	}
 }
 

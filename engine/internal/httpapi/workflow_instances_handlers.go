@@ -7,11 +7,11 @@ import (
 )
 
 type WorkflowInstancesHandlers struct {
-	service *service.WorkflowService
+	service *service.WorkflowInstanceService
 }
 
 func NewWorkflowInstancesHandlers(
-	service *service.WorkflowService,
+	service *service.WorkflowInstanceService,
 ) *WorkflowInstancesHandlers {
 	return &WorkflowInstancesHandlers{
 		service: service,

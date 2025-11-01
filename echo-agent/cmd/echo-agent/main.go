@@ -7,10 +7,12 @@ import (
 
 func main() {
 	ag := agent.NewWorkflowAgent(&agent.WorkflowAgentConfig{
-		Name:          "echo-agent",
-		Version:       "1.0.0",
-		GrpcPort:      "50052",
-		EngineGrpcUrl: ":50051",
+		Name:             "echo-agent",
+		Version:          "1.0.0",
+		GrpcPort:         "50052",
+		EngineGrpcUrl:    ":50051",
+		MaxQueueSize:     100,
+		MaxParallelTasks: 10,
 	})
 
 	ag.RegisterTaskDefinition(internal.NewEchoTaskDefinition())

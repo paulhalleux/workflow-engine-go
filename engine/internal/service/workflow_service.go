@@ -1,23 +1,24 @@
 package service
 
 import (
-	"github.com/paulhalleux/workflow-engine-go/engine/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/persistence"
-	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
 type WorkflowService struct {
 	workflowDefinitionsService *WorkflowDefinitionsService
 	persistence                *persistence.Persistence
+	workflowExecutor           *WorkflowExecutor
 }
 
 func NewWorkflowService(
 	workflowDefinitionsService *WorkflowDefinitionsService,
 	persistence *persistence.Persistence,
+	workflowExecutor *WorkflowExecutor,
 ) *WorkflowService {
 	return &WorkflowService{
 		workflowDefinitionsService: workflowDefinitionsService,
 		persistence:                persistence,
+		workflowExecutor:           workflowExecutor,
 	}
 }
 
@@ -33,21 +34,13 @@ func (ws *WorkflowService) StartWorkflow(definitionID string, parameters map[str
 		return nil, err
 	}
 
+	exec := &WorkflowExecution{
+		WorkflowInstanceID: instance.ID,
+	}
+	err = ws.workflowExecutor.Enqueue(exec)
+	if err != nil {
+		return nil, err
+	}
+
 	return &instance.ID, nil
-}
-
-func (ws *WorkflowService) GetAll(scopeFactory *utils.GormScopeFactory) ([]models.WorkflowInstance, error) {
-	instances, err := ws.persistence.WorkflowInstances.GetAll(scopeFactory)
-	if err != nil {
-		return nil, err
-	}
-	return instances, nil
-}
-
-func (ws *WorkflowService) GetByID(id string) (*models.WorkflowInstance, error) {
-	instance, err := ws.persistence.WorkflowInstances.GetByID(id)
-	if err != nil {
-		return nil, err
-	}
-	return instance, nil
 }

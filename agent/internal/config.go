@@ -6,4 +6,7 @@ type WorkflowAgentConfig struct {
 	GrpcPort      string
 	GrpcAddress   *string
 	EngineGrpcUrl string
+
+	MaxQueueSize     int
+	MaxParallelTasks int
 }
