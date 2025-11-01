@@ -92,7 +92,7 @@ func (a *WorkflowAgent) Start() {
 
 	_, err := a.engineConnector.RegisterAgent(a.Config, a.taskDefinitionRegistry)
 	if err != nil {
-		log.Fatalf("[Agent: %s] Failed to register agent with engine: %v", a.Config.Name, err)
+		log.Printf("[Agent: %s] Failed to register agent with engine: %v, will retry every 10 seconds.", a.Config.Name, err.Error())
 	} else {
 		log.Printf("[Agent: %s] Registered with engine at %s", a.Config.Name, a.Config.EngineGrpcUrl)
 	}
