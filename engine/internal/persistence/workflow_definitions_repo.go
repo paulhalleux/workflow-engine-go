@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/models"
+	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -23,16 +24,16 @@ func (wr *WorkflowDefinitionsRepo) Create(definition *models.WorkflowDefinition)
 
 func (wr *WorkflowDefinitionsRepo) GetByID(id string) (*models.WorkflowDefinition, error) {
 	var definition models.WorkflowDefinition
-	result := wr.db.First(&definition, id)
+	result := wr.db.Where("id = ?", id).First(&definition)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return &definition, nil
 }
 
-func (wr *WorkflowDefinitionsRepo) GetAll() ([]models.WorkflowDefinition, error) {
+func (wr *WorkflowDefinitionsRepo) GetAll(scopeFactory *utils.GormScopeFactory) ([]models.WorkflowDefinition, error) {
 	var definitions []models.WorkflowDefinition
-	result := wr.db.Find(&definitions)
+	result := utils.WithScope(wr.db, scopeFactory).Find(&definitions)
 	if result.Error != nil {
 		return nil, result.Error
 	}

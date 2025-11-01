@@ -31,6 +31,7 @@ type Engine struct {
 	db            *gorm.DB
 
 	workflowDefinitionService *service.WorkflowDefinitionsService
+	workflowService           *service.WorkflowService
 }
 
 func NewEngine(
@@ -49,6 +50,12 @@ func NewEngine(
 		log.Fatalf("failed to migrate database: %v", err)
 	}
 
+	workflowDefinitionService := service.NewWorkflowDefinitionsService(pers)
+	workflowService := service.NewWorkflowService(
+		workflowDefinitionService,
+		pers,
+	)
+
 	return &Engine{
 		Config:  config,
 		Context: ctx,
@@ -57,7 +64,8 @@ func NewEngine(
 		agentRegistry: agentRegistry,
 		db:            database,
 
-		workflowDefinitionService: service.NewWorkflowDefinitionsService(pers),
+		workflowDefinitionService: workflowDefinitionService,
+		workflowService:           workflowService,
 	}
 }
 
@@ -82,7 +90,7 @@ func (e *Engine) startGrpcServer() {
 	reflection.Register(grpcServer)
 
 	// Register gRPC services
-	proto.RegisterEngineServiceServer(grpcServer, grpcapi.NewEngineServiceServer(e.agentRegistry))
+	proto.RegisterEngineServiceServer(grpcServer, grpcapi.NewEngineServiceServer(e.agentRegistry, e.workflowService))
 	proto.RegisterTaskServiceServer(grpcServer, grpcapi.NewTaskServiceServer())
 
 	// Start the gRPC server
@@ -97,9 +105,11 @@ func (e *Engine) startHttpServer() {
 	api := r.Group("/api")
 
 	workflowDefinitionHandlers := httpapi.NewWorkflowDefinitionsHandlers(e.workflowDefinitionService)
+	workflowInstanceHandlers := httpapi.NewWorkflowInstancesHandlers(e.workflowService)
 
 	// Define HTTP routes and handlers here
 	workflowDefinitionHandlers.Register(api)
+	workflowInstanceHandlers.Register(api)
 
 	addr := joinHostPort(e.Config.HttpAddress, e.Config.HttpPort)
 	log.Printf("[Engine] HTTP server running on %s", addr)

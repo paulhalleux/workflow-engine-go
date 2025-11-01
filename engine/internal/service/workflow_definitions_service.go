@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/persistence"
+	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
 type WorkflowDefinitionsService struct {
@@ -17,8 +18,8 @@ func NewWorkflowDefinitionsService(
 	}
 }
 
-func (ws *WorkflowDefinitionsService) GetAll() ([]models.WorkflowDefinition, error) {
-	return ws.persistence.WorkflowDefinitions.GetAll()
+func (ws *WorkflowDefinitionsService) GetAll(scopeFactory *utils.GormScopeFactory) ([]models.WorkflowDefinition, error) {
+	return ws.persistence.WorkflowDefinitions.GetAll(scopeFactory)
 }
 
 func (ws *WorkflowDefinitionsService) GetByID(id string) (*models.WorkflowDefinition, error) {

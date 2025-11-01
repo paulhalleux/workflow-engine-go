@@ -16,6 +16,7 @@ service TaskService {
 service EngineService {
   rpc RegisterAgent(RegisterAgentRequest) returns (RegisterAgentResponse);
   rpc Ping(EnginePingRequest) returns (EnginePingResponse);
+  rpc StartWorkflow(StartWorkflowRequest) returns (StartWorkflowResponse);
 }
 
 enum AgentProtocol {
@@ -56,4 +57,15 @@ message NotifyTaskStatusRequest {
 message NotifyTaskProgressRequest {
   string task_id = 1;
   float progress = 2;
+}
+
+message StartWorkflowRequest {
+  string workflow_definition_id = 1;
+  google.protobuf.Struct input_parameters = 2;
+}
+
+message StartWorkflowResponse {
+  bool success = 1;
+  optional string workflow_instance_id = 2;
+  optional string message = 3;
 }

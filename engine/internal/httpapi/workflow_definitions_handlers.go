@@ -2,9 +2,9 @@ package httpapi
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/paulhalleux/workflow-engine-go/engine/internal/contracts"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/service"
+	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
 type WorkflowDefinitionsHandlers struct {
@@ -31,7 +31,8 @@ func (h *WorkflowDefinitionsHandlers) Register(rg *gin.RouterGroup) {
 }
 
 func (h *WorkflowDefinitionsHandlers) getAll(ctx *gin.Context) {
-	defs, err := h.service.GetAll()
+	paginate := utils.Paginate(ctx)
+	defs, err := h.service.GetAll(&paginate)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -40,7 +41,13 @@ func (h *WorkflowDefinitionsHandlers) getAll(ctx *gin.Context) {
 }
 
 func (h *WorkflowDefinitionsHandlers) getByID(ctx *gin.Context) {
-	ctx.Status(200)
+	id := ctx.Param("id")
+	def, err := h.service.GetByID(id)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, def)
 }
 
 func (h *WorkflowDefinitionsHandlers) create(ctx *gin.Context) {
@@ -59,7 +66,7 @@ func (h *WorkflowDefinitionsHandlers) create(ctx *gin.Context) {
 
 func (h *WorkflowDefinitionsHandlers) update(ctx *gin.Context) {
 	id := ctx.Param("id")
-	var updateRequest *contracts.UpdateWorkflowDefRequest
+	var updateRequest *models.UpdateWorkflowDefRequest
 	if err := ctx.ShouldBindJSON(&updateRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return

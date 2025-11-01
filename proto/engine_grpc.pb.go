@@ -162,6 +162,7 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 const (
 	EngineService_RegisterAgent_FullMethodName = "/engine.EngineService/RegisterAgent"
 	EngineService_Ping_FullMethodName          = "/engine.EngineService/Ping"
+	EngineService_StartWorkflow_FullMethodName = "/engine.EngineService/StartWorkflow"
 )
 
 // EngineServiceClient is the client API for EngineService service.
@@ -170,6 +171,7 @@ const (
 type EngineServiceClient interface {
 	RegisterAgent(ctx context.Context, in *RegisterAgentRequest, opts ...grpc.CallOption) (*RegisterAgentResponse, error)
 	Ping(ctx context.Context, in *EnginePingRequest, opts ...grpc.CallOption) (*EnginePingResponse, error)
+	StartWorkflow(ctx context.Context, in *StartWorkflowRequest, opts ...grpc.CallOption) (*StartWorkflowResponse, error)
 }
 
 type engineServiceClient struct {
@@ -200,12 +202,23 @@ func (c *engineServiceClient) Ping(ctx context.Context, in *EnginePingRequest, o
 	return out, nil
 }
 
+func (c *engineServiceClient) StartWorkflow(ctx context.Context, in *StartWorkflowRequest, opts ...grpc.CallOption) (*StartWorkflowResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StartWorkflowResponse)
+	err := c.cc.Invoke(ctx, EngineService_StartWorkflow_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EngineServiceServer is the server API for EngineService service.
 // All implementations must embed UnimplementedEngineServiceServer
 // for forward compatibility.
 type EngineServiceServer interface {
 	RegisterAgent(context.Context, *RegisterAgentRequest) (*RegisterAgentResponse, error)
 	Ping(context.Context, *EnginePingRequest) (*EnginePingResponse, error)
+	StartWorkflow(context.Context, *StartWorkflowRequest) (*StartWorkflowResponse, error)
 	mustEmbedUnimplementedEngineServiceServer()
 }
 
@@ -221,6 +234,9 @@ func (UnimplementedEngineServiceServer) RegisterAgent(context.Context, *Register
 }
 func (UnimplementedEngineServiceServer) Ping(context.Context, *EnginePingRequest) (*EnginePingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedEngineServiceServer) StartWorkflow(context.Context, *StartWorkflowRequest) (*StartWorkflowResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartWorkflow not implemented")
 }
 func (UnimplementedEngineServiceServer) mustEmbedUnimplementedEngineServiceServer() {}
 func (UnimplementedEngineServiceServer) testEmbeddedByValue()                       {}
@@ -279,6 +295,24 @@ func _EngineService_Ping_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EngineService_StartWorkflow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartWorkflowRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).StartWorkflow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EngineService_StartWorkflow_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).StartWorkflow(ctx, req.(*StartWorkflowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EngineService_ServiceDesc is the grpc.ServiceDesc for EngineService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -293,6 +327,10 @@ var EngineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Ping",
 			Handler:    _EngineService_Ping_Handler,
+		},
+		{
+			MethodName: "StartWorkflow",
+			Handler:    _EngineService_StartWorkflow_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

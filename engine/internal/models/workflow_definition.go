@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
+)
 
 type WorkflowDefinition struct {
 	ID               string                           `gorm:"primaryKey;type:uuid;default:gen_random_uuid()" json:"id"`
@@ -14,5 +18,14 @@ type WorkflowDefinition struct {
 	Steps            *WorkflowStepDefinitionList      `gorm:"type:jsonb;not null" json:"steps"`
 	CreatedAt        time.Time                        `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt        time.Time                        `gorm:"autoUpdateTime" json:"updatedAt"`
-	Metadata         map[string]interface{}           `gorm:"type:jsonb" json:"metadata,omitempty"`
+	Metadata         *utils.UnknownJson               `gorm:"type:jsonb" json:"metadata,omitempty"`
+}
+
+func (def *WorkflowDefinition) NewInstance(input *map[string]interface{}) *WorkflowInstance {
+	return &WorkflowInstance{
+		ID:                   def.ID,
+		WorkflowDefinitionID: def.ID,
+		Status:               WorkflowStatusPending,
+		Input:                utils.UnknownJsonFromMap(input),
+	}
 }

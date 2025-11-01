@@ -416,6 +416,118 @@ func (x *NotifyTaskProgressRequest) GetProgress() float32 {
 	return 0
 }
 
+type StartWorkflowRequest struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	WorkflowDefinitionId string                 `protobuf:"bytes,1,opt,name=workflow_definition_id,json=workflowDefinitionId,proto3" json:"workflow_definition_id,omitempty"`
+	InputParameters      *structpb.Struct       `protobuf:"bytes,2,opt,name=input_parameters,json=inputParameters,proto3" json:"input_parameters,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *StartWorkflowRequest) Reset() {
+	*x = StartWorkflowRequest{}
+	mi := &file_definition_engine_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartWorkflowRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartWorkflowRequest) ProtoMessage() {}
+
+func (x *StartWorkflowRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_definition_engine_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartWorkflowRequest.ProtoReflect.Descriptor instead.
+func (*StartWorkflowRequest) Descriptor() ([]byte, []int) {
+	return file_definition_engine_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *StartWorkflowRequest) GetWorkflowDefinitionId() string {
+	if x != nil {
+		return x.WorkflowDefinitionId
+	}
+	return ""
+}
+
+func (x *StartWorkflowRequest) GetInputParameters() *structpb.Struct {
+	if x != nil {
+		return x.InputParameters
+	}
+	return nil
+}
+
+type StartWorkflowResponse struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Success            bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	WorkflowInstanceId *string                `protobuf:"bytes,2,opt,name=workflow_instance_id,json=workflowInstanceId,proto3,oneof" json:"workflow_instance_id,omitempty"`
+	Message            *string                `protobuf:"bytes,3,opt,name=message,proto3,oneof" json:"message,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *StartWorkflowResponse) Reset() {
+	*x = StartWorkflowResponse{}
+	mi := &file_definition_engine_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartWorkflowResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartWorkflowResponse) ProtoMessage() {}
+
+func (x *StartWorkflowResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_definition_engine_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartWorkflowResponse.ProtoReflect.Descriptor instead.
+func (*StartWorkflowResponse) Descriptor() ([]byte, []int) {
+	return file_definition_engine_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *StartWorkflowResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *StartWorkflowResponse) GetWorkflowInstanceId() string {
+	if x != nil && x.WorkflowInstanceId != nil {
+		return *x.WorkflowInstanceId
+	}
+	return ""
+}
+
+func (x *StartWorkflowResponse) GetMessage() string {
+	if x != nil && x.Message != nil {
+		return *x.Message
+	}
+	return ""
+}
+
 var File_definition_engine_proto protoreflect.FileDescriptor
 
 const file_definition_engine_proto_rawDesc = "" +
@@ -447,17 +559,28 @@ const file_definition_engine_proto_rawDesc = "" +
 	"\amessage\x18\x04 \x01(\tR\amessage\"P\n" +
 	"\x19NotifyTaskProgressRequest\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x1a\n" +
-	"\bprogress\x18\x02 \x01(\x02R\bprogress*0\n" +
+	"\bprogress\x18\x02 \x01(\x02R\bprogress\"\x90\x01\n" +
+	"\x14StartWorkflowRequest\x124\n" +
+	"\x16workflow_definition_id\x18\x01 \x01(\tR\x14workflowDefinitionId\x12B\n" +
+	"\x10input_parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x0finputParameters\"\xac\x01\n" +
+	"\x15StartWorkflowResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x125\n" +
+	"\x14workflow_instance_id\x18\x02 \x01(\tH\x00R\x12workflowInstanceId\x88\x01\x01\x12\x1d\n" +
+	"\amessage\x18\x03 \x01(\tH\x01R\amessage\x88\x01\x01B\x17\n" +
+	"\x15_workflow_instance_idB\n" +
+	"\n" +
+	"\b_message*0\n" +
 	"\rAgentProtocol\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\b\n" +
 	"\x04GRPC\x10\x01\x12\b\n" +
 	"\x04HTTP\x10\x022\xab\x01\n" +
 	"\vTaskService\x12K\n" +
 	"\x10NotifyTaskStatus\x12\x1f.engine.NotifyTaskStatusRequest\x1a\x16.google.protobuf.Empty\x12O\n" +
-	"\x12NotifyTaskProgress\x12!.engine.NotifyTaskProgressRequest\x1a\x16.google.protobuf.Empty2\x9c\x01\n" +
+	"\x12NotifyTaskProgress\x12!.engine.NotifyTaskProgressRequest\x1a\x16.google.protobuf.Empty2\xea\x01\n" +
 	"\rEngineService\x12L\n" +
 	"\rRegisterAgent\x12\x1c.engine.RegisterAgentRequest\x1a\x1d.engine.RegisterAgentResponse\x12=\n" +
-	"\x04Ping\x12\x19.engine.EnginePingRequest\x1a\x1a.engine.EnginePingResponseB\tZ\a./protob\x06proto3"
+	"\x04Ping\x12\x19.engine.EnginePingRequest\x1a\x1a.engine.EnginePingResponse\x12L\n" +
+	"\rStartWorkflow\x12\x1c.engine.StartWorkflowRequest\x1a\x1d.engine.StartWorkflowResponseB\tZ\a./protob\x06proto3"
 
 var (
 	file_definition_engine_proto_rawDescOnce sync.Once
@@ -472,7 +595,7 @@ func file_definition_engine_proto_rawDescGZIP() []byte {
 }
 
 var file_definition_engine_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_definition_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_definition_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_definition_engine_proto_goTypes = []any{
 	(AgentProtocol)(0),                // 0: engine.AgentProtocol
 	(*EnginePingRequest)(nil),         // 1: engine.EnginePingRequest
@@ -481,29 +604,34 @@ var file_definition_engine_proto_goTypes = []any{
 	(*RegisterAgentResponse)(nil),     // 4: engine.RegisterAgentResponse
 	(*NotifyTaskStatusRequest)(nil),   // 5: engine.NotifyTaskStatusRequest
 	(*NotifyTaskProgressRequest)(nil), // 6: engine.NotifyTaskProgressRequest
-	(*TaskDefinition)(nil),            // 7: agent.TaskDefinition
-	(TaskStatus)(0),                   // 8: agent.TaskStatus
-	(*structpb.Struct)(nil),           // 9: google.protobuf.Struct
-	(*emptypb.Empty)(nil),             // 10: google.protobuf.Empty
+	(*StartWorkflowRequest)(nil),      // 7: engine.StartWorkflowRequest
+	(*StartWorkflowResponse)(nil),     // 8: engine.StartWorkflowResponse
+	(*TaskDefinition)(nil),            // 9: agent.TaskDefinition
+	(TaskStatus)(0),                   // 10: agent.TaskStatus
+	(*structpb.Struct)(nil),           // 11: google.protobuf.Struct
+	(*emptypb.Empty)(nil),             // 12: google.protobuf.Empty
 }
 var file_definition_engine_proto_depIdxs = []int32{
 	0,  // 0: engine.RegisterAgentRequest.protocol:type_name -> engine.AgentProtocol
-	7,  // 1: engine.RegisterAgentRequest.supported_tasks:type_name -> agent.TaskDefinition
-	8,  // 2: engine.NotifyTaskStatusRequest.status:type_name -> agent.TaskStatus
-	9,  // 3: engine.NotifyTaskStatusRequest.output_parameters:type_name -> google.protobuf.Struct
-	5,  // 4: engine.TaskService.NotifyTaskStatus:input_type -> engine.NotifyTaskStatusRequest
-	6,  // 5: engine.TaskService.NotifyTaskProgress:input_type -> engine.NotifyTaskProgressRequest
-	3,  // 6: engine.EngineService.RegisterAgent:input_type -> engine.RegisterAgentRequest
-	1,  // 7: engine.EngineService.Ping:input_type -> engine.EnginePingRequest
-	10, // 8: engine.TaskService.NotifyTaskStatus:output_type -> google.protobuf.Empty
-	10, // 9: engine.TaskService.NotifyTaskProgress:output_type -> google.protobuf.Empty
-	4,  // 10: engine.EngineService.RegisterAgent:output_type -> engine.RegisterAgentResponse
-	2,  // 11: engine.EngineService.Ping:output_type -> engine.EnginePingResponse
-	8,  // [8:12] is the sub-list for method output_type
-	4,  // [4:8] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	9,  // 1: engine.RegisterAgentRequest.supported_tasks:type_name -> agent.TaskDefinition
+	10, // 2: engine.NotifyTaskStatusRequest.status:type_name -> agent.TaskStatus
+	11, // 3: engine.NotifyTaskStatusRequest.output_parameters:type_name -> google.protobuf.Struct
+	11, // 4: engine.StartWorkflowRequest.input_parameters:type_name -> google.protobuf.Struct
+	5,  // 5: engine.TaskService.NotifyTaskStatus:input_type -> engine.NotifyTaskStatusRequest
+	6,  // 6: engine.TaskService.NotifyTaskProgress:input_type -> engine.NotifyTaskProgressRequest
+	3,  // 7: engine.EngineService.RegisterAgent:input_type -> engine.RegisterAgentRequest
+	1,  // 8: engine.EngineService.Ping:input_type -> engine.EnginePingRequest
+	7,  // 9: engine.EngineService.StartWorkflow:input_type -> engine.StartWorkflowRequest
+	12, // 10: engine.TaskService.NotifyTaskStatus:output_type -> google.protobuf.Empty
+	12, // 11: engine.TaskService.NotifyTaskProgress:output_type -> google.protobuf.Empty
+	4,  // 12: engine.EngineService.RegisterAgent:output_type -> engine.RegisterAgentResponse
+	2,  // 13: engine.EngineService.Ping:output_type -> engine.EnginePingResponse
+	8,  // 14: engine.EngineService.StartWorkflow:output_type -> engine.StartWorkflowResponse
+	10, // [10:15] is the sub-list for method output_type
+	5,  // [5:10] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_definition_engine_proto_init() }
@@ -514,13 +642,14 @@ func file_definition_engine_proto_init() {
 	file_definition_agent_proto_init()
 	file_definition_engine_proto_msgTypes[2].OneofWrappers = []any{}
 	file_definition_engine_proto_msgTypes[3].OneofWrappers = []any{}
+	file_definition_engine_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_definition_engine_proto_rawDesc), len(file_definition_engine_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
