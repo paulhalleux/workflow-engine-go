@@ -31,10 +31,12 @@ type Engine struct {
 	db            *gorm.DB
 
 	workflowDefinitionService *service.WorkflowDefinitionsService
-	workflowService           *service.WorkflowService
 	workflowInstanceService   *service.WorkflowInstanceService
+	workflowExecutionService  *service.WorkflowExecutionService
+	stepExecutionService      *service.StepExecutionService
 
 	workflowExecutor *service.WorkflowExecutor
+	stepExecutor     *service.StepExecutor
 }
 
 func NewEngine(
@@ -56,12 +58,17 @@ func NewEngine(
 	workflowDefinitionService := service.NewWorkflowDefinitionsService(pers)
 	workflowInstanceService := service.NewWorkflowInstanceService(workflowDefinitionService, pers)
 
-	exec := service.NewWorkflowExecutor(config, workflowInstanceService)
+	stepExecutor := service.NewStepExecutor(config)
+	stepExecutionService := service.NewStepExecutionService(
+		pers,
+		stepExecutor,
+	)
 
-	workflowService := service.NewWorkflowService(
+	workflowExecutor := service.NewWorkflowExecutor(config, workflowDefinitionService, workflowInstanceService, stepExecutionService)
+	workflowExecutionService := service.NewWorkflowExecutionService(
 		workflowDefinitionService,
 		pers,
-		exec,
+		workflowExecutor,
 	)
 
 	return &Engine{
@@ -73,10 +80,12 @@ func NewEngine(
 		db:            database,
 
 		workflowDefinitionService: workflowDefinitionService,
-		workflowService:           workflowService,
 		workflowInstanceService:   workflowInstanceService,
+		workflowExecutionService:  workflowExecutionService,
+		stepExecutionService:      stepExecutionService,
 
-		workflowExecutor: exec,
+		workflowExecutor: workflowExecutor,
+		stepExecutor:     stepExecutor,
 	}
 }
 
@@ -102,7 +111,7 @@ func (e *Engine) startGrpcServer() {
 	reflection.Register(grpcServer)
 
 	// Register gRPC services
-	proto.RegisterEngineServiceServer(grpcServer, grpcapi.NewEngineServiceServer(e.agentRegistry, e.workflowService))
+	proto.RegisterEngineServiceServer(grpcServer, grpcapi.NewEngineServiceServer(e.agentRegistry, e.workflowExecutionService))
 	proto.RegisterTaskServiceServer(grpcServer, grpcapi.NewTaskServiceServer())
 
 	// Start the gRPC server

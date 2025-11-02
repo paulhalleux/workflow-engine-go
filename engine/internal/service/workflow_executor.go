@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"log"
-	"time"
 
 	"github.com/paulhalleux/workflow-engine-go/engine/internal"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/errors"
@@ -15,7 +14,9 @@ type WorkflowExecution struct {
 }
 
 type WorkflowExecutor struct {
-	workflowInstancesService *WorkflowInstanceService
+	workflowInstancesService   *WorkflowInstanceService
+	workflowDefinitionsService *WorkflowDefinitionsService
+	stepExecutionService       *StepExecutionService
 
 	taskQueue chan *WorkflowExecution
 	sem       chan struct{}
@@ -23,10 +24,14 @@ type WorkflowExecutor struct {
 
 func NewWorkflowExecutor(
 	config *internal.WorkflowEngineConfig,
+	workflowDefinitionsService *WorkflowDefinitionsService,
 	workflowInstancesService *WorkflowInstanceService,
+	stepExecutionService *StepExecutionService,
 ) *WorkflowExecutor {
 	return &WorkflowExecutor{
-		workflowInstancesService: workflowInstancesService,
+		workflowInstancesService:   workflowInstancesService,
+		workflowDefinitionsService: workflowDefinitionsService,
+		stepExecutionService:       stepExecutionService,
 
 		taskQueue: make(chan *WorkflowExecution, config.MaxWorkflowQueueSize),
 		sem:       make(chan struct{}, config.MaxParallelWorkflows),
@@ -76,7 +81,21 @@ func (we *WorkflowExecutor) startWorkflow(exec *WorkflowExecution) {
 		return
 	}
 
-	log.Println("Starting workflow execution:", instance)
-	time.Sleep(2 * time.Second) // Simulate workflow execution
-	log.Println("Completed workflow execution:", exec.WorkflowInstanceID)
+	definition, err := we.workflowDefinitionsService.GetByID(instance.WorkflowDefinitionID)
+	if err != nil {
+		we.failWorkflowInstance(exec, "Failed to retrieve workflow definition")
+		return
+	}
+
+	firstStep, err := definition.GetFirstStep()
+	if err != nil {
+		we.failWorkflowInstance(exec, err.Error())
+		return
+	}
+
+	_, err = we.stepExecutionService.StartStep(firstStep, definition)
+	if err != nil {
+		we.failWorkflowInstance(exec, "failed to start first step")
+		return
+	}
 }

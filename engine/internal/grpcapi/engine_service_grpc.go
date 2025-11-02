@@ -13,12 +13,12 @@ type EngineServiceServer struct {
 	proto.UnimplementedEngineServiceServer
 
 	agentRegistry   *internal.AgentRegistry
-	workflowService *service.WorkflowService
+	workflowService *service.WorkflowExecutionService
 }
 
 func NewEngineServiceServer(
 	agentRegistry *internal.AgentRegistry,
-	workflowService *service.WorkflowService,
+	workflowService *service.WorkflowExecutionService,
 ) *EngineServiceServer {
 	return &EngineServiceServer{
 		agentRegistry:   agentRegistry,

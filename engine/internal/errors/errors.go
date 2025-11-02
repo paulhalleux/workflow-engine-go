@@ -15,3 +15,11 @@ func (e *WorkflowQueueFullError) Error() string {
 }
 
 var ErrWorkflowQueueFull = &WorkflowQueueFullError{}
+
+type WorkflowDefinitionNoStepsError struct{}
+
+func (e *WorkflowDefinitionNoStepsError) Error() string {
+	return "workflow definition has no steps"
+}
+
+var ErrWorkflowDefinitionNoSteps = &WorkflowDefinitionNoStepsError{}

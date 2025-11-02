@@ -10,7 +10,7 @@ import (
 )
 
 type StepExecution struct {
-	WorkflowInstanceID string
+	StepInstanceID string
 }
 
 type StepExecutor struct {
@@ -52,7 +52,7 @@ func (we *StepExecutor) Start(ctx context.Context) {
 }
 
 func (we *StepExecutor) startStep(exec *StepExecution) {
-	log.Println("Starting step execution:", exec.WorkflowInstanceID)
+	log.Println("Starting step execution:", exec.StepInstanceID)
 	time.Sleep(2 * time.Second) // Simulate step execution
-	log.Println("Completed step execution:", exec.WorkflowInstanceID)
+	log.Println("Completed step execution:", exec.StepInstanceID)
 }

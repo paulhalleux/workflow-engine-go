@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/paulhalleux/workflow-engine-go/engine/internal/errors"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
@@ -29,4 +30,11 @@ func (def *WorkflowDefinition) NewInstance(input *map[string]interface{}) *Workf
 		Status:               WorkflowStatusPending,
 		Input:                utils.UnknownJsonFromMap(input),
 	}
+}
+
+func (def *WorkflowDefinition) GetFirstStep() (*WorkflowStepDefinition, error) {
+	if def.Steps == nil || len(*def.Steps) == 0 {
+		return nil, errors.ErrWorkflowDefinitionNoSteps
+	}
+	return &(*def.Steps)[0], nil
 }
