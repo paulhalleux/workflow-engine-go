@@ -9,6 +9,7 @@ type Persistence struct {
 	db                  *gorm.DB
 	WorkflowDefinitions *WorkflowDefinitionsRepo
 	WorkflowInstances   *WorkflowInstancesRepo
+	StepInstances       *StepInstancesRepo
 }
 
 func NewPersistence(
@@ -16,12 +17,14 @@ func NewPersistence(
 ) *Persistence {
 	workflowDefinitionsRepo := NewWorkflowDefinitionsRepo(db)
 	workflowInstancesRepo := NewWorkflowInstancesRepo(db)
+	stepInstancesRepo := NewStepInstancesRepo(db)
 
 	return &Persistence{
 		db: db,
 
 		WorkflowDefinitions: workflowDefinitionsRepo,
 		WorkflowInstances:   workflowInstancesRepo,
+		StepInstances:       stepInstancesRepo,
 	}
 }
 
@@ -29,6 +32,7 @@ func (p *Persistence) Migrate() error {
 	if err := p.db.AutoMigrate(
 		&models.WorkflowDefinition{},
 		&models.WorkflowInstance{},
+		&models.StepInstance{},
 	); err != nil {
 		return err
 	}

@@ -6,24 +6,24 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
-type WorkflowInstancesHandlers struct {
-	service *service.WorkflowInstanceService
+type StepInstancesHandlers struct {
+	service *service.StepInstanceService
 }
 
-func NewWorkflowInstancesHandlers(
-	service *service.WorkflowInstanceService,
-) *WorkflowInstancesHandlers {
-	return &WorkflowInstancesHandlers{
+func NewStepInstancesHandlers(
+	service *service.StepInstanceService,
+) *StepInstancesHandlers {
+	return &StepInstancesHandlers{
 		service: service,
 	}
 }
 
-func (h *WorkflowInstancesHandlers) Register(rg *gin.RouterGroup) {
-	rg.GET("/workflow-instances", h.getAll)
-	rg.GET("/workflow-instances/:id", h.getByID)
+func (h *StepInstancesHandlers) Register(rg *gin.RouterGroup) {
+	rg.GET("/step-instances", h.getAll)
+	rg.GET("/step-instances/:id", h.getByID)
 }
 
-func (h *WorkflowInstancesHandlers) getAll(ctx *gin.Context) {
+func (h *StepInstancesHandlers) getAll(ctx *gin.Context) {
 	paginate := utils.Paginate(ctx)
 	defs, err := h.service.GetAll(&paginate)
 	if err != nil {
@@ -33,7 +33,7 @@ func (h *WorkflowInstancesHandlers) getAll(ctx *gin.Context) {
 	ctx.JSON(200, defs)
 }
 
-func (h *WorkflowInstancesHandlers) getByID(ctx *gin.Context) {
+func (h *StepInstancesHandlers) getByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	def, err := h.service.GetByID(id)
 	if err != nil {

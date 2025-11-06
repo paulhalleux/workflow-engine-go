@@ -7,17 +7,14 @@ import (
 )
 
 type WorkflowInstanceService struct {
-	workflowDefinitionsService *WorkflowDefinitionsService
-	persistence                *persistence.Persistence
+	persistence *persistence.Persistence
 }
 
 func NewWorkflowInstanceService(
-	workflowDefinitionsService *WorkflowDefinitionsService,
 	persistence *persistence.Persistence,
 ) *WorkflowInstanceService {
 	return &WorkflowInstanceService{
-		workflowDefinitionsService: workflowDefinitionsService,
-		persistence:                persistence,
+		persistence: persistence,
 	}
 }
 

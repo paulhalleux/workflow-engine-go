@@ -34,6 +34,7 @@ type Engine struct {
 	workflowInstanceService   *service.WorkflowInstanceService
 	workflowExecutionService  *service.WorkflowExecutionService
 	stepExecutionService      *service.StepExecutionService
+	stepInstanceService       *service.StepInstanceService
 
 	workflowExecutor *service.WorkflowExecutor
 	stepExecutor     *service.StepExecutor
@@ -56,7 +57,8 @@ func NewEngine(
 	}
 
 	workflowDefinitionService := service.NewWorkflowDefinitionsService(pers)
-	workflowInstanceService := service.NewWorkflowInstanceService(workflowDefinitionService, pers)
+	workflowInstanceService := service.NewWorkflowInstanceService(pers)
+	stepInstanceService := service.NewStepInstanceService(pers)
 
 	stepExecutor := service.NewStepExecutor(config)
 	stepExecutionService := service.NewStepExecutionService(
@@ -83,6 +85,7 @@ func NewEngine(
 		workflowInstanceService:   workflowInstanceService,
 		workflowExecutionService:  workflowExecutionService,
 		stepExecutionService:      stepExecutionService,
+		stepInstanceService:       stepInstanceService,
 
 		workflowExecutor: workflowExecutor,
 		stepExecutor:     stepExecutor,
@@ -127,10 +130,12 @@ func (e *Engine) startHttpServer() {
 
 	workflowDefinitionHandlers := httpapi.NewWorkflowDefinitionsHandlers(e.workflowDefinitionService)
 	workflowInstanceHandlers := httpapi.NewWorkflowInstancesHandlers(e.workflowInstanceService)
+	stepInstanceHandlers := httpapi.NewStepInstancesHandlers(e.stepInstanceService)
 
 	// Define HTTP routes and handlers here
 	workflowDefinitionHandlers.Register(api)
 	workflowInstanceHandlers.Register(api)
+	stepInstanceHandlers.Register(api)
 
 	addr := joinHostPort(e.Config.HttpAddress, e.Config.HttpPort)
 	log.Printf("[Engine] HTTP server running on %s", addr)
