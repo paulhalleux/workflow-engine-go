@@ -1,0 +1,23 @@
+type: http_request
+model: http_request
+id: rq_Hr6zQZpCPe
+createdAt: 2025-11-07T09:30:20.466150200
+updatedAt: 2025-11-07T09:30:20.466150300
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_TqVXkoLnYe
+authentication: {}
+authenticationType: null
+body:
+  text: "{\r\n    \"name\": \"wait\",\r\n    \"version\": \"1.0.1\",\r\n    \"steps\": [\r\n        {\r\n            \"id\": \"wait\",\r\n            \"name\": \"Wait\",\r\n            \"description\": \"Wait task\",\r\n            \"type\": \"wait\",\r\n            \"waitConfig\": {\r\n                \"durationSeconds\": {\r\n                    \"type\": \"workflow\",\r\n                    \"value\": \"duration\"\r\n                }\r\n            }\r\n        }\r\n    ]\r\n}"
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Save
+sortPriority: 4.0
+url: ${[baseURL]}/api/workflow-definitions
+urlParameters: []

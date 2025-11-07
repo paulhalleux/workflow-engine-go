@@ -1,0 +1,13 @@
+type: folder
+model: folder
+id: fl_TqVXkoLnYe
+createdAt: 2025-11-07T09:30:20.467210200
+updatedAt: 2025-11-07T10:01:35.046420500
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_DrZeRGUZSw
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+name: Workflow Definitions
+sortPriority: 2000.0

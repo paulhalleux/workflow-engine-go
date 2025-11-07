@@ -1,0 +1,23 @@
+type: http_request
+model: http_request
+id: rq_SfokjAWEY5
+createdAt: 2025-11-07T09:30:20.466536600
+updatedAt: 2025-11-07T09:30:20.466536800
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_TqVXkoLnYe
+authentication: {}
+authenticationType: null
+body:
+  text: "{\r\n    \"steps\": [\r\n        {\r\n            \"id\": \"say-hello\",\r\n            \"displayName\": \"Say Hello\",\r\n            \"description\": \"Say Hello To The Users\"\r\n        }\r\n    ]\r\n}"
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: DELETE
+name: Delete
+sortPriority: 7.0
+url: ${[baseURL]}/api/workflow-definitions/d1b39e9d-5dd2-480b-842b-c737ed7a45f7
+urlParameters: []

@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_VsbWnVtWB4
+createdAt: 2025-11-07T09:46:53.049318300
+updatedAt: 2025-11-07T10:01:39.144200600
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_nPPM58kzMV
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: GetByName
+sortPriority: 1000.0
+url: ${[ baseURL ]}/api/agents/echo-agent
+urlParameters: []

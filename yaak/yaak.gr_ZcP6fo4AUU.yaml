@@ -1,0 +1,24 @@
+type: grpc_request
+model: grpc_request
+id: gr_ZcP6fo4AUU
+createdAt: 2025-11-07T09:38:22.379612500
+updatedAt: 2025-11-07T09:41:10.694744800
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_bnj3ZTPWPB
+authenticationType: null
+authentication: {}
+description: ''
+message: |-
+  {
+      "name": "test",
+      "port": "50052",
+      "protocol": "GRPC",
+      "version": "1.0.0",
+      "supported_tasks": []
+  }
+metadata: []
+method: RegisterAgent
+name: ''
+service: engine.EngineService
+sortPriority: 1000.0
+url: ${[ baseURL ]}

@@ -1,0 +1,23 @@
+type: http_request
+model: http_request
+id: rq_MvVvRe6Xg7
+createdAt: 2025-11-07T09:30:20.466340600
+updatedAt: 2025-11-07T09:30:20.466341
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_TqVXkoLnYe
+authentication: {}
+authenticationType: null
+body:
+  text: "{\r\n    \"name\": \"workflow\"\r\n}"
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: PUT
+name: Update
+sortPriority: 6.0
+url: ${[baseURL]}/api/workflow-definitions/dd95db02-bf5b-475e-816f-bfee5a3fce73
+urlParameters: []

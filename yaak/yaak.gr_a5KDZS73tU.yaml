@@ -1,0 +1,22 @@
+type: grpc_request
+model: grpc_request
+id: gr_a5KDZS73tU
+createdAt: 2025-11-07T09:41:09.403124500
+updatedAt: 2025-11-07T09:42:04.640285600
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_bnj3ZTPWPB
+authenticationType: null
+authentication: {}
+description: ''
+message: |-
+  {
+      "task_id": "",
+      "status": "PENDING",
+      "output_parameters": null
+  }
+metadata: []
+method: NotifyTaskStatus
+name: ''
+service: engine.TaskService
+sortPriority: 3000.0
+url: ${[ baseURL ]}

@@ -1,0 +1,27 @@
+type: http_request
+model: http_request
+id: rq_LmDFEX7TXL
+createdAt: 2025-11-07T09:30:20.465928
+updatedAt: 2025-11-07T09:30:25.267796700
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_TqVXkoLnYe
+authentication: {}
+authenticationType: null
+body:
+  text: |-
+    {
+        "name": "test",
+        "isRelease": true
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Search
+sortPriority: 2.0
+url: ${[baseURL]}/api/workflow-definitions/search
+urlParameters: []

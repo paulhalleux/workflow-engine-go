@@ -1,0 +1,26 @@
+type: http_request
+model: http_request
+id: rq_4jr7z37EeM
+createdAt: 2025-11-07T09:30:20.465663300
+updatedAt: 2025-11-07T09:30:20.465663700
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_TqVXkoLnYe
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: GetAll
+sortPriority: 1.0
+url: ${[baseURL]}/api/workflow-definitions
+urlParameters:
+- enabled: false
+  name: offset
+  value: '0'
+  id: null
+- enabled: false
+  name: limit
+  value: '10'
+  id: null

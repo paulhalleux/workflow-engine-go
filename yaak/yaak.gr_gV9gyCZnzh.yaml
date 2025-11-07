@@ -1,0 +1,23 @@
+type: grpc_request
+model: grpc_request
+id: gr_gV9gyCZnzh
+createdAt: 2025-11-07T09:38:58.800944800
+updatedAt: 2025-11-07T09:41:10.701979100
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_bnj3ZTPWPB
+authenticationType: null
+authentication: {}
+description: ''
+message: |-
+  {
+      "workflow_definition_id": "dd95db02-bf5b-475e-816f-bfee5a3fce73",
+      "input_parameters": {
+          "message": "MyMessage"
+      }
+  }
+metadata: []
+method: StartWorkflow
+name: ''
+service: engine.EngineService
+sortPriority: 2000.0
+url: ${[ baseURL ]}

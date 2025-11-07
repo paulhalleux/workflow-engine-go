@@ -1,0 +1,20 @@
+type: grpc_request
+model: grpc_request
+id: gr_3j99skYYoK
+createdAt: 2025-11-07T09:35:01.576036
+updatedAt: 2025-11-07T09:41:10.674655300
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_bnj3ZTPWPB
+authenticationType: null
+authentication: {}
+description: ''
+message: |-
+  {
+      "name": "echo-agent"
+  }
+metadata: []
+method: Ping
+name: ''
+service: engine.EngineService
+sortPriority: 0.0
+url: ${[ baseURL ]}

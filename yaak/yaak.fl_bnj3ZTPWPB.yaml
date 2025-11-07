@@ -1,0 +1,13 @@
+type: folder
+model: folder
+id: fl_bnj3ZTPWPB
+createdAt: 2025-11-07T09:31:49.475921500
+updatedAt: 2025-11-07T09:31:51.652367600
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_BbdK8n5BAn
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+name: Engine
+sortPriority: 1000.0

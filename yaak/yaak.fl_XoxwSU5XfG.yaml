@@ -1,0 +1,13 @@
+type: folder
+model: folder
+id: fl_XoxwSU5XfG
+createdAt: 2025-11-07T09:30:20.467380500
+updatedAt: 2025-11-07T10:01:35.060302700
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_DrZeRGUZSw
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+name: Step Instances
+sortPriority: 4000.0

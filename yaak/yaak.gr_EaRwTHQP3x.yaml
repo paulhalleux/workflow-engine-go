@@ -1,0 +1,21 @@
+type: grpc_request
+model: grpc_request
+id: gr_EaRwTHQP3x
+createdAt: 2025-11-07T09:42:08.600125100
+updatedAt: 2025-11-07T09:42:39.293798700
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_bnj3ZTPWPB
+authenticationType: null
+authentication: {}
+description: ''
+message: |-
+  {
+      "task_id": "",
+      "progress": 0
+  }
+metadata: []
+method: NotifyTaskProgress
+name: TaskService/NotifyTaskProgress
+service: engine.TaskService
+sortPriority: 3000.001
+url: ${[ baseURL ]}

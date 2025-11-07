@@ -39,9 +39,10 @@ func (ws *StepExecutionService) StartStep(
 	}
 
 	exec := &StepExecution{
-		StepInstanceID: instance.ID,
-		StepDef:        stepDefinition,
-		Input:          instance.Input.ToMap(),
+		StepInstanceID:     instance.ID,
+		WorkflowInstanceID: workflowInstance.ID,
+		StepDef:            stepDefinition,
+		Input:              instance.Input.ToMap(),
 	}
 
 	err = ws.stepExecutor.Enqueue(exec)

@@ -1,0 +1,13 @@
+type: folder
+model: folder
+id: fl_xq6ZKPbEAu
+createdAt: 2025-11-07T09:30:20.467325900
+updatedAt: 2025-11-07T10:01:35.053516700
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_DrZeRGUZSw
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+name: Workflow Instances
+sortPriority: 3000.0

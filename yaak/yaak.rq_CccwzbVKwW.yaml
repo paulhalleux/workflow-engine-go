@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_CccwzbVKwW
+createdAt: 2025-11-07T10:01:48.015392800
+updatedAt: 2025-11-07T10:02:07.339736300
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_yv5nkiJF5r
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: GetAll
+sortPriority: -0.0001
+url: ${[ baseURL ]}/api/task-definitions
+urlParameters: []

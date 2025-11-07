@@ -1,0 +1,14 @@
+type: workspace
+model: workspace
+id: wk_Kz3U9tLuVH
+createdAt: 2025-11-07T09:30:20.451823700
+updatedAt: 2025-11-07T09:30:20.451824500
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+name: Engine Go
+encryptionKeyChallenge: null
+settingValidateCertificates: true
+settingFollowRedirects: true
+settingRequestTimeout: 0

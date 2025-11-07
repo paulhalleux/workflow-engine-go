@@ -9,6 +9,16 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/models"
 )
 
+type StepResult struct {
+	StepID string
+	Output *map[string]interface{}
+}
+
+type WorkflowExecutionResult struct {
+	Success bool
+	Message *string
+}
+
 type WorkflowExecution struct {
 	WorkflowInstanceID string
 }
@@ -17,6 +27,9 @@ type WorkflowExecutor struct {
 	workflowInstancesService   *WorkflowInstanceService
 	workflowDefinitionsService *WorkflowDefinitionsService
 	stepExecutionService       *StepExecutionService
+
+	workflowChan           *map[string]chan *WorkflowExecutionResult
+	workflowStepOutputChan *map[string]chan *StepResult
 
 	taskQueue chan *WorkflowExecution
 	sem       chan struct{}
@@ -27,11 +40,16 @@ func NewWorkflowExecutor(
 	workflowDefinitionsService *WorkflowDefinitionsService,
 	workflowInstancesService *WorkflowInstanceService,
 	stepExecutionService *StepExecutionService,
+	workflowChan *map[string]chan *WorkflowExecutionResult,
+	workflowStepOutputChan *map[string]chan *StepResult,
 ) *WorkflowExecutor {
 	return &WorkflowExecutor{
 		workflowInstancesService:   workflowInstancesService,
 		workflowDefinitionsService: workflowDefinitionsService,
 		stepExecutionService:       stepExecutionService,
+
+		workflowChan:           workflowChan,
+		workflowStepOutputChan: workflowStepOutputChan,
 
 		taskQueue: make(chan *WorkflowExecution, config.MaxWorkflowQueueSize),
 		sem:       make(chan struct{}, config.MaxParallelWorkflows),
@@ -85,6 +103,18 @@ func (we *WorkflowExecutor) startWorkflowInstance(exec *WorkflowExecution) {
 	}
 }
 
+func (we *WorkflowExecutor) completeWorkflowInstance(instance *models.WorkflowInstance, taskOutputs *map[string]*map[string]interface{}) {
+	err := we.workflowInstancesService.Update(&models.WorkflowInstance{
+		ID:     instance.ID,
+		Status: models.WorkflowStatusCompleted,
+		Output: nil,
+	})
+
+	if err != nil {
+		log.Println("Error updating workflow status to completed:", err)
+	}
+}
+
 func (we *WorkflowExecutor) startWorkflow(exec *WorkflowExecution) {
 	instance, err := we.workflowInstancesService.GetByID(exec.WorkflowInstanceID)
 	if err != nil {
@@ -104,6 +134,15 @@ func (we *WorkflowExecutor) startWorkflow(exec *WorkflowExecution) {
 		return
 	}
 
+	stepOutputMap := make(map[string]*map[string]interface{})
+	stepOutputChan := make(chan *StepResult, 100)
+
+	(*we.workflowStepOutputChan)[instance.ID] = stepOutputChan
+	defer delete(*we.workflowStepOutputChan, instance.ID)
+
+	(*we.workflowChan)[instance.ID] = make(chan *WorkflowExecutionResult)
+	defer delete(*we.workflowChan, instance.ID)
+
 	log.Printf("Starting workflow instance %s with first step %s", instance.ID, firstStep.Name)
 	id, err := we.stepExecutionService.StartStep(firstStep, instance)
 	if err != nil {
@@ -113,4 +152,20 @@ func (we *WorkflowExecutor) startWorkflow(exec *WorkflowExecution) {
 
 	log.Printf("Started first step instance %s for workflow instance %s", *id, instance.ID)
 	we.startWorkflowInstance(exec)
+
+	for {
+		select {
+		case stepOutput := <-stepOutputChan:
+			log.Printf("Workflow instance %s received output from step %s", instance.ID, stepOutput.StepID)
+			stepOutputMap[stepOutput.StepID] = stepOutput.Output
+		case result := <-(*we.workflowChan)[instance.ID]:
+			log.Printf("Workflow instance %s received stop signal", instance.ID)
+			if result.Success {
+				we.completeWorkflowInstance(instance, &stepOutputMap)
+			} else {
+				we.failWorkflowInstance(exec, *result.Message)
+			}
+			return
+		}
+	}
 }

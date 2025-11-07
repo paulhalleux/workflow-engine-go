@@ -40,7 +40,9 @@ type Engine struct {
 	workflowExecutor *service.WorkflowExecutor
 	stepExecutor     *service.StepExecutor
 
-	agentTaskChan map[string]chan *proto.NotifyTaskStatusRequest
+	agentTaskChan          map[string]chan *proto.NotifyTaskStatusRequest
+	workflowChan           map[string]chan *service.WorkflowExecutionResult
+	workflowStepOutputChan map[string]chan *service.StepResult
 }
 
 func NewEngine(
@@ -63,20 +65,22 @@ func NewEngine(
 	workflowInstanceService := service.NewWorkflowInstanceService(pers)
 	stepInstanceService := service.NewStepInstanceService(pers)
 
-	stepExecutor := service.NewStepExecutor(config, stepInstanceService)
+	agentTaskChan := make(map[string]chan *proto.NotifyTaskStatusRequest)
+	workflowChan := make(map[string]chan *service.WorkflowExecutionResult)
+	workflowStepOutputChan := make(map[string]chan *service.StepResult)
+
+	stepExecutor := service.NewStepExecutor(config, stepInstanceService, &workflowChan, &workflowStepOutputChan)
 	stepExecutionService := service.NewStepExecutionService(
 		pers,
 		stepExecutor,
 	)
 
-	workflowExecutor := service.NewWorkflowExecutor(config, workflowDefinitionService, workflowInstanceService, stepExecutionService)
+	workflowExecutor := service.NewWorkflowExecutor(config, workflowDefinitionService, workflowInstanceService, stepExecutionService, &workflowChan, &workflowStepOutputChan)
 	workflowExecutionService := service.NewWorkflowExecutionService(
 		workflowDefinitionService,
 		pers,
 		workflowExecutor,
 	)
-
-	agentTaskChan := make(map[string]chan *proto.NotifyTaskStatusRequest)
 
 	stepExecutor.RegisterTypeExecutor(models.StepTypeTask, service.NewAgentStepExecutor(agentRegistry, agentTaskChan))
 
@@ -97,7 +101,9 @@ func NewEngine(
 		workflowExecutor: workflowExecutor,
 		stepExecutor:     stepExecutor,
 
-		agentTaskChan: agentTaskChan,
+		agentTaskChan:          agentTaskChan,
+		workflowChan:           workflowChan,
+		workflowStepOutputChan: workflowStepOutputChan,
 	}
 }
 

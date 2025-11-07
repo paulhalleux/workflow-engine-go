@@ -1,0 +1,23 @@
+type: grpc_request
+model: grpc_request
+id: gr_yL9We5qhpX
+createdAt: 2025-11-07T09:34:06.879978600
+updatedAt: 2025-11-07T09:34:17.801716500
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_uno9H8jCgX
+authenticationType: null
+authentication: {}
+description: ''
+message: |
+  {
+      "task_name": "echo",
+      "input_parameters": {
+          "message": "bar"
+      }
+  }
+metadata: []
+method: StartTask
+name: ''
+service: agent.AgentService
+sortPriority: 1000.0
+url: ${[ baseURL ]}

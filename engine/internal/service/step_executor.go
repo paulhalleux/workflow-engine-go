@@ -21,14 +21,18 @@ type StepTypeExecutor interface {
 }
 
 type StepExecution struct {
-	StepInstanceID string
-	StepDef        *models.WorkflowStepDefinition
-	Input          *map[string]interface{}
+	StepInstanceID     string
+	WorkflowInstanceID string
+	StepDef            *models.WorkflowStepDefinition
+	Input              *map[string]interface{}
 }
 
 type StepExecutor struct {
 	stepInstanceService *StepInstanceService
 	typeExecutors       map[models.StepType]StepTypeExecutor
+
+	workflowChan           *map[string]chan *WorkflowExecutionResult
+	workflowStepOutputChan *map[string]chan *StepResult
 
 	taskQueue chan *StepExecution
 	sem       chan struct{}
@@ -37,10 +41,15 @@ type StepExecutor struct {
 func NewStepExecutor(
 	config *internal.WorkflowEngineConfig,
 	stepInstanceService *StepInstanceService,
+	workflowChan *map[string]chan *WorkflowExecutionResult,
+	workflowStepOutputChan *map[string]chan *StepResult,
 ) *StepExecutor {
 	return &StepExecutor{
 		stepInstanceService: stepInstanceService,
 		typeExecutors:       make(map[models.StepType]StepTypeExecutor),
+
+		workflowChan:           workflowChan,
+		workflowStepOutputChan: workflowStepOutputChan,
 
 		taskQueue: make(chan *StepExecution, config.MaxWorkflowQueueSize),
 		sem:       make(chan struct{}, config.MaxParallelWorkflows),
@@ -81,6 +90,11 @@ func (we *StepExecutor) Start(ctx context.Context) {
 }
 
 func (we *StepExecutor) failStepInstance(exec *StepExecution, messages string) {
+	(*we.workflowChan)[exec.WorkflowInstanceID] <- &WorkflowExecutionResult{
+		Success: false,
+		Message: &messages,
+	}
+
 	err := we.stepInstanceService.Update(&models.StepInstance{
 		ID:           exec.StepInstanceID,
 		Status:       models.StepStatusFailed,
@@ -146,9 +160,20 @@ func (we *StepExecutor) startStep(exec *StepExecution) {
 	log.Println("Completed step instance:", stepInstance.ID, "with result:", result)
 	we.completeStepInstance(stepInstance, result)
 
-	if result.NextStepIds != nil {
+	outputChan, exists := (*we.workflowStepOutputChan)[stepInstance.WorkflowInstanceID]
+	if exists {
+		outputChan <- &StepResult{
+			StepID: exec.StepDef.Name,
+			Output: result.Output,
+		}
+	}
+
+	if result.NextStepIds != nil && len(*result.NextStepIds) > 0 {
 		log.Println("Next steps to execute:", *result.NextStepIds)
 	} else {
 		log.Println("No next steps to execute.")
+		(*we.workflowChan)[stepInstance.WorkflowInstanceID] <- &WorkflowExecutionResult{
+			Success: true,
+		}
 	}
 }

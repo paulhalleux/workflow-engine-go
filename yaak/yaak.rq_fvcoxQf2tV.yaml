@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_fvcoxQf2tV
+createdAt: 2025-11-07T09:46:35.210693100
+updatedAt: 2025-11-07T10:01:39.123585900
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_nPPM58kzMV
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: GetAll
+sortPriority: 0.0
+url: ${[ baseURL ]}/api/agents
+urlParameters: []

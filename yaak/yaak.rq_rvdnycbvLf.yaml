@@ -1,0 +1,23 @@
+type: http_request
+model: http_request
+id: rq_rvdnycbvLf
+createdAt: 2025-11-07T09:30:20.466239500
+updatedAt: 2025-11-07T09:30:20.466239600
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_TqVXkoLnYe
+authentication: {}
+authenticationType: null
+body:
+  text: "{\r\n    \"input\": {\r\n        \"a\": \"c\"\r\n    }\r\n}"
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Start
+sortPriority: 5.0
+url: ${[baseURL]}/api/workflow-definitions/0651738a-2063-49d6-91f6-40039561c0ed/_start
+urlParameters: []

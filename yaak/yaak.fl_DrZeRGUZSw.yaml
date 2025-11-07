@@ -1,0 +1,13 @@
+type: folder
+model: folder
+id: fl_DrZeRGUZSw
+createdAt: 2025-11-07T09:39:31.800045300
+updatedAt: 2025-11-07T09:39:34.090832700
+workspaceId: wk_Kz3U9tLuVH
+folderId: null
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+name: HTTP
+sortPriority: 0.0

@@ -1,0 +1,13 @@
+type: folder
+model: folder
+id: fl_BbdK8n5BAn
+createdAt: 2025-11-07T09:31:27.308852
+updatedAt: 2025-11-07T09:39:34.115192100
+workspaceId: wk_Kz3U9tLuVH
+folderId: null
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+name: gRPC
+sortPriority: 1000.0
