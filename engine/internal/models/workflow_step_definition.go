@@ -8,7 +8,7 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
-type StepType string
+type StepType string // @name StepType
 
 const (
 	StepTypeTask     StepType = "task"
@@ -24,7 +24,7 @@ type WorkflowStepDefinition struct {
 	Name             string                   `json:"name"`
 	Description      string                   `json:"description"`
 	Parameters       StepDefinitionParameters `json:"parameters"`
-	Metadata         map[string]interface{}   `json:"metadata,omitempty"`
+	Metadata         utils.UnknownJson        `json:"metadata,omitempty"`
 	Type             StepType                 `json:"type"`
 	TaskConfig       *TaskConfig              `json:"taskConfig,omitempty"`
 	WorkflowConfig   *WorkflowConfig          `json:"workflowConfig,omitempty"`
@@ -32,50 +32,50 @@ type WorkflowStepDefinition struct {
 	DecisionConfig   *DecisionConfig          `json:"decisionConfig,omitempty"`
 	ForkConfig       *ForkConfig              `json:"forkConfig,omitempty"`
 	JoinConfig       *JoinConfig              `json:"joinConfig,omitempty"`
-}
+} // @name WorkflowStepDefinition
 
 type TaskConfig struct {
 	TaskDefinitionID string  `json:"taskDefinitionId"`
 	NextStepID       *string `json:"nextStepId"`
-}
+} // @name TaskConfig
 
 type WorkflowConfig struct {
 	WorkflowDefinitionID string  `json:"workflowDefinitionId"`
 	NextStepID           *string `json:"nextStepId"`
-}
+} // @name WorkflowConfig
 
 type WaitConfig struct {
 	DurationSeconds StepDefinitionParameter `json:"durationSeconds"`
 	NextStepID      *string                 `json:"nextStepId"`
-}
+} // @name WaitConfig
 
 type JoinConfig struct {
 	IncomingStepIDs []string `json:"incomingStepIds"`
 	NextStepID      *string  `json:"nextStepId"`
-}
+} // @name JoinConfig
 
 type ForkBranch struct {
 	Name        *string `json:"name"`
 	Description *string `json:"description"`
 	NextStepID  string  `json:"nextStepId"`
-}
+} // @name ForkBranch
 
 type ForkConfig struct {
 	Branches []ForkBranch `json:"branches"`
-}
+} // @name ForkConfig
 
 type DecisionCase struct {
 	Name        *string `json:"name"`
 	Description *string `json:"description"`
 	Condition   string  `json:"condition"`
 	NextStepID  string  `json:"nextStepId"`
-}
+} // @name DecisionCase
 
 type DecisionConfig struct {
 	Cases []DecisionCase `json:"cases"`
-}
+} // @name DecisionConfig
 
-type WorkflowStepDefinitionList []WorkflowStepDefinition
+type WorkflowStepDefinitionList []WorkflowStepDefinition // @name WorkflowStepDefinitionList
 
 func (list *WorkflowStepDefinitionList) Value() (driver.Value, error) {
 	return json.Marshal(list)

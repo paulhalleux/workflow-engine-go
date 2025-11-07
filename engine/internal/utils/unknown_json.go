@@ -6,7 +6,7 @@ import (
 	"errors"
 )
 
-type UnknownJson map[string]interface{}
+type UnknownJson map[string]interface{} // @name UnknownJson
 
 func (a *UnknownJson) Value() (driver.Value, error) {
 	return json.Marshal(a)

@@ -4,7 +4,7 @@ type UpdateWorkflowDefRequest struct {
 	Name        *string                     `json:"name"`
 	Description *string                     `json:"description"`
 	Steps       *WorkflowStepDefinitionList `json:"steps"`
-}
+} // @name UpdateWorkflowDefRequest
 
 func (r *UpdateWorkflowDefRequest) ToWorkflowDefinition(def *WorkflowDefinition) *WorkflowDefinition {
 	if r.Name != nil {

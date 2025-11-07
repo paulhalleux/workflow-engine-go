@@ -6,14 +6,14 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
-type StepStatus string
+type StepStatus string // @name StepStatus
 
 const (
-	StepStatusPending   StepStatus = "PENDING"
-	StepStatusRunning   StepStatus = "RUNNING"
-	StepStatusCompleted StepStatus = "COMPLETED"
-	StepStatusFailed    StepStatus = "FAILED"
-	StepStatusCancelled StepStatus = "CANCELLED"
+	StepStatusPending   StepStatus = "pending"
+	StepStatusRunning   StepStatus = "running"
+	StepStatusCompleted StepStatus = "completed"
+	StepStatusFailed    StepStatus = "failed"
+	StepStatusCancelled StepStatus = "cancelled"
 )
 
 type StepInstance struct {
@@ -30,4 +30,4 @@ type StepInstance struct {
 	UpdatedAt            time.Time          `gorm:"autoUpdateTime" json:"updatedAt"`
 	StartedAt            *time.Time         `json:"startedAt,omitempty"`
 	CompletedAt          *time.Time         `json:"completedAt,omitempty"`
-}
+} // @name StepInstance

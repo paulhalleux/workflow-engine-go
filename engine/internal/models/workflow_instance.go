@@ -6,7 +6,7 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
-type WorkflowStatus string
+type WorkflowStatus string // @name WorkflowStatus
 
 const (
 	WorkflowStatusPending   WorkflowStatus = "PENDING"
@@ -27,4 +27,4 @@ type WorkflowInstance struct {
 	UpdatedAt            time.Time          `gorm:"autoUpdateTime" json:"updatedAt"`
 	StartedAt            *time.Time         `json:"startedAt,omitempty"`
 	CompletedAt          *time.Time         `json:"completedAt,omitempty"`
-}
+} // @name WorkflowInstance

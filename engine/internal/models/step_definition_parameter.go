@@ -1,6 +1,6 @@
 package models
 
-type StepParameterType string
+type StepParameterType string // @name StepParameterType
 
 const (
 	StepParameterTypeConstant   StepParameterType = "constant"
@@ -11,9 +11,9 @@ const (
 type StepDefinitionParameter struct {
 	Type  StepParameterType `json:"type"`
 	Value interface{}       `json:"value"`
-}
+} // @name StepDefinitionParameter
 
-type StepDefinitionParameters map[string]StepDefinitionParameter
+type StepDefinitionParameters map[string]StepDefinitionParameter // @name StepDefinitionParameters
 
 func (sdp StepDefinitionParameters) ToResolved(
 	workflowInput *map[string]interface{},

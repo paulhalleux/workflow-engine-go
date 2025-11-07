@@ -23,6 +23,14 @@ func (h *WorkflowInstancesHandlers) Register(rg *gin.RouterGroup) {
 	rg.GET("/workflow-instances/:id", h.getByID)
 }
 
+// getAll
+// @Id 			getAllWorkflowInstances
+// @Summary 	Get all workflow instances
+// @Description Get all workflow instances
+// @Tags 		Workflow Instances
+// @Produce 	json
+// @Success 	200 {array} models.WorkflowInstance
+// @Router 		/workflow-instances [get]
 func (h *WorkflowInstancesHandlers) getAll(ctx *gin.Context) {
 	paginate := utils.Paginate(ctx)
 	defs, err := h.service.GetAll(&paginate)
@@ -33,6 +41,15 @@ func (h *WorkflowInstancesHandlers) getAll(ctx *gin.Context) {
 	ctx.JSON(200, defs)
 }
 
+// getByID
+// @Id 			getWorkflowInstanceByID
+// @Summary 	Get a workflow instance by ID
+// @Description Get a workflow instance by ID
+// @Tags 		Workflow Instances
+// @Produce 	json
+// @Param 		id path string true "Workflow Instance ID"
+// @Success 	200 {object} models.WorkflowInstance
+// @Router 		/workflow-instances/{id} [get]
 func (h *WorkflowInstancesHandlers) getByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	def, err := h.service.GetByID(id)

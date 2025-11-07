@@ -8,6 +8,8 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine"
 )
 
+// @version 1.0
+// @title Workflow Engine API
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {

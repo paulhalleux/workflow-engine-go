@@ -16,12 +16,12 @@ type WorkflowDefinition struct {
 	IsDraft          bool                             `gorm:"not null;default:true" json:"isDraft"`
 	IsEnabled        bool                             `gorm:"not null;default:false" json:"isEnabled"`
 	InputParameters  *WorkflowParameterDefinitionList `gorm:"type:jsonb" json:"inputParameters"`
-	OutputParameters *WorkflowParameterDefinitionList `gorm:"type:jsonb" json:"outputParameters"`
+	OutputParameters *interface{}                     `gorm:"type:jsonb" json:"outputParameters"`
 	Steps            *WorkflowStepDefinitionList      `gorm:"type:jsonb;not null" json:"steps"`
 	CreatedAt        time.Time                        `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt        time.Time                        `gorm:"autoUpdateTime" json:"updatedAt"`
 	Metadata         *utils.UnknownJson               `gorm:"type:jsonb" json:"metadata,omitempty"`
-}
+} // @name WorkflowDefinition
 
 func (def WorkflowDefinition) NewInstance(input *map[string]interface{}) *WorkflowInstance {
 	return &WorkflowInstance{
