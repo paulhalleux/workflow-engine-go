@@ -131,11 +131,15 @@ func (e *Engine) startHttpServer() {
 	workflowDefinitionHandlers := httpapi.NewWorkflowDefinitionsHandlers(e.workflowDefinitionService)
 	workflowInstanceHandlers := httpapi.NewWorkflowInstancesHandlers(e.workflowInstanceService)
 	stepInstanceHandlers := httpapi.NewStepInstancesHandlers(e.stepInstanceService)
+	agentsHandlers := httpapi.NewAgentsHandlers(e.agentRegistry)
+	taskDefinitionsHandlers := httpapi.NewTaskDefinitionsHandlers(e.agentRegistry)
 
 	// Define HTTP routes and handlers here
 	workflowDefinitionHandlers.Register(api)
 	workflowInstanceHandlers.Register(api)
 	stepInstanceHandlers.Register(api)
+	agentsHandlers.Register(api)
+	taskDefinitionsHandlers.Register(api)
 
 	addr := joinHostPort(e.Config.HttpAddress, e.Config.HttpPort)
 	log.Printf("[Engine] HTTP server running on %s", addr)

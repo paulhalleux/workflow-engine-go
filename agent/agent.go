@@ -43,7 +43,7 @@ func NewWorkflowAgent(config *internal.WorkflowAgentConfig) *WorkflowAgent {
 	}
 
 	taskDefinitionRegistry := internal.NewTaskDefinitionRegistry()
-	taskExecutor := internal.NewTaskExecutor(taskDefinitionRegistry, engineGrpcConnection)
+	taskExecutor := internal.NewTaskExecutor(config, taskDefinitionRegistry, engineGrpcConnection)
 	taskExecutionService := internal.NewTaskExecutionService(
 		taskExecutor,
 		engineGrpcConnection,

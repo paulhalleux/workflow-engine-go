@@ -31,6 +31,7 @@ func (e *EngineServiceServer) RegisterAgent(_ context.Context, req *proto.Regist
 		req.Name,
 		internal.RegisteredAgent{
 			Name:           req.Name,
+			Version:        req.Version,
 			Address:        req.Address,
 			Port:           req.Port,
 			Protocol:       req.Protocol,

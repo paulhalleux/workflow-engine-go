@@ -1,0 +1,2 @@
+- [ ] Ping agents and store their status
+- [ ] Force register agent from engine
