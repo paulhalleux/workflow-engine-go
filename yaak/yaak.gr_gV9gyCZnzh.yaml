@@ -2,7 +2,7 @@ type: grpc_request
 model: grpc_request
 id: gr_gV9gyCZnzh
 createdAt: 2025-11-07T09:38:58.800944800
-updatedAt: 2025-11-07T19:57:23.479430
+updatedAt: 2025-11-07T21:28:42.410506
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_bnj3ZTPWPB
 authenticationType: null
@@ -10,7 +10,7 @@ authentication: {}
 description: ''
 message: |-
   {
-      "workflow_definition_id": "915be79c-826a-48df-9754-3d8cdbb6e30f",
+      "workflow_definition_id": "8a003687-ce17-477d-a9ea-04ff2936a68d",
       "input_parameters": {
           "message": "MyMessage"
       }

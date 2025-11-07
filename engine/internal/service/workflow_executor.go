@@ -22,6 +22,7 @@ type WorkflowExecutionResult struct {
 
 type WorkflowExecution struct {
 	WorkflowInstanceID string
+	StepCompletionChan chan string
 }
 
 type WorkflowExecutor struct {
@@ -147,7 +148,7 @@ func (we *WorkflowExecutor) startWorkflow(exec *WorkflowExecution) {
 	defer delete(*we.workflowChan, instance.ID)
 
 	log.Printf("Starting workflow instance %s with first step %s", instance.ID, firstStep.Name)
-	id, err := we.stepExecutionService.StartStep(firstStep.StepDefinitionID, instance, definition, waitGroup)
+	id, err := we.stepExecutionService.StartStep(firstStep.StepDefinitionID, instance, definition, exec, waitGroup)
 	if err != nil {
 		we.failWorkflowInstance(exec, "failed to start first step")
 		return

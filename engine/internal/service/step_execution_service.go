@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"sync"
 
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/errors"
@@ -27,6 +28,7 @@ func (ws *StepExecutionService) StartStep(
 	stepDefinitionID string,
 	workflowInstance *models.WorkflowInstance,
 	workflowDefinition *models.WorkflowDefinition,
+	workflowExecution *WorkflowExecution,
 	waitGroup *sync.WaitGroup,
 ) (*string, error) {
 	stepDefinition, ok := workflowDefinition.GetStepByID(stepDefinitionID)
@@ -53,15 +55,18 @@ func (ws *StepExecutionService) StartStep(
 		WorkflowInstanceID: workflowInstance.ID,
 		StepDef:            stepDefinition,
 		Input:              instance.Input.ToMap(),
+		WorkflowExecution:  workflowExecution,
 		Next: func(stepId string) error {
-			_, err := ws.StartStep(stepId, workflowInstance, workflowDefinition, waitGroup)
+			_, err := ws.StartStep(stepId, workflowInstance, workflowDefinition, workflowExecution, waitGroup)
 			if err != nil {
 				return err
 			}
+			log.Printf("Enqueued next step %s for workflow instance %s", stepId, workflowInstance.ID)
 			return nil
 		},
 		End: func() {
 			waitGroup.Done()
+			workflowExecution.StepCompletionChan <- instance.StepID
 		},
 	}
 

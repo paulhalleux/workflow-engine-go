@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_Hr6zQZpCPe
 createdAt: 2025-11-07T09:30:20.466150200
-updatedAt: 2025-11-07T19:57:14.928658600
+updatedAt: 2025-11-07T21:18:55.474708300
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_TqVXkoLnYe
 authentication: {}
@@ -11,13 +11,14 @@ body:
   text: |-
     {
       "name": "fork",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "steps": [
         {
           "stepDefinitionId": "fork",
           "name": "Fork",
           "type": "fork",
           "forkConfig": {
+            "joinStepId": "join",
             "branches": [
               {
                 "nextStepId": "wait1"
@@ -48,6 +49,14 @@ body:
               "type": "workflow",
               "value": "duration"
             }
+          }
+        },
+        {
+          "stepDefinitionId": "join",
+          "name": "Join",
+          "type": "join",
+          "joinConfig": {
+            "incomingStepIds": ["wait1", "wait2"]
           }
         }
       ]

@@ -23,6 +23,7 @@ type StepTypeExecutor interface {
 type StepExecution struct {
 	StepInstanceID     string
 	WorkflowInstanceID string
+	WorkflowExecution  *WorkflowExecution
 	StepDef            *models.WorkflowStepDefinition
 	Input              *map[string]interface{}
 	Next               func(stepId string) error
@@ -54,7 +55,7 @@ func NewStepExecutor(
 		workflowStepOutputChan: workflowStepOutputChan,
 
 		taskQueue: make(chan *StepExecution, config.MaxWorkflowQueueSize),
-		sem:       make(chan struct{}, config.MaxParallelWorkflows),
+		sem:       make(chan struct{}, config.MaxParallelSteps),
 	}
 }
 

@@ -36,7 +36,9 @@ func (ws *WorkflowExecutionService) StartWorkflow(definitionID string, parameter
 
 	exec := &WorkflowExecution{
 		WorkflowInstanceID: instance.ID,
+		StepCompletionChan: make(chan string, len(*def.Steps)),
 	}
+
 	err = ws.workflowExecutor.Enqueue(exec)
 	if err != nil {
 		return nil, err

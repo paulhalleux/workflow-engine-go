@@ -85,6 +85,7 @@ func NewEngine(
 	stepExecutor.RegisterTypeExecutor(models.StepTypeTask, service.NewAgentStepExecutor(agentRegistry, agentTaskChan))
 	stepExecutor.RegisterTypeExecutor(models.StepTypeFork, service.NewForkStepExecutor())
 	stepExecutor.RegisterTypeExecutor(models.StepTypeWait, service.NewWaitStepExecutor())
+	stepExecutor.RegisterTypeExecutor(models.StepTypeJoin, service.NewJoinStepExecutor())
 
 	return &Engine{
 		Config:  config,

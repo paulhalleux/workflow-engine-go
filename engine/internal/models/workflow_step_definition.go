@@ -61,7 +61,8 @@ type ForkBranch struct {
 } // @name ForkBranch
 
 type ForkConfig struct {
-	Branches []ForkBranch `json:"branches"`
+	JoinStepID string       `json:"joinStepId"`
+	Branches   []ForkBranch `json:"branches"`
 } // @name ForkConfig
 
 type DecisionCase struct {
@@ -96,7 +97,7 @@ func (def WorkflowStepDefinition) NewInstance(
 ) *StepInstance {
 	return &StepInstance{
 		ID:                   uuid.New().String(),
-		StepID:               def.Name,
+		StepID:               def.StepDefinitionID,
 		WorkflowDefinitionID: workflowDefinitionId,
 		WorkflowInstanceID:   workflowInstanceId,
 		Status:               StepStatusPending,
