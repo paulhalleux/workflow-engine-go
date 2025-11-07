@@ -2,3 +2,4 @@
 - [ ] Force register agent from engine
 - [ ] Retry enqueueing steps and workflows
 - [ ] Cascade delete
+- [ ] Fix indexes

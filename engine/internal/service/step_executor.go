@@ -25,6 +25,8 @@ type StepExecution struct {
 	WorkflowInstanceID string
 	StepDef            *models.WorkflowStepDefinition
 	Input              *map[string]interface{}
+	Next               func(stepId string) error
+	End                func()
 }
 
 type StepExecutor struct {
@@ -151,6 +153,7 @@ func (we *StepExecutor) startStep(exec *StepExecution) {
 	we.startStepInstance(exec)
 
 	result, err := executor.Execute(exec)
+	defer exec.End()
 	if err != nil {
 		log.Println("Error executing step instance:", err)
 		we.failStepInstance(exec, fmt.Sprintf("Step execution failed: %s", err.Error()))
@@ -170,10 +173,15 @@ func (we *StepExecutor) startStep(exec *StepExecution) {
 
 	if result.NextStepIds != nil && len(*result.NextStepIds) > 0 {
 		log.Println("Next steps to execute:", *result.NextStepIds)
-	} else {
-		log.Println("No next steps to execute.")
-		(*we.workflowChan)[stepInstance.WorkflowInstanceID] <- &WorkflowExecutionResult{
-			Success: true,
+		for _, nextStepId := range *result.NextStepIds {
+			err := exec.Next(nextStepId)
+			if err != nil {
+				message := fmt.Sprintf("failed to execute step: %s", nextStepId)
+				(*we.workflowChan)[stepInstance.WorkflowInstanceID] <- &WorkflowExecutionResult{
+					Success: false,
+					Message: &message,
+				}
+			}
 		}
 	}
 }

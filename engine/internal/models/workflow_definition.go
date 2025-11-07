@@ -38,3 +38,15 @@ func (def WorkflowDefinition) GetFirstStep() (*WorkflowStepDefinition, error) {
 	}
 	return &(*def.Steps)[0], nil
 }
+
+func (def WorkflowDefinition) GetStepByID(id string) (*WorkflowStepDefinition, bool) {
+	if def.Steps == nil {
+		return nil, false
+	}
+	for _, step := range *def.Steps {
+		if step.StepDefinitionID == id {
+			return &step, true
+		}
+	}
+	return nil, false
+}

@@ -2,13 +2,31 @@ type: http_request
 model: http_request
 id: rq_rvdnycbvLf
 createdAt: 2025-11-07T09:30:20.466239500
-updatedAt: 2025-11-07T09:30:20.466239600
+updatedAt: 2025-11-07T19:41:48.380720400
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_TqVXkoLnYe
 authentication: {}
 authenticationType: null
 body:
-  text: "{\r\n    \"input\": {\r\n        \"a\": \"c\"\r\n    }\r\n}"
+  text: |-
+    {
+        "name": "wait",
+        "version": "1.0.1",
+        "steps": [
+            {
+                "id": "wait",
+                "name": "Wait",
+                "description": "Wait task",
+                "type": "wait",
+                "waitConfig": {
+                    "durationSeconds": {
+                        "type": "workflow",
+                        "value": "duration"
+                    }
+                }
+            }
+        ]
+    }
 bodyType: application/json
 description: ''
 headers:

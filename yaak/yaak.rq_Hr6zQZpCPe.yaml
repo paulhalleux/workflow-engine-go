@@ -2,13 +2,56 @@ type: http_request
 model: http_request
 id: rq_Hr6zQZpCPe
 createdAt: 2025-11-07T09:30:20.466150200
-updatedAt: 2025-11-07T09:30:20.466150300
+updatedAt: 2025-11-07T19:57:14.928658600
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_TqVXkoLnYe
 authentication: {}
 authenticationType: null
 body:
-  text: "{\r\n    \"name\": \"wait\",\r\n    \"version\": \"1.0.1\",\r\n    \"steps\": [\r\n        {\r\n            \"id\": \"wait\",\r\n            \"name\": \"Wait\",\r\n            \"description\": \"Wait task\",\r\n            \"type\": \"wait\",\r\n            \"waitConfig\": {\r\n                \"durationSeconds\": {\r\n                    \"type\": \"workflow\",\r\n                    \"value\": \"duration\"\r\n                }\r\n            }\r\n        }\r\n    ]\r\n}"
+  text: |-
+    {
+      "name": "fork",
+      "version": "1.0.3",
+      "steps": [
+        {
+          "stepDefinitionId": "fork",
+          "name": "Fork",
+          "type": "fork",
+          "forkConfig": {
+            "branches": [
+              {
+                "nextStepId": "wait1"
+              },
+              {
+                "nextStepId": "wait2"
+              }
+            ]
+          }
+        },
+        {
+          "stepDefinitionId": "wait1",
+          "name": "Wait 1",
+          "type": "wait",
+          "waitConfig": {
+            "durationSeconds": {
+              "type": "workflow",
+              "value": "duration"
+            }
+          }
+        },
+        {
+          "stepDefinitionId": "wait2",
+          "name": "Wait 2",
+          "type": "wait",
+          "waitConfig": {
+            "durationSeconds": {
+              "type": "workflow",
+              "value": "duration"
+            }
+          }
+        }
+      ]
+    }
 bodyType: application/json
 description: ''
 headers:

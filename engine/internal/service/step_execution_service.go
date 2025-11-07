@@ -1,6 +1,9 @@
 package service
 
 import (
+	"sync"
+
+	"github.com/paulhalleux/workflow-engine-go/engine/internal/errors"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/persistence"
 )
@@ -21,9 +24,16 @@ func NewStepExecutionService(
 }
 
 func (ws *StepExecutionService) StartStep(
-	stepDefinition *models.WorkflowStepDefinition,
+	stepDefinitionID string,
 	workflowInstance *models.WorkflowInstance,
+	workflowDefinition *models.WorkflowDefinition,
+	waitGroup *sync.WaitGroup,
 ) (*string, error) {
+	stepDefinition, ok := workflowDefinition.GetStepByID(stepDefinitionID)
+	if !ok {
+		return nil, errors.ErrStepDefinitionNotFound
+	}
+
 	instance := stepDefinition.NewInstance(
 		workflowInstance.WorkflowDefinitionID,
 		workflowInstance.ID,
@@ -43,8 +53,19 @@ func (ws *StepExecutionService) StartStep(
 		WorkflowInstanceID: workflowInstance.ID,
 		StepDef:            stepDefinition,
 		Input:              instance.Input.ToMap(),
+		Next: func(stepId string) error {
+			_, err := ws.StartStep(stepId, workflowInstance, workflowDefinition, waitGroup)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+		End: func() {
+			waitGroup.Done()
+		},
 	}
 
+	waitGroup.Add(1)
 	err = ws.stepExecutor.Enqueue(exec)
 	if err != nil {
 		return nil, err

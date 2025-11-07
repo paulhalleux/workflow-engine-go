@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"log"
+	"sync"
 
 	"github.com/paulhalleux/workflow-engine-go/engine/internal"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/errors"
@@ -134,8 +135,10 @@ func (we *WorkflowExecutor) startWorkflow(exec *WorkflowExecution) {
 		return
 	}
 
+	waitGroup := &sync.WaitGroup{}
 	stepOutputMap := make(map[string]*map[string]interface{})
 	stepOutputChan := make(chan *StepResult, 100)
+	defer close(stepOutputChan)
 
 	(*we.workflowStepOutputChan)[instance.ID] = stepOutputChan
 	defer delete(*we.workflowStepOutputChan, instance.ID)
@@ -144,7 +147,7 @@ func (we *WorkflowExecutor) startWorkflow(exec *WorkflowExecution) {
 	defer delete(*we.workflowChan, instance.ID)
 
 	log.Printf("Starting workflow instance %s with first step %s", instance.ID, firstStep.Name)
-	id, err := we.stepExecutionService.StartStep(firstStep, instance)
+	id, err := we.stepExecutionService.StartStep(firstStep.StepDefinitionID, instance, definition, waitGroup)
 	if err != nil {
 		we.failWorkflowInstance(exec, "failed to start first step")
 		return
@@ -152,6 +155,13 @@ func (we *WorkflowExecutor) startWorkflow(exec *WorkflowExecution) {
 
 	log.Printf("Started first step instance %s for workflow instance %s", *id, instance.ID)
 	we.startWorkflowInstance(exec)
+
+	go func() {
+		waitGroup.Wait()
+		(*we.workflowChan)[instance.ID] <- &WorkflowExecutionResult{
+			Success: true,
+		}
+	}()
 
 	for {
 		select {
