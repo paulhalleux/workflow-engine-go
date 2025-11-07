@@ -9,6 +9,7 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine/internal"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/grpcapi"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/httpapi"
+	"github.com/paulhalleux/workflow-engine-go/engine/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/persistence"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/service"
 	"github.com/paulhalleux/workflow-engine-go/proto"
@@ -38,6 +39,8 @@ type Engine struct {
 
 	workflowExecutor *service.WorkflowExecutor
 	stepExecutor     *service.StepExecutor
+
+	agentTaskChan map[string]chan *proto.NotifyTaskStatusRequest
 }
 
 func NewEngine(
@@ -60,7 +63,7 @@ func NewEngine(
 	workflowInstanceService := service.NewWorkflowInstanceService(pers)
 	stepInstanceService := service.NewStepInstanceService(pers)
 
-	stepExecutor := service.NewStepExecutor(config)
+	stepExecutor := service.NewStepExecutor(config, stepInstanceService)
 	stepExecutionService := service.NewStepExecutionService(
 		pers,
 		stepExecutor,
@@ -72,6 +75,10 @@ func NewEngine(
 		pers,
 		workflowExecutor,
 	)
+
+	agentTaskChan := make(map[string]chan *proto.NotifyTaskStatusRequest)
+
+	stepExecutor.RegisterTypeExecutor(models.StepTypeTask, service.NewAgentStepExecutor(agentRegistry, agentTaskChan))
 
 	return &Engine{
 		Config:  config,
@@ -89,6 +96,8 @@ func NewEngine(
 
 		workflowExecutor: workflowExecutor,
 		stepExecutor:     stepExecutor,
+
+		agentTaskChan: agentTaskChan,
 	}
 }
 
@@ -98,6 +107,7 @@ func (e *Engine) Start() {
 	go e.startGrpcServer()
 	go e.startHttpServer()
 	go e.workflowExecutor.Start(e.Context)
+	go e.stepExecutor.Start(e.Context)
 
 	<-e.Context.Done()
 	log.Printf("[Engine] Shutting down workflow engine...")
@@ -115,7 +125,7 @@ func (e *Engine) startGrpcServer() {
 
 	// Register gRPC services
 	proto.RegisterEngineServiceServer(grpcServer, grpcapi.NewEngineServiceServer(e.agentRegistry, e.workflowExecutionService))
-	proto.RegisterTaskServiceServer(grpcServer, grpcapi.NewTaskServiceServer())
+	proto.RegisterTaskServiceServer(grpcServer, grpcapi.NewTaskServiceServer(e.agentTaskChan))
 
 	// Start the gRPC server
 	log.Printf("[Engine] gRPC server running on %s", lis.Addr().String())

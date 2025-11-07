@@ -1,25 +1,15 @@
 package errors
 
-type UnsupportedProtocolError struct{}
-
-func (e *UnsupportedProtocolError) Error() string {
-	return "unsupported agent protocol"
+type SimpleError struct {
+	Message string
 }
 
-var ErrUnsupportedProtocol = &UnsupportedProtocolError{}
-
-type WorkflowQueueFullError struct{}
-
-func (e *WorkflowQueueFullError) Error() string {
-	return "workflow queue is full"
+func (e *SimpleError) Error() string {
+	return e.Message
 }
 
-var ErrWorkflowQueueFull = &WorkflowQueueFullError{}
-
-type WorkflowDefinitionNoStepsError struct{}
-
-func (e *WorkflowDefinitionNoStepsError) Error() string {
-	return "workflow definition has no steps"
-}
-
-var ErrWorkflowDefinitionNoSteps = &WorkflowDefinitionNoStepsError{}
+var ErrAgentNotFoundForTaskDefinition = &SimpleError{"no registered agent found for the given task definition"}
+var ErrWorkflowDefinitionNoSteps = &SimpleError{"workflow definition has no steps"}
+var ErrWorkflowQueueFull = &SimpleError{"workflow queue is full"}
+var ErrUnsupportedProtocol = &SimpleError{"unsupported agent protocol"}
+var ErrAgentConnectorNotFound = &SimpleError{"could not find a way to connect to the specified agent"}

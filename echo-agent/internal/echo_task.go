@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"time"
+
 	"github.com/paulhalleux/workflow-engine-go/agent"
 )
 
@@ -20,6 +22,7 @@ func NewEchoTaskDefinition() agent.TaskDefinition {
 		InputParameters:  agent.ReflectJsonSchema(inputParameters{}),
 		OutputParameters: agent.ReflectJsonSchema(outputParameters{}),
 		Handle: func(req *agent.TaskExecutionRequest) agent.TaskExecutionResult {
+			time.Sleep(5 * time.Second) // Simulate some processing time
 			return agent.TaskExecutionResult{
 				Output: &map[string]interface{}{
 					"message": req.Input["message"],

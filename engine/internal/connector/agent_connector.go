@@ -8,6 +8,7 @@ import (
 type AgentConnector interface {
 	Close() error
 	Ping() error
+	StartTask(req *proto.StartTaskRequest) (*proto.TaskActionResponse, error)
 }
 
 func NewAgentConnector(protocol proto.AgentProtocol, address *string, port string) (AgentConnector, error) {

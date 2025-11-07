@@ -41,7 +41,7 @@ func (wr *StepInstancesRepo) GetAll(scopeFactory *utils.GormScopeFactory) ([]mod
 }
 
 func (wr *StepInstancesRepo) Update(definition *models.StepInstance) error {
-	return wr.db.Save(definition).Error
+	return wr.db.Where("id = ?", definition.ID).Updates(definition).Error
 }
 
 func (wr *StepInstancesRepo) Delete(id string) error {

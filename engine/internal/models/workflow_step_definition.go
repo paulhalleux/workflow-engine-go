@@ -3,6 +3,9 @@ package models
 import (
 	"database/sql/driver"
 	"encoding/json"
+
+	"github.com/google/uuid"
+	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
 type StepType string
@@ -84,4 +87,20 @@ func (list *WorkflowStepDefinitionList) Scan(value interface{}) error {
 		return nil
 	}
 	return json.Unmarshal(bytes, list)
+}
+
+func (def WorkflowStepDefinition) NewInstance(
+	workflowDefinitionId string,
+	workflowInstanceId string,
+	input *map[string]interface{},
+) *StepInstance {
+	return &StepInstance{
+		ID:                   uuid.New().String(),
+		StepID:               def.Name,
+		WorkflowDefinitionID: workflowDefinitionId,
+		WorkflowInstanceID:   workflowInstanceId,
+		Status:               StepStatusPending,
+		Input:                utils.UnknownJsonFromMap(input),
+		Progress:             0,
+	}
 }

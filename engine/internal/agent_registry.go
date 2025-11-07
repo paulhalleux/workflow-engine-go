@@ -60,6 +60,11 @@ func (ar *AgentRegistry) GetAgent(name string) (RegisteredAgent, bool) {
 	return agent, exists
 }
 
+func (ar *AgentRegistry) GetAgentConnector(name string) (*connector.AgentConnector, bool) {
+	conn, exists := ar.agentsConnectors[name]
+	return conn, exists
+}
+
 func (ar *AgentRegistry) UnregisterAgent(name string) {
 	delete(ar.agents, name)
 }
@@ -91,6 +96,17 @@ func (ar *AgentRegistry) ListTaskDefinitions() []*models.TaskDefinitionResponse 
 func (ar *AgentRegistry) GetTaskDefinition(taskId string) (*models.TaskDefinitionResponse, bool) {
 	taskDef, exists := ar.tasks[taskId]
 	return taskDefResponseFromProto(taskDef), exists
+}
+
+func (ar *AgentRegistry) GetAgentByTaskName(taskName string) (*RegisteredAgent, bool) {
+	for _, agent := range ar.agents {
+		for _, taskDef := range agent.SupportedTasks {
+			if taskDef.Id == taskName {
+				return &agent, true
+			}
+		}
+	}
+	return nil, false
 }
 
 func (ag RegisteredAgent) ToResponse() models.AgentResponse {

@@ -41,7 +41,7 @@ func (wr *WorkflowInstancesRepo) GetAll(scopeFactory *utils.GormScopeFactory) ([
 }
 
 func (wr *WorkflowInstancesRepo) Update(definition *models.WorkflowInstance) error {
-	return wr.db.Save(definition).Error
+	return wr.db.Where("id = ?", definition.ID).Updates(definition).Error
 }
 
 func (wr *WorkflowInstancesRepo) Delete(id string) error {

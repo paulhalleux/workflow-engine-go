@@ -23,7 +23,7 @@ type WorkflowDefinition struct {
 	Metadata         *utils.UnknownJson               `gorm:"type:jsonb" json:"metadata,omitempty"`
 }
 
-func (def *WorkflowDefinition) NewInstance(input *map[string]interface{}) *WorkflowInstance {
+func (def WorkflowDefinition) NewInstance(input *map[string]interface{}) *WorkflowInstance {
 	return &WorkflowInstance{
 		ID:                   uuid.New().String(),
 		WorkflowDefinitionID: def.ID,
@@ -32,7 +32,7 @@ func (def *WorkflowDefinition) NewInstance(input *map[string]interface{}) *Workf
 	}
 }
 
-func (def *WorkflowDefinition) GetFirstStep() (*WorkflowStepDefinition, error) {
+func (def WorkflowDefinition) GetFirstStep() (*WorkflowStepDefinition, error) {
 	if def.Steps == nil || len(*def.Steps) == 0 {
 		return nil, errors.ErrWorkflowDefinitionNoSteps
 	}

@@ -44,6 +44,12 @@ func (g *GrpcAgentConnector) Ping() error {
 	return err
 }
 
+func (g *GrpcAgentConnector) StartTask(req *proto.StartTaskRequest) (*proto.TaskActionResponse, error) {
+	client := proto.NewAgentServiceClient(g.connection)
+	res, err := client.StartTask(context.Background(), req)
+	return res, err
+}
+
 func joinHostPort(host *string, port string) string {
 	if host != nil {
 		return net.JoinHostPort(*host, port)

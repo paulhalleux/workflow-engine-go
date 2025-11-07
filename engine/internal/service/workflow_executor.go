@@ -74,6 +74,17 @@ func (we *WorkflowExecutor) failWorkflowInstance(exec *WorkflowExecution, messag
 	}
 }
 
+func (we *WorkflowExecutor) startWorkflowInstance(exec *WorkflowExecution) {
+	err := we.workflowInstancesService.Update(&models.WorkflowInstance{
+		ID:     exec.WorkflowInstanceID,
+		Status: models.WorkflowStatusRunning,
+	})
+
+	if err != nil {
+		log.Println("Error updating workflow status to running:", err)
+	}
+}
+
 func (we *WorkflowExecutor) startWorkflow(exec *WorkflowExecution) {
 	instance, err := we.workflowInstancesService.GetByID(exec.WorkflowInstanceID)
 	if err != nil {
@@ -93,9 +104,13 @@ func (we *WorkflowExecutor) startWorkflow(exec *WorkflowExecution) {
 		return
 	}
 
-	_, err = we.stepExecutionService.StartStep(firstStep, definition)
+	log.Printf("Starting workflow instance %s with first step %s", instance.ID, firstStep.Name)
+	id, err := we.stepExecutionService.StartStep(firstStep, instance)
 	if err != nil {
 		we.failWorkflowInstance(exec, "failed to start first step")
 		return
 	}
+
+	log.Printf("Started first step instance %s for workflow instance %s", *id, instance.ID)
+	we.startWorkflowInstance(exec)
 }
