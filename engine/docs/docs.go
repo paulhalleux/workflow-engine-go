@@ -585,6 +585,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/ForkBranch"
                     }
+                },
+                "joinStepId": {
+                    "type": "string"
                 }
             }
         },

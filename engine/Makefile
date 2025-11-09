@@ -12,8 +12,11 @@ swagger:
 
 swagger-gen-ts: swagger
 	docker run --rm \
+	  -v $(CURDIR)/../ui/packages/wf-engine-api/src:/output \
       -v $(CURDIR):/local openapitools/openapi-generator-cli generate \
       -i /local/docs/swagger.json \
       -g typescript-fetch \
-      -o /local/out/swagger-ts \
-      --additional-properties=npmName=@paulhalleux/wf-engine-api,npmVersion=1.0.0,stringEnums=true
+      -o /output \
+      --additional-properties=stringEnums=true
+	clean-swagger-output.bat
+

@@ -60,6 +60,8 @@ definitions:
         items:
           $ref: '#/definitions/ForkBranch'
         type: array
+      joinStepId:
+        type: string
     type: object
   JoinConfig:
     properties:
