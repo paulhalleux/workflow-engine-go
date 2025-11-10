@@ -1,0 +1,7 @@
+.edge {
+  stroke: var(--c-outline-selected);
+
+  &.selected {
+    stroke: var(--c-text-base);
+  }
+}

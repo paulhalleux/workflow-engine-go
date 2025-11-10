@@ -9,17 +9,17 @@ import (
 )
 
 type WorkflowDefinition struct {
-	ID               string                           `gorm:"primaryKey;type:uuid;default:gen_random_uuid()" json:"id"`
-	Name             string                           `gorm:"type:varchar(255);not null" json:"name"`
+	ID               string                           `gorm:"primaryKey;type:uuid;default:gen_random_uuid()" json:"id" validate:"required"`
+	Name             string                           `gorm:"type:varchar(255);not null" json:"name" validate:"required"`
 	Description      string                           `gorm:"type:text" json:"description"`
-	Version          string                           `gorm:"type:varchar(50);not null;uniqueIndex:idx_name_version" json:"version"`
-	IsDraft          bool                             `gorm:"not null;default:true" json:"isDraft"`
-	IsEnabled        bool                             `gorm:"not null;default:false" json:"isEnabled"`
+	Version          string                           `gorm:"type:varchar(50);not null;uniqueIndex:idx_name_version" json:"version" validate:"required"`
+	IsDraft          bool                             `gorm:"not null;default:true" json:"isDraft" validate:"required"`
+	IsEnabled        bool                             `gorm:"not null;default:false" json:"isEnabled" validate:"required"`
 	InputParameters  *WorkflowParameterDefinitionList `gorm:"type:jsonb" json:"inputParameters"`
 	OutputParameters *interface{}                     `gorm:"type:jsonb" json:"outputParameters"`
-	Steps            *WorkflowStepDefinitionList      `gorm:"type:jsonb;not null" json:"steps"`
-	CreatedAt        time.Time                        `gorm:"autoCreateTime" json:"createdAt"`
-	UpdatedAt        time.Time                        `gorm:"autoUpdateTime" json:"updatedAt"`
+	Steps            *WorkflowStepDefinitionList      `gorm:"type:jsonb;not null" json:"steps" validate:"required"`
+	CreatedAt        time.Time                        `gorm:"autoCreateTime" json:"createdAt" validate:"required"`
+	UpdatedAt        time.Time                        `gorm:"autoUpdateTime" json:"updatedAt" validate:"required"`
 	Metadata         *utils.UnknownJson               `gorm:"type:jsonb" json:"metadata,omitempty"`
 } // @name WorkflowDefinition
 

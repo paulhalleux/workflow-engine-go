@@ -24,7 +24,7 @@ export interface JoinConfig {
      * @type {Array<string>}
      * @memberof JoinConfig
      */
-    incomingStepIds?: Array<string>;
+    incomingStepIds: Array<string>;
     /**
      * 
      * @type {string}
@@ -37,6 +37,7 @@ export interface JoinConfig {
  * Check if a given object implements the JoinConfig interface.
  */
 export function instanceOfJoinConfig(value: object): value is JoinConfig {
+    if (!('incomingStepIds' in value) || value['incomingStepIds'] === undefined) return false;
     return true;
 }
 
@@ -50,7 +51,7 @@ export function JoinConfigFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'incomingStepIds': json['incomingStepIds'] == null ? undefined : json['incomingStepIds'],
+        'incomingStepIds': json['incomingStepIds'],
         'nextStepId': json['nextStepId'] == null ? undefined : json['nextStepId'],
     };
 }

@@ -1,0 +1,23 @@
+.node {
+  border: 1px solid var(--c-border);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--c-bg-alt);
+
+  width: var(--node-width);
+  height: var(--node-height);
+
+  display: flex;
+  padding: 6px;
+  gap: 6px;
+
+  &.circle {
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+  }
+
+  &.selected {
+    outline: 1px solid var(--c-outline-selected);
+    outline-offset: 2px;
+  }
+}

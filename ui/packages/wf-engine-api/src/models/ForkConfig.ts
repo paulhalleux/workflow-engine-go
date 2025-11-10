@@ -32,19 +32,21 @@ export interface ForkConfig {
      * @type {Array<ForkBranch>}
      * @memberof ForkConfig
      */
-    branches?: Array<ForkBranch>;
+    branches: Array<ForkBranch>;
     /**
      * 
      * @type {string}
      * @memberof ForkConfig
      */
-    joinStepId?: string;
+    joinStepId: string;
 }
 
 /**
  * Check if a given object implements the ForkConfig interface.
  */
 export function instanceOfForkConfig(value: object): value is ForkConfig {
+    if (!('branches' in value) || value['branches'] === undefined) return false;
+    if (!('joinStepId' in value) || value['joinStepId'] === undefined) return false;
     return true;
 }
 
@@ -58,8 +60,8 @@ export function ForkConfigFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'branches': json['branches'] == null ? undefined : ((json['branches'] as Array<any>).map(ForkBranchFromJSON)),
-        'joinStepId': json['joinStepId'] == null ? undefined : json['joinStepId'],
+        'branches': ((json['branches'] as Array<any>).map(ForkBranchFromJSON)),
+        'joinStepId': json['joinStepId'],
     };
 }
 
@@ -74,7 +76,7 @@ export function ForkConfigToJSONTyped(value?: ForkConfig | null, ignoreDiscrimin
 
     return {
         
-        'branches': value['branches'] == null ? undefined : ((value['branches'] as Array<any>).map(ForkBranchToJSON)),
+        'branches': ((value['branches'] as Array<any>).map(ForkBranchToJSON)),
         'joinStepId': value['joinStepId'],
     };
 }

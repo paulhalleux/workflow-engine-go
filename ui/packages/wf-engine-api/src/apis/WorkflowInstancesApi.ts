@@ -41,7 +41,7 @@ export class WorkflowInstancesApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/workflow-instances`;
+        let urlPath = `/api/workflow-instances`;
 
         const response = await this.request({
             path: urlPath,
@@ -79,7 +79,7 @@ export class WorkflowInstancesApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/workflow-instances/{id}`;
+        let urlPath = `/api/workflow-instances/{id}`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({

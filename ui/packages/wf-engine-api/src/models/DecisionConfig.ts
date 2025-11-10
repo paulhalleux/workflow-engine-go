@@ -32,13 +32,21 @@ export interface DecisionConfig {
      * @type {Array<DecisionCase>}
      * @memberof DecisionConfig
      */
-    cases?: Array<DecisionCase>;
+    cases: Array<DecisionCase>;
+    /**
+     * 
+     * @type {string}
+     * @memberof DecisionConfig
+     */
+    joinStepId: string;
 }
 
 /**
  * Check if a given object implements the DecisionConfig interface.
  */
 export function instanceOfDecisionConfig(value: object): value is DecisionConfig {
+    if (!('cases' in value) || value['cases'] === undefined) return false;
+    if (!('joinStepId' in value) || value['joinStepId'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +60,8 @@ export function DecisionConfigFromJSONTyped(json: any, ignoreDiscriminator: bool
     }
     return {
         
-        'cases': json['cases'] == null ? undefined : ((json['cases'] as Array<any>).map(DecisionCaseFromJSON)),
+        'cases': ((json['cases'] as Array<any>).map(DecisionCaseFromJSON)),
+        'joinStepId': json['joinStepId'],
     };
 }
 
@@ -67,7 +76,8 @@ export function DecisionConfigToJSONTyped(value?: DecisionConfig | null, ignoreD
 
     return {
         
-        'cases': value['cases'] == null ? undefined : ((value['cases'] as Array<any>).map(DecisionCaseToJSON)),
+        'cases': ((value['cases'] as Array<any>).map(DecisionCaseToJSON)),
+        'joinStepId': value['joinStepId'],
     };
 }
 

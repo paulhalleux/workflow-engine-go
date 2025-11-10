@@ -32,13 +32,13 @@ export interface StepDefinitionParameter {
      * @type {StepParameterType}
      * @memberof StepDefinitionParameter
      */
-    type?: StepParameterType;
+    type: StepParameterType;
     /**
      * 
      * @type {object}
      * @memberof StepDefinitionParameter
      */
-    value?: object;
+    value: object;
 }
 
 
@@ -47,6 +47,8 @@ export interface StepDefinitionParameter {
  * Check if a given object implements the StepDefinitionParameter interface.
  */
 export function instanceOfStepDefinitionParameter(value: object): value is StepDefinitionParameter {
+    if (!('type' in value) || value['type'] === undefined) return false;
+    if (!('value' in value) || value['value'] === undefined) return false;
     return true;
 }
 
@@ -60,8 +62,8 @@ export function StepDefinitionParameterFromJSONTyped(json: any, ignoreDiscrimina
     }
     return {
         
-        'type': json['type'] == null ? undefined : StepParameterTypeFromJSON(json['type']),
-        'value': json['value'] == null ? undefined : json['value'],
+        'type': StepParameterTypeFromJSON(json['type']),
+        'value': json['value'],
     };
 }
 

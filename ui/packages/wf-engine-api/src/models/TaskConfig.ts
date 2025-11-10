@@ -30,13 +30,14 @@ export interface TaskConfig {
      * @type {string}
      * @memberof TaskConfig
      */
-    taskDefinitionId?: string;
+    taskDefinitionId: string;
 }
 
 /**
  * Check if a given object implements the TaskConfig interface.
  */
 export function instanceOfTaskConfig(value: object): value is TaskConfig {
+    if (!('taskDefinitionId' in value) || value['taskDefinitionId'] === undefined) return false;
     return true;
 }
 
@@ -51,7 +52,7 @@ export function TaskConfigFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     return {
         
         'nextStepId': json['nextStepId'] == null ? undefined : json['nextStepId'],
-        'taskDefinitionId': json['taskDefinitionId'] == null ? undefined : json['taskDefinitionId'],
+        'taskDefinitionId': json['taskDefinitionId'],
     };
 }
 

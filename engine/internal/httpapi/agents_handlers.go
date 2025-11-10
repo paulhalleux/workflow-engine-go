@@ -29,7 +29,7 @@ func (h *AgentsHandlers) Register(rg *gin.RouterGroup) {
 // @Tags         agents
 // @Produce      json
 // @Success      200  {array}   models.AgentResponse
-// @Router       /agents [get]
+// @Router       /api/agents [get]
 func (h *AgentsHandlers) getAll(ctx *gin.Context) {
 	agents := h.registry.ListAgents()
 	ctx.JSON(200, agents.ToResponseList())
@@ -44,7 +44,7 @@ func (h *AgentsHandlers) getAll(ctx *gin.Context) {
 // @Param        name   path      string  true  "Agent Name"
 // @Success      200    {object}  models.AgentResponse
 // @Failure      404    {object}  map[string]string
-// @Router       /agents/{name} [get]
+// @Router       /api/agents/{name} [get]
 func (h *AgentsHandlers) getByName(ctx *gin.Context) {
 	name := ctx.Param("name")
 	agent, has := h.registry.GetAgent(name)

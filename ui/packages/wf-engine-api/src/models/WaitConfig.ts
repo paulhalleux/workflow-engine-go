@@ -32,7 +32,7 @@ export interface WaitConfig {
      * @type {StepDefinitionParameter}
      * @memberof WaitConfig
      */
-    durationSeconds?: StepDefinitionParameter;
+    durationSeconds: StepDefinitionParameter;
     /**
      * 
      * @type {string}
@@ -45,6 +45,7 @@ export interface WaitConfig {
  * Check if a given object implements the WaitConfig interface.
  */
 export function instanceOfWaitConfig(value: object): value is WaitConfig {
+    if (!('durationSeconds' in value) || value['durationSeconds'] === undefined) return false;
     return true;
 }
 
@@ -58,7 +59,7 @@ export function WaitConfigFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'durationSeconds': json['durationSeconds'] == null ? undefined : StepDefinitionParameterFromJSON(json['durationSeconds']),
+        'durationSeconds': StepDefinitionParameterFromJSON(json['durationSeconds']),
         'nextStepId': json['nextStepId'] == null ? undefined : json['nextStepId'],
     };
 }

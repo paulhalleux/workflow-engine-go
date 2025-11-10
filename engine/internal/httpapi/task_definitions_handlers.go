@@ -29,7 +29,7 @@ func (h *TaskDefinitionsHandlers) Register(rg *gin.RouterGroup) {
 // @Tags 		Task Definitions
 // @Produce 	json
 // @Success 	200 {array} models.TaskDefinitionResponse
-// @Router 		/task-definitions [get]
+// @Router 		/api/task-definitions [get]
 func (h *TaskDefinitionsHandlers) getAll(ctx *gin.Context) {
 	definitions := h.registry.ListTaskDefinitions()
 	ctx.JSON(200, definitions)
@@ -44,7 +44,7 @@ func (h *TaskDefinitionsHandlers) getAll(ctx *gin.Context) {
 // @Param 		id path string true "Task Definition ID"
 // @Success 	200 {object} models.TaskDefinitionResponse
 // @Failure 	404 {object} gin.H
-// @Router 		/task-definitions/{id} [get]
+// @Router 		/api/task-definitions/{id} [get]
 func (h *TaskDefinitionsHandlers) getById(ctx *gin.Context) {
 	id := ctx.Param("id")
 	definition, has := h.registry.GetTaskDefinition(id)

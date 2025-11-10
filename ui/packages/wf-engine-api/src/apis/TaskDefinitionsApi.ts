@@ -41,7 +41,7 @@ export class TaskDefinitionsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/task-definitions`;
+        let urlPath = `/api/task-definitions`;
 
         const response = await this.request({
             path: urlPath,
@@ -79,7 +79,7 @@ export class TaskDefinitionsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/task-definitions/{id}`;
+        let urlPath = `/api/task-definitions/{id}`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({

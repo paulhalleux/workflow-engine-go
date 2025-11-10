@@ -111,7 +111,7 @@ export interface WorkflowStepDefinition {
      * @type {string}
      * @memberof WorkflowStepDefinition
      */
-    name?: string;
+    name: string;
     /**
      * 
      * @type {{ [key: string]: StepDefinitionParameter; }}
@@ -123,7 +123,7 @@ export interface WorkflowStepDefinition {
      * @type {string}
      * @memberof WorkflowStepDefinition
      */
-    stepDefinitionId?: string;
+    stepDefinitionId: string;
     /**
      * 
      * @type {TaskConfig}
@@ -135,7 +135,7 @@ export interface WorkflowStepDefinition {
      * @type {StepType}
      * @memberof WorkflowStepDefinition
      */
-    type?: StepType;
+    type: StepType;
     /**
      * 
      * @type {WaitConfig}
@@ -156,6 +156,9 @@ export interface WorkflowStepDefinition {
  * Check if a given object implements the WorkflowStepDefinition interface.
  */
 export function instanceOfWorkflowStepDefinition(value: object): value is WorkflowStepDefinition {
+    if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('stepDefinitionId' in value) || value['stepDefinitionId'] === undefined) return false;
+    if (!('type' in value) || value['type'] === undefined) return false;
     return true;
 }
 
@@ -174,11 +177,11 @@ export function WorkflowStepDefinitionFromJSONTyped(json: any, ignoreDiscriminat
         'forkConfig': json['forkConfig'] == null ? undefined : ForkConfigFromJSON(json['forkConfig']),
         'joinConfig': json['joinConfig'] == null ? undefined : JoinConfigFromJSON(json['joinConfig']),
         'metadata': json['metadata'] == null ? undefined : json['metadata'],
-        'name': json['name'] == null ? undefined : json['name'],
+        'name': json['name'],
         'parameters': json['parameters'] == null ? undefined : (mapValues(json['parameters'], StepDefinitionParameterFromJSON)),
-        'stepDefinitionId': json['stepDefinitionId'] == null ? undefined : json['stepDefinitionId'],
+        'stepDefinitionId': json['stepDefinitionId'],
         'taskConfig': json['taskConfig'] == null ? undefined : TaskConfigFromJSON(json['taskConfig']),
-        'type': json['type'] == null ? undefined : StepTypeFromJSON(json['type']),
+        'type': StepTypeFromJSON(json['type']),
         'waitConfig': json['waitConfig'] == null ? undefined : WaitConfigFromJSON(json['waitConfig']),
         'workflowConfig': json['workflowConfig'] == null ? undefined : WorkflowConfigFromJSON(json['workflowConfig']),
     };

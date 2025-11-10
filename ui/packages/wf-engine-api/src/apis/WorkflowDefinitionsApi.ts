@@ -78,7 +78,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
 
-        let urlPath = `/workflow-definitions`;
+        let urlPath = `/api/workflow-definitions`;
 
         const response = await this.request({
             path: urlPath,
@@ -117,7 +117,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/workflow-definitions/{id}`;
+        let urlPath = `/api/workflow-definitions/{id}`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -155,7 +155,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/workflow-definitions/{id}/disable`;
+        let urlPath = `/api/workflow-definitions/{id}/disable`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -193,7 +193,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/workflow-definitions/{id}/enable`;
+        let urlPath = `/api/workflow-definitions/{id}/enable`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -224,7 +224,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/workflow-definitions`;
+        let urlPath = `/api/workflow-definitions`;
 
         const response = await this.request({
             path: urlPath,
@@ -262,7 +262,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/workflow-definitions/{id}`;
+        let urlPath = `/api/workflow-definitions/{id}`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -301,7 +301,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/workflow-definitions/{id}/publish`;
+        let urlPath = `/api/workflow-definitions/{id}/publish`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -348,7 +348,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
 
-        let urlPath = `/workflow-definitions/{id}`;
+        let urlPath = `/api/workflow-definitions/{id}`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({

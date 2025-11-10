@@ -1,0 +1,22 @@
+.graph {
+  width: 100vw;
+  height: 100vh;
+}
+
+.workflow-list {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 8px;
+  list-style: none;
+  z-index: 10;
+
+  font-size: var(--font-size-xs);
+  background: var(--c-bg-alt);
+  border: 1px solid var(--c-border);
+  border-radius: var(--border-radius-sm);
+}
+
+.reactflow {
+  background-color: var(--c-bg-base) !important;
+}

@@ -36,13 +36,14 @@ export interface ForkBranch {
      * @type {string}
      * @memberof ForkBranch
      */
-    nextStepId?: string;
+    nextStepId: string;
 }
 
 /**
  * Check if a given object implements the ForkBranch interface.
  */
 export function instanceOfForkBranch(value: object): value is ForkBranch {
+    if (!('nextStepId' in value) || value['nextStepId'] === undefined) return false;
     return true;
 }
 
@@ -58,7 +59,7 @@ export function ForkBranchFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         
         'description': json['description'] == null ? undefined : json['description'],
         'name': json['name'] == null ? undefined : json['name'],
-        'nextStepId': json['nextStepId'] == null ? undefined : json['nextStepId'],
+        'nextStepId': json['nextStepId'],
     };
 }
 

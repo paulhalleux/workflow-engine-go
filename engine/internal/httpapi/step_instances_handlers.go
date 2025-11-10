@@ -33,7 +33,7 @@ func (h *StepInstancesHandlers) Register(rg *gin.RouterGroup) {
 // @Param 		offset query int false "Page offset"
 // @Success 	200 {array} models.StepInstance
 // @Failure 	500 {object} gin.H
-// @Router 		/step-instances [get]
+// @Router 		/api/step-instances [get]
 func (h *StepInstancesHandlers) getAll(ctx *gin.Context) {
 	paginate := utils.Paginate(ctx)
 	defs, err := h.service.GetAll(&paginate)
@@ -53,7 +53,7 @@ func (h *StepInstancesHandlers) getAll(ctx *gin.Context) {
 // @Param 		id path string true "Step Instance ID"
 // @Success 	200 {object} models.StepInstance
 // @Failure 	500 {object} gin.H
-// @Router 		/step-instances/{id} [get]
+// @Router 		/api/step-instances/{id} [get]
 func (h *StepInstancesHandlers) getByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	def, err := h.service.GetByID(id)

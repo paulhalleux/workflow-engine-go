@@ -37,6 +37,9 @@ definitions:
         type: string
       nextStepId:
         type: string
+    required:
+    - condition
+    - nextStepId
     type: object
   DecisionConfig:
     properties:
@@ -44,6 +47,11 @@ definitions:
         items:
           $ref: '#/definitions/DecisionCase'
         type: array
+      joinStepId:
+        type: string
+    required:
+    - cases
+    - joinStepId
     type: object
   ForkBranch:
     properties:
@@ -53,6 +61,8 @@ definitions:
         type: string
       nextStepId:
         type: string
+    required:
+    - nextStepId
     type: object
   ForkConfig:
     properties:
@@ -62,6 +72,9 @@ definitions:
         type: array
       joinStepId:
         type: string
+    required:
+    - branches
+    - joinStepId
     type: object
   JoinConfig:
     properties:
@@ -71,12 +84,17 @@ definitions:
         type: array
       nextStepId:
         type: string
+    required:
+    - incomingStepIds
     type: object
   StepDefinitionParameter:
     properties:
       type:
         $ref: '#/definitions/StepParameterType'
       value: {}
+    required:
+    - type
+    - value
     type: object
   StepDefinitionParameters:
     additionalProperties:
@@ -157,6 +175,8 @@ definitions:
         type: string
       taskDefinitionId:
         type: string
+    required:
+    - taskDefinitionId
     type: object
   TaskDefinitionResponse:
     properties:
@@ -191,6 +211,8 @@ definitions:
         $ref: '#/definitions/StepDefinitionParameter'
       nextStepId:
         type: string
+    required:
+    - durationSeconds
     type: object
   WorkflowConfig:
     properties:
@@ -198,6 +220,8 @@ definitions:
         type: string
       workflowDefinitionId:
         type: string
+    required:
+    - workflowDefinitionId
     type: object
   WorkflowDefinition:
     properties:
@@ -228,6 +252,15 @@ definitions:
         type: string
       version:
         type: string
+    required:
+    - createdAt
+    - id
+    - isDraft
+    - isEnabled
+    - name
+    - steps
+    - updatedAt
+    - version
     type: object
   WorkflowInstance:
     properties:
@@ -306,6 +339,10 @@ definitions:
         $ref: '#/definitions/WaitConfig'
       workflowConfig:
         $ref: '#/definitions/WorkflowConfig'
+    required:
+    - name
+    - stepDefinitionId
+    - type
     type: object
   gin.H:
     additionalProperties: {}
@@ -315,7 +352,7 @@ info:
   title: Workflow Engine API
   version: "1.0"
 paths:
-  /agents:
+  /api/agents:
     get:
       description: Get a list of all registered agents
       operationId: getAllAgents
@@ -331,7 +368,7 @@ paths:
       summary: Get all agents
       tags:
       - agents
-  /agents/{name}:
+  /api/agents/{name}:
     get:
       description: Get details of a registered agent by its name
       operationId: getAgentByName
@@ -357,7 +394,7 @@ paths:
       summary: Get agent by name
       tags:
       - agents
-  /step-instances:
+  /api/step-instances:
     get:
       description: Get all step instances with pagination
       operationId: getAllStepInstances
@@ -386,7 +423,7 @@ paths:
       summary: Get all step instances
       tags:
       - StepInstances
-  /step-instances/{id}:
+  /api/step-instances/{id}:
     get:
       description: Get a step instance by its ID
       operationId: getStepInstanceById
@@ -410,7 +447,7 @@ paths:
       summary: Get step instance by ID
       tags:
       - StepInstances
-  /task-definitions:
+  /api/task-definitions:
     get:
       description: Get all task definitions
       operationId: getAllTaskDefinitions
@@ -426,7 +463,7 @@ paths:
       summary: Get all task definitions
       tags:
       - Task Definitions
-  /task-definitions/{id}:
+  /api/task-definitions/{id}:
     get:
       description: Get task definition by ID
       operationId: getTaskDefinitionById
@@ -450,7 +487,7 @@ paths:
       summary: Get task definition by ID
       tags:
       - Task Definitions
-  /workflow-definitions:
+  /api/workflow-definitions:
     get:
       description: Get all workflow definitions
       operationId: getAllWorkflowDefinitions
@@ -488,7 +525,7 @@ paths:
       summary: Create a new workflow definition
       tags:
       - Workflow Definitions
-  /workflow-definitions/{id}:
+  /api/workflow-definitions/{id}:
     delete:
       description: Delete a workflow definition
       operationId: deleteWorkflowDefinition
@@ -550,7 +587,7 @@ paths:
       summary: Update an existing workflow definition
       tags:
       - Workflow Definitions
-  /workflow-definitions/{id}/disable:
+  /api/workflow-definitions/{id}/disable:
     patch:
       description: Delete a workflow definition
       operationId: disableWorkflowDefinition
@@ -566,7 +603,7 @@ paths:
       summary: Delete a workflow definition
       tags:
       - Workflow Definitions
-  /workflow-definitions/{id}/enable:
+  /api/workflow-definitions/{id}/enable:
     patch:
       description: Delete a workflow definition
       operationId: enableWorkflowDefinition
@@ -582,7 +619,7 @@ paths:
       summary: Delete a workflow definition
       tags:
       - Workflow Definitions
-  /workflow-definitions/{id}/publish:
+  /api/workflow-definitions/{id}/publish:
     patch:
       description: Publish a workflow definition
       operationId: publishWorkflowDefinition
@@ -598,7 +635,7 @@ paths:
       summary: Publish a workflow definition
       tags:
       - Workflow Definitions
-  /workflow-instances:
+  /api/workflow-instances:
     get:
       description: Get all workflow instances
       operationId: getAllWorkflowInstances
@@ -614,7 +651,7 @@ paths:
       summary: Get all workflow instances
       tags:
       - Workflow Instances
-  /workflow-instances/{id}:
+  /api/workflow-instances/{id}:
     get:
       description: Get a workflow instance by ID
       operationId: getWorkflowInstanceByID

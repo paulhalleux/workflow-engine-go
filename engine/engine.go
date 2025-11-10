@@ -145,6 +145,7 @@ func (e *Engine) startGrpcServer() {
 
 func (e *Engine) startHttpServer() {
 	r := gin.Default()
+	r.Use(corsMiddleware())
 	api := r.Group("/api")
 
 	workflowDefinitionHandlers := httpapi.NewWorkflowDefinitionsHandlers(e.workflowDefinitionService)
@@ -186,4 +187,20 @@ func joinHostPort(host *string, port string) string {
 		return fmt.Sprintf(":%s", port)
 	}
 	return fmt.Sprintf("%s:%s", *host, port)
+}
+
+func corsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }

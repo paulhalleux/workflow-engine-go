@@ -37,7 +37,7 @@ func (h *WorkflowDefinitionsHandlers) Register(rg *gin.RouterGroup) {
 // @Tags 		Workflow Definitions
 // @Produce 	json
 // @Success 	200 {array} models.WorkflowDefinition
-// @Router 		/workflow-definitions [get]
+// @Router 		/api/workflow-definitions [get]
 func (h *WorkflowDefinitionsHandlers) getAll(ctx *gin.Context) {
 	paginate := utils.Paginate(ctx)
 	defs, err := h.service.GetAll(&paginate)
@@ -56,7 +56,7 @@ func (h *WorkflowDefinitionsHandlers) getAll(ctx *gin.Context) {
 // @Produce 	json
 // @Param 		id path string true "Workflow Definition ID"
 // @Success 	200 {object} models.WorkflowDefinition
-// @Router 		/workflow-definitions/{id} [get]
+// @Router 		/api/workflow-definitions/{id} [get]
 func (h *WorkflowDefinitionsHandlers) getByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	def, err := h.service.GetByID(id)
@@ -76,7 +76,7 @@ func (h *WorkflowDefinitionsHandlers) getByID(ctx *gin.Context) {
 // @Produce 	json
 // @Param 		definition body models.WorkflowDefinition true "Workflow Definition"
 // @Success 	201 {object} models.WorkflowDefinition
-// @Router 		/workflow-definitions [post]
+// @Router 		/api/workflow-definitions [post]
 func (h *WorkflowDefinitionsHandlers) create(ctx *gin.Context) {
 	var def *models.WorkflowDefinition
 	if err := ctx.ShouldBindJSON(&def); err != nil {
@@ -101,7 +101,7 @@ func (h *WorkflowDefinitionsHandlers) create(ctx *gin.Context) {
 // @Param 		id path string true "Workflow Definition ID"
 // @Param 		definition body models.UpdateWorkflowDefRequest true "Updated Workflow Definition"
 // @Success 	200 {object} models.WorkflowDefinition
-// @Router 		/workflow-definitions/{id} [put]
+// @Router 		/api/workflow-definitions/{id} [put]
 func (h *WorkflowDefinitionsHandlers) update(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var updateRequest *models.UpdateWorkflowDefRequest
@@ -130,7 +130,7 @@ func (h *WorkflowDefinitionsHandlers) update(ctx *gin.Context) {
 // @Tags 		Workflow Definitions
 // @Param 		id path string true "Workflow Definition ID"
 // @Success 	204
-// @Router 		/workflow-definitions/{id} [delete]
+// @Router 		/api/workflow-definitions/{id} [delete]
 func (h *WorkflowDefinitionsHandlers) delete(ctx *gin.Context) {
 	err := h.service.Delete(ctx.Param("id"))
 	if err != nil {
@@ -147,7 +147,7 @@ func (h *WorkflowDefinitionsHandlers) delete(ctx *gin.Context) {
 // @Tags 		Workflow Definitions
 // @Param 		id path string true "Workflow Definition ID"
 // @Success 	204
-// @Router 		/workflow-definitions/{id}/enable [patch]
+// @Router 		/api/workflow-definitions/{id}/enable [patch]
 func (h *WorkflowDefinitionsHandlers) enable(ctx *gin.Context) {
 	err := h.service.Enable(ctx.Param("id"))
 	if err != nil {
@@ -164,7 +164,7 @@ func (h *WorkflowDefinitionsHandlers) enable(ctx *gin.Context) {
 // @Tags 		Workflow Definitions
 // @Param 		id path string true "Workflow Definition ID"
 // @Success 	204
-// @Router 		/workflow-definitions/{id}/disable [patch]
+// @Router 		/api/workflow-definitions/{id}/disable [patch]
 func (h *WorkflowDefinitionsHandlers) disable(ctx *gin.Context) {
 	err := h.service.Disable(ctx.Param("id"))
 	if err != nil {
@@ -181,7 +181,7 @@ func (h *WorkflowDefinitionsHandlers) disable(ctx *gin.Context) {
 // @Tags 		Workflow Definitions
 // @Param 		id path string true "Workflow Definition ID"
 // @Success 	204
-// @Router 		/workflow-definitions/{id}/publish [patch]
+// @Router 		/api/workflow-definitions/{id}/publish [patch]
 func (h *WorkflowDefinitionsHandlers) publish(ctx *gin.Context) {
 	err := h.service.Publish(ctx.Param("id"))
 	if err != nil {

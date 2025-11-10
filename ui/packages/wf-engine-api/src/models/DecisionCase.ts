@@ -24,7 +24,7 @@ export interface DecisionCase {
      * @type {string}
      * @memberof DecisionCase
      */
-    condition?: string;
+    condition: string;
     /**
      * 
      * @type {string}
@@ -42,13 +42,15 @@ export interface DecisionCase {
      * @type {string}
      * @memberof DecisionCase
      */
-    nextStepId?: string;
+    nextStepId: string;
 }
 
 /**
  * Check if a given object implements the DecisionCase interface.
  */
 export function instanceOfDecisionCase(value: object): value is DecisionCase {
+    if (!('condition' in value) || value['condition'] === undefined) return false;
+    if (!('nextStepId' in value) || value['nextStepId'] === undefined) return false;
     return true;
 }
 
@@ -62,10 +64,10 @@ export function DecisionCaseFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
-        'condition': json['condition'] == null ? undefined : json['condition'],
+        'condition': json['condition'],
         'description': json['description'] == null ? undefined : json['description'],
         'name': json['name'] == null ? undefined : json['name'],
-        'nextStepId': json['nextStepId'] == null ? undefined : json['nextStepId'],
+        'nextStepId': json['nextStepId'],
     };
 }
 

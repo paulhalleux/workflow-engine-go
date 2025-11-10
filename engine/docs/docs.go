@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/agents": {
+        "/api/agents": {
             "get": {
                 "description": "Get a list of all registered agents",
                 "produces": [
@@ -39,7 +39,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/agents/{name}": {
+        "/api/agents/{name}": {
             "get": {
                 "description": "Get details of a registered agent by its name",
                 "produces": [
@@ -78,7 +78,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/step-instances": {
+        "/api/step-instances": {
             "get": {
                 "description": "Get all step instances with pagination",
                 "produces": [
@@ -122,7 +122,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/step-instances/{id}": {
+        "/api/step-instances/{id}": {
             "get": {
                 "description": "Get a step instance by its ID",
                 "produces": [
@@ -158,7 +158,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/task-definitions": {
+        "/api/task-definitions": {
             "get": {
                 "description": "Get all task definitions",
                 "produces": [
@@ -182,7 +182,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/task-definitions/{id}": {
+        "/api/task-definitions/{id}": {
             "get": {
                 "description": "Get task definition by ID",
                 "produces": [
@@ -218,7 +218,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workflow-definitions": {
+        "/api/workflow-definitions": {
             "get": {
                 "description": "Get all workflow definitions",
                 "produces": [
@@ -275,7 +275,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workflow-definitions/{id}": {
+        "/api/workflow-definitions/{id}": {
             "get": {
                 "description": "Get a workflow definition by ID",
                 "produces": [
@@ -367,7 +367,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workflow-definitions/{id}/disable": {
+        "/api/workflow-definitions/{id}/disable": {
             "patch": {
                 "description": "Delete a workflow definition",
                 "tags": [
@@ -391,7 +391,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workflow-definitions/{id}/enable": {
+        "/api/workflow-definitions/{id}/enable": {
             "patch": {
                 "description": "Delete a workflow definition",
                 "tags": [
@@ -415,7 +415,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workflow-definitions/{id}/publish": {
+        "/api/workflow-definitions/{id}/publish": {
             "patch": {
                 "description": "Publish a workflow definition",
                 "tags": [
@@ -439,7 +439,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workflow-instances": {
+        "/api/workflow-instances": {
             "get": {
                 "description": "Get all workflow instances",
                 "produces": [
@@ -463,7 +463,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workflow-instances/{id}": {
+        "/api/workflow-instances/{id}": {
             "get": {
                 "description": "Get a workflow instance by ID",
                 "produces": [
@@ -537,6 +537,10 @@ const docTemplate = `{
         },
         "DecisionCase": {
             "type": "object",
+            "required": [
+                "condition",
+                "nextStepId"
+            ],
             "properties": {
                 "condition": {
                     "type": "string"
@@ -554,17 +558,27 @@ const docTemplate = `{
         },
         "DecisionConfig": {
             "type": "object",
+            "required": [
+                "cases",
+                "joinStepId"
+            ],
             "properties": {
                 "cases": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/DecisionCase"
                     }
+                },
+                "joinStepId": {
+                    "type": "string"
                 }
             }
         },
         "ForkBranch": {
             "type": "object",
+            "required": [
+                "nextStepId"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
@@ -579,6 +593,10 @@ const docTemplate = `{
         },
         "ForkConfig": {
             "type": "object",
+            "required": [
+                "branches",
+                "joinStepId"
+            ],
             "properties": {
                 "branches": {
                     "type": "array",
@@ -593,6 +611,9 @@ const docTemplate = `{
         },
         "JoinConfig": {
             "type": "object",
+            "required": [
+                "incomingStepIds"
+            ],
             "properties": {
                 "incomingStepIds": {
                     "type": "array",
@@ -607,6 +628,10 @@ const docTemplate = `{
         },
         "StepDefinitionParameter": {
             "type": "object",
+            "required": [
+                "type",
+                "value"
+            ],
             "properties": {
                 "type": {
                     "$ref": "#/definitions/StepParameterType"
@@ -715,6 +740,9 @@ const docTemplate = `{
         },
         "TaskConfig": {
             "type": "object",
+            "required": [
+                "taskDefinitionId"
+            ],
             "properties": {
                 "nextStepId": {
                     "type": "string"
@@ -767,6 +795,9 @@ const docTemplate = `{
         },
         "WaitConfig": {
             "type": "object",
+            "required": [
+                "durationSeconds"
+            ],
             "properties": {
                 "durationSeconds": {
                     "$ref": "#/definitions/StepDefinitionParameter"
@@ -778,6 +809,9 @@ const docTemplate = `{
         },
         "WorkflowConfig": {
             "type": "object",
+            "required": [
+                "workflowDefinitionId"
+            ],
             "properties": {
                 "nextStepId": {
                     "type": "string"
@@ -789,6 +823,16 @@ const docTemplate = `{
         },
         "WorkflowDefinition": {
             "type": "object",
+            "required": [
+                "createdAt",
+                "id",
+                "isDraft",
+                "isEnabled",
+                "name",
+                "steps",
+                "updatedAt",
+                "version"
+            ],
             "properties": {
                 "createdAt": {
                     "type": "string"
@@ -907,6 +951,11 @@ const docTemplate = `{
         },
         "WorkflowStepDefinition": {
             "type": "object",
+            "required": [
+                "name",
+                "stepDefinitionId",
+                "type"
+            ],
             "properties": {
                 "decisionConfig": {
                     "$ref": "#/definitions/DecisionConfig"

@@ -30,13 +30,14 @@ export interface WorkflowConfig {
      * @type {string}
      * @memberof WorkflowConfig
      */
-    workflowDefinitionId?: string;
+    workflowDefinitionId: string;
 }
 
 /**
  * Check if a given object implements the WorkflowConfig interface.
  */
 export function instanceOfWorkflowConfig(value: object): value is WorkflowConfig {
+    if (!('workflowDefinitionId' in value) || value['workflowDefinitionId'] === undefined) return false;
     return true;
 }
 
@@ -51,7 +52,7 @@ export function WorkflowConfigFromJSONTyped(json: any, ignoreDiscriminator: bool
     return {
         
         'nextStepId': json['nextStepId'] == null ? undefined : json['nextStepId'],
-        'workflowDefinitionId': json['workflowDefinitionId'] == null ? undefined : json['workflowDefinitionId'],
+        'workflowDefinitionId': json['workflowDefinitionId'],
     };
 }
 

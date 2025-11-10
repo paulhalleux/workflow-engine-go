@@ -48,7 +48,7 @@ export class AgentsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/agents/{name}`;
+        let urlPath = `/api/agents/{name}`;
         urlPath = urlPath.replace(`{${"name"}}`, encodeURIComponent(String(requestParameters['name'])));
 
         const response = await this.request({
@@ -80,7 +80,7 @@ export class AgentsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/agents`;
+        let urlPath = `/api/agents`;
 
         const response = await this.request({
             path: urlPath,

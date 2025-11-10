@@ -39,7 +39,7 @@ export interface WorkflowDefinition {
      * @type {string}
      * @memberof WorkflowDefinition
      */
-    createdAt?: string;
+    createdAt: string;
     /**
      * 
      * @type {string}
@@ -51,7 +51,7 @@ export interface WorkflowDefinition {
      * @type {string}
      * @memberof WorkflowDefinition
      */
-    id?: string;
+    id: string;
     /**
      * 
      * @type {Array<WorkflowParameterDefinition>}
@@ -63,13 +63,13 @@ export interface WorkflowDefinition {
      * @type {boolean}
      * @memberof WorkflowDefinition
      */
-    isDraft?: boolean;
+    isDraft: boolean;
     /**
      * 
      * @type {boolean}
      * @memberof WorkflowDefinition
      */
-    isEnabled?: boolean;
+    isEnabled: boolean;
     /**
      * 
      * @type {{ [key: string]: any; }}
@@ -81,7 +81,7 @@ export interface WorkflowDefinition {
      * @type {string}
      * @memberof WorkflowDefinition
      */
-    name?: string;
+    name: string;
     /**
      * 
      * @type {object}
@@ -93,25 +93,33 @@ export interface WorkflowDefinition {
      * @type {Array<WorkflowStepDefinition>}
      * @memberof WorkflowDefinition
      */
-    steps?: Array<WorkflowStepDefinition>;
+    steps: Array<WorkflowStepDefinition>;
     /**
      * 
      * @type {string}
      * @memberof WorkflowDefinition
      */
-    updatedAt?: string;
+    updatedAt: string;
     /**
      * 
      * @type {string}
      * @memberof WorkflowDefinition
      */
-    version?: string;
+    version: string;
 }
 
 /**
  * Check if a given object implements the WorkflowDefinition interface.
  */
 export function instanceOfWorkflowDefinition(value: object): value is WorkflowDefinition {
+    if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('isDraft' in value) || value['isDraft'] === undefined) return false;
+    if (!('isEnabled' in value) || value['isEnabled'] === undefined) return false;
+    if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('steps' in value) || value['steps'] === undefined) return false;
+    if (!('updatedAt' in value) || value['updatedAt'] === undefined) return false;
+    if (!('version' in value) || value['version'] === undefined) return false;
     return true;
 }
 
@@ -125,18 +133,18 @@ export function WorkflowDefinitionFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'createdAt': json['createdAt'] == null ? undefined : json['createdAt'],
+        'createdAt': json['createdAt'],
         'description': json['description'] == null ? undefined : json['description'],
-        'id': json['id'] == null ? undefined : json['id'],
+        'id': json['id'],
         'inputParameters': json['inputParameters'] == null ? undefined : ((json['inputParameters'] as Array<any>).map(WorkflowParameterDefinitionFromJSON)),
-        'isDraft': json['isDraft'] == null ? undefined : json['isDraft'],
-        'isEnabled': json['isEnabled'] == null ? undefined : json['isEnabled'],
+        'isDraft': json['isDraft'],
+        'isEnabled': json['isEnabled'],
         'metadata': json['metadata'] == null ? undefined : json['metadata'],
-        'name': json['name'] == null ? undefined : json['name'],
+        'name': json['name'],
         'outputParameters': json['outputParameters'] == null ? undefined : json['outputParameters'],
-        'steps': json['steps'] == null ? undefined : ((json['steps'] as Array<any>).map(WorkflowStepDefinitionFromJSON)),
-        'updatedAt': json['updatedAt'] == null ? undefined : json['updatedAt'],
-        'version': json['version'] == null ? undefined : json['version'],
+        'steps': ((json['steps'] as Array<any>).map(WorkflowStepDefinitionFromJSON)),
+        'updatedAt': json['updatedAt'],
+        'version': json['version'],
     };
 }
 
@@ -160,7 +168,7 @@ export function WorkflowDefinitionToJSONTyped(value?: WorkflowDefinition | null,
         'metadata': value['metadata'],
         'name': value['name'],
         'outputParameters': value['outputParameters'],
-        'steps': value['steps'] == null ? undefined : ((value['steps'] as Array<any>).map(WorkflowStepDefinitionToJSON)),
+        'steps': ((value['steps'] as Array<any>).map(WorkflowStepDefinitionToJSON)),
         'updatedAt': value['updatedAt'],
         'version': value['version'],
     };

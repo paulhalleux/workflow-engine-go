@@ -54,7 +54,7 @@ export class StepInstancesApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/step-instances`;
+        let urlPath = `/api/step-instances`;
 
         const response = await this.request({
             path: urlPath,
@@ -92,7 +92,7 @@ export class StepInstancesApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/step-instances/{id}`;
+        let urlPath = `/api/step-instances/{id}`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
