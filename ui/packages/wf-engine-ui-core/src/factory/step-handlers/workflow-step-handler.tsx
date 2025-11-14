@@ -21,7 +21,7 @@ export const createWorkflowStepHandler: StepHandlerFactory = (
     return {
       stepType: StepType.StepTypeWorkflow,
       getNodeSize: () => {
-        return { width: 140, height: 80 };
+        return { width: 120, height: 48 };
       },
       getNextStepIds: (definition) => {
         const config = getConfig(definition);

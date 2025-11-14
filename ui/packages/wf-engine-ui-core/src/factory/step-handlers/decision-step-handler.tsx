@@ -21,7 +21,7 @@ export const createDecisionStepHandler: StepHandlerFactory = (
     return {
       stepType: StepType.StepTypeDecision,
       getNodeSize: () => {
-        return { width: 60, height: 60 };
+        return { width: 48, height: 48 };
       },
       getNextStepIds: (definition) => {
         const config = getConfig(definition);

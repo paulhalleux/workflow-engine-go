@@ -48,7 +48,6 @@ export function WorkflowDefinitionGraph({
       edgeTypes={{
         default: EdgeRenderer,
       }}
-      fitView
       onNodesChange={(changes) =>
         setGraph((prev) => ({
           ...prev,
@@ -60,16 +59,6 @@ export function WorkflowDefinitionGraph({
     </ReactFlow>
   );
 }
-
-// const NodeRenderer = (node: NodeProps) => {
-//   return (
-//     <GraphNode.Root node={node}>
-//       <GraphNode.Rectangle />
-//       <GraphNode.Handle type="target" position={Position.Left} />
-//       <GraphNode.Handle type="source" position={Position.Right} />
-//     </GraphNode.Root>
-//   );
-// };
 
 const EdgeRenderer = (edge: EdgeProps) => {
   return (
@@ -84,7 +73,6 @@ const getLayoutedElements = (graph: WorkflowGraph): WorkflowGraph => {
   const isHorizontal = true;
 
   dagreGraph.setGraph({ rankdir: "LR" });
-
   graph.nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: node.width, height: node.height });
   });

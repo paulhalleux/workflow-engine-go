@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+option go_package = "./proto";
+
+package websocket;
+
+// Websocket Scope
+
+enum WebsocketScopeType {
+  WEBSOCKET_SCOPE_TYPE_UNSPECIFIED = 0;
+  WEBSOCKET_SCOPE_TYPE_WORKFLOW_INSTANCE = 1;
+}
+
+message WebsocketScope {
+  WebsocketScopeType type = 1;
+  string id = 2;
+}
+
+// Websocket Message
+
+enum WebsocketMessageType {
+  WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED = 0;
+  WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT = 1;
+}
+
+message WebsocketMessage {
+  WebsocketMessageType type = 1;
+
+  oneof payload {
+    WorkflowInstanceEvent workflow_instance_event = 2;
+  }
+}
+
+// Websocket Command
+
+enum WebsocketCommandType {
+  WEBSOCKET_COMMAND_TYPE_UNSPECIFIED = 0;
+  WEBSOCKET_COMMAND_TYPE_SUBSCRIBE = 1;
+  WEBSOCKET_COMMAND_TYPE_UNSUBSCRIBE = 2;
+}
+
+message WebsocketCommand {
+  WebsocketCommandType type = 1;
+
+  oneof command {
+    WebsocketSubscribeCommand subscribe_command = 2;
+    WebsocketUnsubscribeCommand unsubscribe_command = 3;
+  }
+}
+
+message WebsocketSubscribeCommand {
+  WebsocketScopeType scope_type = 1;
+  string scope_id = 2;
+}
+
+message WebsocketUnsubscribeCommand {
+  WebsocketScopeType scope_type = 1;
+  string scope_id = 2;
+}
+
+// Workflow Instance Event
+
+enum WorkflowInstanceEventType {
+  WORKFLOW_INSTANCE_EVENT_TYPE_UNSPECIFIED = 0;
+  WORKFLOW_INSTANCE_EVENT_TYPE_STARTED = 1;
+  WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED = 2;
+  WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED = 3;
+  WORKFLOW_INSTANCE_EVENT_TYPE_FAILED = 4;
+}
+
+message WorkflowInstanceEvent {
+  string workflow_instance_id = 1;
+  WorkflowInstanceEventType event_type = 2;
+
+  oneof details {
+    WorkflowInstanceStartedDetails started_details = 3;
+    WorkflowInstanceUpdatedDetails updated_details = 4;
+    WorkflowInstanceCompletedDetails completed_details = 5;
+    WorkflowInstanceFailedDetails failed_details = 6;
+  }
+}
+
+message WorkflowInstanceStartedDetails {}
+message WorkflowInstanceUpdatedDetails {}
+message WorkflowInstanceCompletedDetails {}
+message WorkflowInstanceFailedDetails {}

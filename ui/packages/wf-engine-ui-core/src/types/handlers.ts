@@ -2,7 +2,7 @@ import { StepType, WorkflowStepDefinition } from "@paulhalleux/wf-engine-api";
 import { NodeProps } from "@xyflow/react";
 import * as React from "react";
 
-import { FactoryContext } from "./graph.ts";
+import { FactoryContext, WorkflowGraphNode } from "./graph.ts";
 
 export type Size = {
   width: number;
@@ -14,7 +14,7 @@ export type StepHandler = {
   getNodeSize: (definition: WorkflowStepDefinition) => Size;
   getNextStepIds: (definition: WorkflowStepDefinition) => string[];
   getPreviousStepIds: (definition: WorkflowStepDefinition) => string[];
-  render: React.ComponentType<NodeProps>;
+  render: React.ComponentType<NodeProps<WorkflowGraphNode>>;
 };
 
 export type StepHandlerBaseFactory = (ctx: FactoryContext) => StepHandler;

@@ -16,7 +16,7 @@ export const createTaskStepHandler: StepHandlerFactory = (overridesFactory) => {
     return {
       stepType: StepType.StepTypeTask,
       getNodeSize: () => {
-        return { width: 120, height: 60 };
+        return { width: 120, height: 48 };
       },
       getNextStepIds: (definition) => {
         const config = getConfig(definition);

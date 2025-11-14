@@ -1,0 +1,20 @@
+type: websocket_request
+model: websocket_request
+id: wr_RdKK3bjh7K
+createdAt: 2025-11-14T10:20:35.342742600
+updatedAt: 2025-11-14T13:33:05.437645900
+workspaceId: wk_Kz3U9tLuVH
+folderId: fl_xcPDHSVLmv
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+message: |-
+  {
+    "id": "abc",
+    "type": "workflow_instance_update"
+  }
+name: WebSocket
+sortPriority: 1999.9999
+url: ${[ baseURL ]}/ws
+urlParameters: []

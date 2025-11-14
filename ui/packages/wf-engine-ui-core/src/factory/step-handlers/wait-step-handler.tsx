@@ -16,7 +16,7 @@ export const createWaitStepHandler: StepHandlerFactory = (overridesFactory) => {
     return {
       stepType: StepType.StepTypeWait,
       getNodeSize: () => {
-        return { width: 120, height: 60 };
+        return { width: 120, height: 48 };
       },
       getNextStepIds: (definition) => {
         const config = getConfig(definition);

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 
 	"github.com/paulhalleux/workflow-engine-go/engine/internal"
 	"github.com/paulhalleux/workflow-engine-go/engine/internal/grpcapi"
@@ -19,9 +20,16 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 type WorkflowEngineConfig = internal.WorkflowEngineConfig
+
+var upgrader = &websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true },
+}
 
 type Engine struct {
 	Config  *internal.WorkflowEngineConfig
@@ -30,6 +38,7 @@ type Engine struct {
 	persistence   *persistence.Persistence
 	agentRegistry *internal.AgentRegistry
 	db            *gorm.DB
+	wsHub         *internal.WebsocketHub
 
 	workflowDefinitionService *service.WorkflowDefinitionsService
 	workflowInstanceService   *service.WorkflowInstanceService
@@ -60,6 +69,8 @@ func NewEngine(
 	if err := pers.Migrate(); err != nil {
 		log.Fatalf("failed to migrate database: %v", err)
 	}
+
+	wsHub := internal.NewWebsocketHub()
 
 	workflowDefinitionService := service.NewWorkflowDefinitionsService(pers)
 	workflowInstanceService := service.NewWorkflowInstanceService(pers)
@@ -94,6 +105,7 @@ func NewEngine(
 		persistence:   pers,
 		agentRegistry: agentRegistry,
 		db:            database,
+		wsHub:         wsHub,
 
 		workflowDefinitionService: workflowDefinitionService,
 		workflowInstanceService:   workflowInstanceService,
@@ -161,11 +173,31 @@ func (e *Engine) startHttpServer() {
 	agentsHandlers.Register(api)
 	taskDefinitionsHandlers.Register(api)
 
+	r.GET("/ws", func(c *gin.Context) {
+		serveWS(c, e.wsHub)
+	})
+
 	addr := joinHostPort(e.Config.HttpAddress, e.Config.HttpPort)
 	log.Printf("[Engine] HTTP server running on %s", addr)
 	if err := r.Run(addr); err != nil {
 		log.Fatalf("failed to run HTTP server: %v", err)
 	}
+}
+
+func serveWS(ctx *gin.Context, hub *internal.WebsocketHub) {
+	ws, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	client := internal.NewWebsocketClient(ws, hub)
+	log.Printf("New client: %v", client.Conn.RemoteAddr())
+
+	hub.RegisterNewClient(client)
+
+	go client.Write()
+	go client.Read()
 }
 
 func createDatabase(config *WorkflowEngineConfig) (*gorm.DB, error) {

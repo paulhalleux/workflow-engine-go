@@ -16,7 +16,7 @@ export const createJoinStepHandler: StepHandlerFactory = (overridesFactory) => {
     return {
       stepType: StepType.StepTypeJoin,
       getNodeSize: () => {
-        return { width: 60, height: 60 };
+        return { width: 48, height: 48 };
       },
       getNextStepIds: (definition) => {
         const config = getConfig(definition);

@@ -2,7 +2,7 @@ import { WorkflowStepDefinition } from "@paulhalleux/wf-engine-api";
 import { NodeProps, Position } from "@xyflow/react";
 
 import { GraphNode } from "../../components";
-import { FactoryContext } from "../../types/graph.ts";
+import { FactoryContext, WorkflowGraphNode } from "../../types/graph.ts";
 
 /**
  * Creates a function that returns the IDs of the previous steps leading to the given step definition.
@@ -30,10 +30,10 @@ export const createPreviousStepGetter = (ctx: FactoryContext) => {
   };
 };
 
-export const defaultNodeRenderer = (node: NodeProps) => {
+export const defaultNodeRenderer = (node: NodeProps<WorkflowGraphNode>) => {
   return (
     <GraphNode.Root node={node}>
-      <GraphNode.Rectangle />
+      <GraphNode.Rectangle>{node.data.definition.name}</GraphNode.Rectangle>
       <GraphNode.Handle type="target" position={Position.Left} />
       <GraphNode.Handle type="source" position={Position.Right} />
     </GraphNode.Root>
