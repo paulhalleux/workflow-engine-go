@@ -4,7 +4,7 @@ import "@xyflow/react/dist/style.css";
 import { StepType, WorkflowDefinition } from "@paulhalleux/wf-engine-api";
 import { websocket } from "@paulhalleux/wf-engine-proto";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 
 import {
   createDecisionStepHandler,
@@ -16,28 +16,35 @@ import {
 } from "../factory/step-handlers";
 import { useWebsocketConnection } from "../hooks/useWebsocketConnection.ts";
 import { WorkflowDefinitionsQuery } from "../query";
+import { createProtobufProtocol } from "../utils/websocket.ts";
 import styles from "./app.module.css";
 import { WorkflowDefinitionGraph } from "./WorkflowDefinitionGraph.tsx";
 
-export function App() {
-  const { sendMessage } = useWebsocketConnection(
-    "ws://localhost:8080/ws",
-    websocket.WebsocketCommand,
-    websocket.WebsocketMessage,
-    (data) => {
-      console.log("WebSocket message received:", data);
-    },
-  );
+const protocol = createProtobufProtocol({
+  message: websocket.WebsocketMessage,
+  command: websocket.WebsocketCommand,
+});
 
-  useEffect(() => {
-    sendMessage({
-      type: websocket.WebsocketCommandType.SUBSCRIBE,
-      clientId: "ui-client-1",
-      subscribeCommand: {
-        scopes: [],
-      },
-    });
-  }, [sendMessage]);
+export function App() {
+  const clientId = useRef<string>(null);
+  const { sendMessage } = useWebsocketConnection({
+    url: "ws://localhost:8080/ws",
+    protocol,
+    onMessage: (data) => {
+      if (data.type === websocket.WebsocketMessageType.REGISTERED) {
+        clientId.current = data.registeredMessage.clientId;
+        sendMessage({
+          type: websocket.WebsocketCommandType.SUBSCRIBE,
+          clientId: clientId.current,
+          subscribeCommand: {
+            scopes: [],
+          },
+        });
+      } else {
+        console.log("WebSocket message received:", data);
+      }
+    },
+  });
 
   const { data: workflowDefinitions = [] } = useQuery(
     WorkflowDefinitionsQuery.getAll(),

@@ -1,14 +1,18 @@
-import { BinaryReader } from "@bufbuild/protobuf/wire";
 import * as React from "react";
 
-import { MessageFns } from "../types/ws.ts";
+import { WebsocketProtocol } from "../utils/websocket.ts";
 
-export const useWebsocketConnection = <Command, Message>(
-  url: string,
-  command: MessageFns<Command>,
-  message: MessageFns<Message>,
-  onMessage: (data: Message) => void,
-) => {
+type UseWebsocketConnectionArguments<Message, Command> = {
+  url: string;
+  protocol: WebsocketProtocol<Message, Command>;
+  onMessage: (data: Message) => void;
+};
+
+export const useWebsocketConnection = <Message, Command>({
+  url,
+  protocol,
+  onMessage,
+}: UseWebsocketConnectionArguments<Message, Command>) => {
   const ws = React.useRef<WebSocket | null>(null);
 
   const latestOnMessage = React.useRef(onMessage);
@@ -28,42 +32,25 @@ export const useWebsocketConnection = <Command, Message>(
     };
 
     ws.current.onmessage = async (event) => {
-      let bytes: Uint8Array;
-
-      if (typeof event.data === "string") {
-        console.warn("Received text message, ignoring binary decoder");
-        return;
-      } else if (event.data instanceof ArrayBuffer) {
-        bytes = new Uint8Array(event.data);
-      } else if (event.data instanceof Blob) {
-        const buffer = await event.data.arrayBuffer();
-        bytes = new Uint8Array(buffer);
-      } else {
-        console.warn("Unknown WebSocket message type", typeof event.data);
-        return;
-      }
-
-      const reader = new BinaryReader(bytes);
-      const decodedMessage = message.decode(reader);
+      const decodedMessage = protocol.decode(event);
       latestOnMessage.current(decodedMessage);
     };
 
     return () => {
       ws.current?.close();
     };
-  }, [url, message]);
+  }, [protocol, url]);
 
   const sendMessage = React.useCallback(
     (data: Command) => {
-      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-        const encodedMessage = command.encode(data).finish();
-        ws.current.send(encodedMessage);
-        console.log("WebSocket message sent:", data);
-      } else {
-        console.warn("WebSocket is not open. Unable to send message.");
+      if (!(ws.current && ws.current.readyState === WebSocket.OPEN)) {
+        return;
       }
+
+      const encodedMessage = protocol.encode(data);
+      ws.current.send(encodedMessage);
     },
-    [command],
+    [protocol],
   );
 
   return { sendMessage };
