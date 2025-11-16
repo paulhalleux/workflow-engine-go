@@ -23,6 +23,7 @@ type WorkflowExecutionResult struct {
 type WorkflowExecution struct {
 	WorkflowInstanceID string
 	StepCompletionChan chan string
+	StepInstanceIDs    map[string]string
 }
 
 type WorkflowExecutor struct {

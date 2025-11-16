@@ -5,7 +5,11 @@
     "packages/*"
   ],
   "devDependencies": {
-    "lerna": "^6.6.2"
+    "lerna": "^6.6.2",
+    "ts-protoc-gen": "^0.15.0"
   },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
+  "dependencies": {
+    "ts-proto": "^2.8.3"
+  }
 }

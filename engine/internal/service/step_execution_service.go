@@ -36,14 +36,22 @@ func (ws *StepExecutionService) StartStep(
 		return nil, errors.ErrStepDefinitionNotFound
 	}
 
+	stepId, ok := workflowExecution.StepInstanceIDs[stepDefinitionID]
+	if ok {
+		return &stepId, nil
+	}
+
 	instance := stepDefinition.NewInstance(
 		workflowInstance.WorkflowDefinitionID,
 		workflowInstance.ID,
-		stepDefinition.Parameters.ToResolved(
-			workflowInstance.Input.ToMap(),
-			&map[string]map[string]interface{}{},
-		),
+		&map[string]interface{}{},
+		//stepDefinition.Parameters.ToResolved(
+		//	workflowInstance.Input.ToMap(),
+		//	&map[string]map[string]interface{}{},
+		//),
 	)
+
+	workflowExecution.StepInstanceIDs[stepDefinitionID] = instance.ID
 
 	err := ws.persistence.StepInstances.Create(instance)
 	if err != nil {

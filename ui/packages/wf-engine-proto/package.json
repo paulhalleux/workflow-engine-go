@@ -1,0 +1,14 @@
+{
+  "name": "@paulhalleux/wf-engine-proto",
+  "version": "1.0.0",
+  "description": "Protocol Buffers definitions for wf-engine",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

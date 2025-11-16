@@ -2,8 +2,9 @@ import "@xyflow/react/dist/base.css";
 import "@xyflow/react/dist/style.css";
 
 import { StepType, WorkflowDefinition } from "@paulhalleux/wf-engine-api";
+import { websocket } from "@paulhalleux/wf-engine-proto";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   createDecisionStepHandler,
@@ -13,11 +14,31 @@ import {
   createWaitStepHandler,
   createWorkflowStepHandler,
 } from "../factory/step-handlers";
+import { useWebsocketConnection } from "../hooks/useWebsocketConnection.ts";
 import { WorkflowDefinitionsQuery } from "../query";
 import styles from "./app.module.css";
 import { WorkflowDefinitionGraph } from "./WorkflowDefinitionGraph.tsx";
 
 export function App() {
+  const { sendMessage } = useWebsocketConnection(
+    "ws://localhost:8080/ws",
+    websocket.WebsocketCommand,
+    websocket.WebsocketMessage,
+    (data) => {
+      console.log("WebSocket message received:", data);
+    },
+  );
+
+  useEffect(() => {
+    sendMessage({
+      type: websocket.WebsocketCommandType.SUBSCRIBE,
+      clientId: "ui-client-1",
+      subscribeCommand: {
+        scopes: [],
+      },
+    });
+  }, [sendMessage]);
+
   const { data: workflowDefinitions = [] } = useQuery(
     WorkflowDefinitionsQuery.getAll(),
   );

@@ -13,7 +13,7 @@ enum WebsocketScopeType {
 
 message WebsocketScope {
   WebsocketScopeType type = 1;
-  string id = 2;
+  optional string id = 2;
 }
 
 // Websocket Message
@@ -21,13 +21,16 @@ message WebsocketScope {
 enum WebsocketMessageType {
   WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED = 0;
   WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT = 1;
+  WEBSOCKET_MESSAGE_TYPE_REGISTERED = 2;
 }
 
 message WebsocketMessage {
   WebsocketMessageType type = 1;
+  WebsocketScope scope = 2;
 
   oneof payload {
-    WorkflowInstanceEvent workflow_instance_event = 2;
+    WorkflowInstanceEvent workflow_instance_event = 3;
+    RegisteredMessage registered_message = 4;
   }
 }
 
@@ -40,22 +43,16 @@ enum WebsocketCommandType {
 }
 
 message WebsocketCommand {
-  WebsocketCommandType type = 1;
+  string client_id = 1;
+  WebsocketCommandType type = 2;
 
   oneof command {
-    WebsocketSubscribeCommand subscribe_command = 2;
-    WebsocketUnsubscribeCommand unsubscribe_command = 3;
+    WebsocketSubscribeCommand subscribe_command = 3;
   }
 }
 
 message WebsocketSubscribeCommand {
-  WebsocketScopeType scope_type = 1;
-  string scope_id = 2;
-}
-
-message WebsocketUnsubscribeCommand {
-  WebsocketScopeType scope_type = 1;
-  string scope_id = 2;
+  repeated WebsocketScope scopes = 1;
 }
 
 // Workflow Instance Event
@@ -66,6 +63,7 @@ enum WorkflowInstanceEventType {
   WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED = 2;
   WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED = 3;
   WORKFLOW_INSTANCE_EVENT_TYPE_FAILED = 4;
+  WORKFLOW_INSTANCE_EVENT_TYPE_CREATED = 5;
 }
 
 message WorkflowInstanceEvent {
@@ -77,6 +75,7 @@ message WorkflowInstanceEvent {
     WorkflowInstanceUpdatedDetails updated_details = 4;
     WorkflowInstanceCompletedDetails completed_details = 5;
     WorkflowInstanceFailedDetails failed_details = 6;
+    WorkflowInstanceCreatedDetails created_details = 7;
   }
 }
 
@@ -84,3 +83,10 @@ message WorkflowInstanceStartedDetails {}
 message WorkflowInstanceUpdatedDetails {}
 message WorkflowInstanceCompletedDetails {}
 message WorkflowInstanceFailedDetails {}
+message WorkflowInstanceCreatedDetails {}
+
+// Registered Message
+
+message RegisteredMessage {
+  string client_id = 1;
+}

@@ -72,6 +72,7 @@ type WebsocketMessageType int32
 const (
 	WebsocketMessageType_WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED             WebsocketMessageType = 0
 	WebsocketMessageType_WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT WebsocketMessageType = 1
+	WebsocketMessageType_WEBSOCKET_MESSAGE_TYPE_REGISTERED              WebsocketMessageType = 2
 )
 
 // Enum value maps for WebsocketMessageType.
@@ -79,10 +80,12 @@ var (
 	WebsocketMessageType_name = map[int32]string{
 		0: "WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED",
 		1: "WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT",
+		2: "WEBSOCKET_MESSAGE_TYPE_REGISTERED",
 	}
 	WebsocketMessageType_value = map[string]int32{
 		"WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED":             0,
 		"WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT": 1,
+		"WEBSOCKET_MESSAGE_TYPE_REGISTERED":              2,
 	}
 )
 
@@ -170,6 +173,7 @@ const (
 	WorkflowInstanceEventType_WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED     WorkflowInstanceEventType = 2
 	WorkflowInstanceEventType_WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED   WorkflowInstanceEventType = 3
 	WorkflowInstanceEventType_WORKFLOW_INSTANCE_EVENT_TYPE_FAILED      WorkflowInstanceEventType = 4
+	WorkflowInstanceEventType_WORKFLOW_INSTANCE_EVENT_TYPE_CREATED     WorkflowInstanceEventType = 5
 )
 
 // Enum value maps for WorkflowInstanceEventType.
@@ -180,6 +184,7 @@ var (
 		2: "WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED",
 		3: "WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED",
 		4: "WORKFLOW_INSTANCE_EVENT_TYPE_FAILED",
+		5: "WORKFLOW_INSTANCE_EVENT_TYPE_CREATED",
 	}
 	WorkflowInstanceEventType_value = map[string]int32{
 		"WORKFLOW_INSTANCE_EVENT_TYPE_UNSPECIFIED": 0,
@@ -187,6 +192,7 @@ var (
 		"WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED":     2,
 		"WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED":   3,
 		"WORKFLOW_INSTANCE_EVENT_TYPE_FAILED":      4,
+		"WORKFLOW_INSTANCE_EVENT_TYPE_CREATED":     5,
 	}
 )
 
@@ -220,7 +226,7 @@ func (WorkflowInstanceEventType) EnumDescriptor() ([]byte, []int) {
 type WebsocketScope struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Type          WebsocketScopeType     `protobuf:"varint,1,opt,name=type,proto3,enum=websocket.WebsocketScopeType" json:"type,omitempty"`
-	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	Id            *string                `protobuf:"bytes,2,opt,name=id,proto3,oneof" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -263,8 +269,8 @@ func (x *WebsocketScope) GetType() WebsocketScopeType {
 }
 
 func (x *WebsocketScope) GetId() string {
-	if x != nil {
-		return x.Id
+	if x != nil && x.Id != nil {
+		return *x.Id
 	}
 	return ""
 }
@@ -272,9 +278,11 @@ func (x *WebsocketScope) GetId() string {
 type WebsocketMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Type  WebsocketMessageType   `protobuf:"varint,1,opt,name=type,proto3,enum=websocket.WebsocketMessageType" json:"type,omitempty"`
+	Scope *WebsocketScope        `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"`
 	// Types that are valid to be assigned to Payload:
 	//
 	//	*WebsocketMessage_WorkflowInstanceEvent
+	//	*WebsocketMessage_RegisteredMessage
 	Payload       isWebsocketMessage_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -317,6 +325,13 @@ func (x *WebsocketMessage) GetType() WebsocketMessageType {
 	return WebsocketMessageType_WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED
 }
 
+func (x *WebsocketMessage) GetScope() *WebsocketScope {
+	if x != nil {
+		return x.Scope
+	}
+	return nil
+}
+
 func (x *WebsocketMessage) GetPayload() isWebsocketMessage_Payload {
 	if x != nil {
 		return x.Payload
@@ -333,23 +348,38 @@ func (x *WebsocketMessage) GetWorkflowInstanceEvent() *WorkflowInstanceEvent {
 	return nil
 }
 
+func (x *WebsocketMessage) GetRegisteredMessage() *RegisteredMessage {
+	if x != nil {
+		if x, ok := x.Payload.(*WebsocketMessage_RegisteredMessage); ok {
+			return x.RegisteredMessage
+		}
+	}
+	return nil
+}
+
 type isWebsocketMessage_Payload interface {
 	isWebsocketMessage_Payload()
 }
 
 type WebsocketMessage_WorkflowInstanceEvent struct {
-	WorkflowInstanceEvent *WorkflowInstanceEvent `protobuf:"bytes,2,opt,name=workflow_instance_event,json=workflowInstanceEvent,proto3,oneof"`
+	WorkflowInstanceEvent *WorkflowInstanceEvent `protobuf:"bytes,3,opt,name=workflow_instance_event,json=workflowInstanceEvent,proto3,oneof"`
+}
+
+type WebsocketMessage_RegisteredMessage struct {
+	RegisteredMessage *RegisteredMessage `protobuf:"bytes,4,opt,name=registered_message,json=registeredMessage,proto3,oneof"`
 }
 
 func (*WebsocketMessage_WorkflowInstanceEvent) isWebsocketMessage_Payload() {}
 
+func (*WebsocketMessage_RegisteredMessage) isWebsocketMessage_Payload() {}
+
 type WebsocketCommand struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	Type  WebsocketCommandType   `protobuf:"varint,1,opt,name=type,proto3,enum=websocket.WebsocketCommandType" json:"type,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	ClientId string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	Type     WebsocketCommandType   `protobuf:"varint,2,opt,name=type,proto3,enum=websocket.WebsocketCommandType" json:"type,omitempty"`
 	// Types that are valid to be assigned to Command:
 	//
 	//	*WebsocketCommand_SubscribeCommand
-	//	*WebsocketCommand_UnsubscribeCommand
 	Command       isWebsocketCommand_Command `protobuf_oneof:"command"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -385,6 +415,13 @@ func (*WebsocketCommand) Descriptor() ([]byte, []int) {
 	return file_definition_websocket_proto_rawDescGZIP(), []int{2}
 }
 
+func (x *WebsocketCommand) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
 func (x *WebsocketCommand) GetType() WebsocketCommandType {
 	if x != nil {
 		return x.Type
@@ -408,35 +445,19 @@ func (x *WebsocketCommand) GetSubscribeCommand() *WebsocketSubscribeCommand {
 	return nil
 }
 
-func (x *WebsocketCommand) GetUnsubscribeCommand() *WebsocketUnsubscribeCommand {
-	if x != nil {
-		if x, ok := x.Command.(*WebsocketCommand_UnsubscribeCommand); ok {
-			return x.UnsubscribeCommand
-		}
-	}
-	return nil
-}
-
 type isWebsocketCommand_Command interface {
 	isWebsocketCommand_Command()
 }
 
 type WebsocketCommand_SubscribeCommand struct {
-	SubscribeCommand *WebsocketSubscribeCommand `protobuf:"bytes,2,opt,name=subscribe_command,json=subscribeCommand,proto3,oneof"`
-}
-
-type WebsocketCommand_UnsubscribeCommand struct {
-	UnsubscribeCommand *WebsocketUnsubscribeCommand `protobuf:"bytes,3,opt,name=unsubscribe_command,json=unsubscribeCommand,proto3,oneof"`
+	SubscribeCommand *WebsocketSubscribeCommand `protobuf:"bytes,3,opt,name=subscribe_command,json=subscribeCommand,proto3,oneof"`
 }
 
 func (*WebsocketCommand_SubscribeCommand) isWebsocketCommand_Command() {}
 
-func (*WebsocketCommand_UnsubscribeCommand) isWebsocketCommand_Command() {}
-
 type WebsocketSubscribeCommand struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ScopeType     WebsocketScopeType     `protobuf:"varint,1,opt,name=scope_type,json=scopeType,proto3,enum=websocket.WebsocketScopeType" json:"scope_type,omitempty"`
-	ScopeId       string                 `protobuf:"bytes,2,opt,name=scope_id,json=scopeId,proto3" json:"scope_id,omitempty"`
+	Scopes        []*WebsocketScope      `protobuf:"bytes,1,rep,name=scopes,proto3" json:"scopes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -471,70 +492,11 @@ func (*WebsocketSubscribeCommand) Descriptor() ([]byte, []int) {
 	return file_definition_websocket_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *WebsocketSubscribeCommand) GetScopeType() WebsocketScopeType {
+func (x *WebsocketSubscribeCommand) GetScopes() []*WebsocketScope {
 	if x != nil {
-		return x.ScopeType
+		return x.Scopes
 	}
-	return WebsocketScopeType_WEBSOCKET_SCOPE_TYPE_UNSPECIFIED
-}
-
-func (x *WebsocketSubscribeCommand) GetScopeId() string {
-	if x != nil {
-		return x.ScopeId
-	}
-	return ""
-}
-
-type WebsocketUnsubscribeCommand struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ScopeType     WebsocketScopeType     `protobuf:"varint,1,opt,name=scope_type,json=scopeType,proto3,enum=websocket.WebsocketScopeType" json:"scope_type,omitempty"`
-	ScopeId       string                 `protobuf:"bytes,2,opt,name=scope_id,json=scopeId,proto3" json:"scope_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *WebsocketUnsubscribeCommand) Reset() {
-	*x = WebsocketUnsubscribeCommand{}
-	mi := &file_definition_websocket_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WebsocketUnsubscribeCommand) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WebsocketUnsubscribeCommand) ProtoMessage() {}
-
-func (x *WebsocketUnsubscribeCommand) ProtoReflect() protoreflect.Message {
-	mi := &file_definition_websocket_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use WebsocketUnsubscribeCommand.ProtoReflect.Descriptor instead.
-func (*WebsocketUnsubscribeCommand) Descriptor() ([]byte, []int) {
-	return file_definition_websocket_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *WebsocketUnsubscribeCommand) GetScopeType() WebsocketScopeType {
-	if x != nil {
-		return x.ScopeType
-	}
-	return WebsocketScopeType_WEBSOCKET_SCOPE_TYPE_UNSPECIFIED
-}
-
-func (x *WebsocketUnsubscribeCommand) GetScopeId() string {
-	if x != nil {
-		return x.ScopeId
-	}
-	return ""
+	return nil
 }
 
 type WorkflowInstanceEvent struct {
@@ -547,6 +509,7 @@ type WorkflowInstanceEvent struct {
 	//	*WorkflowInstanceEvent_UpdatedDetails
 	//	*WorkflowInstanceEvent_CompletedDetails
 	//	*WorkflowInstanceEvent_FailedDetails
+	//	*WorkflowInstanceEvent_CreatedDetails
 	Details       isWorkflowInstanceEvent_Details `protobuf_oneof:"details"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -554,7 +517,7 @@ type WorkflowInstanceEvent struct {
 
 func (x *WorkflowInstanceEvent) Reset() {
 	*x = WorkflowInstanceEvent{}
-	mi := &file_definition_websocket_proto_msgTypes[5]
+	mi := &file_definition_websocket_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -566,7 +529,7 @@ func (x *WorkflowInstanceEvent) String() string {
 func (*WorkflowInstanceEvent) ProtoMessage() {}
 
 func (x *WorkflowInstanceEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_definition_websocket_proto_msgTypes[5]
+	mi := &file_definition_websocket_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -579,7 +542,7 @@ func (x *WorkflowInstanceEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowInstanceEvent.ProtoReflect.Descriptor instead.
 func (*WorkflowInstanceEvent) Descriptor() ([]byte, []int) {
-	return file_definition_websocket_proto_rawDescGZIP(), []int{5}
+	return file_definition_websocket_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *WorkflowInstanceEvent) GetWorkflowInstanceId() string {
@@ -639,6 +602,15 @@ func (x *WorkflowInstanceEvent) GetFailedDetails() *WorkflowInstanceFailedDetail
 	return nil
 }
 
+func (x *WorkflowInstanceEvent) GetCreatedDetails() *WorkflowInstanceCreatedDetails {
+	if x != nil {
+		if x, ok := x.Details.(*WorkflowInstanceEvent_CreatedDetails); ok {
+			return x.CreatedDetails
+		}
+	}
+	return nil
+}
+
 type isWorkflowInstanceEvent_Details interface {
 	isWorkflowInstanceEvent_Details()
 }
@@ -659,6 +631,10 @@ type WorkflowInstanceEvent_FailedDetails struct {
 	FailedDetails *WorkflowInstanceFailedDetails `protobuf:"bytes,6,opt,name=failed_details,json=failedDetails,proto3,oneof"`
 }
 
+type WorkflowInstanceEvent_CreatedDetails struct {
+	CreatedDetails *WorkflowInstanceCreatedDetails `protobuf:"bytes,7,opt,name=created_details,json=createdDetails,proto3,oneof"`
+}
+
 func (*WorkflowInstanceEvent_StartedDetails) isWorkflowInstanceEvent_Details() {}
 
 func (*WorkflowInstanceEvent_UpdatedDetails) isWorkflowInstanceEvent_Details() {}
@@ -666,6 +642,8 @@ func (*WorkflowInstanceEvent_UpdatedDetails) isWorkflowInstanceEvent_Details() {
 func (*WorkflowInstanceEvent_CompletedDetails) isWorkflowInstanceEvent_Details() {}
 
 func (*WorkflowInstanceEvent_FailedDetails) isWorkflowInstanceEvent_Details() {}
+
+func (*WorkflowInstanceEvent_CreatedDetails) isWorkflowInstanceEvent_Details() {}
 
 type WorkflowInstanceStartedDetails struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -675,7 +653,7 @@ type WorkflowInstanceStartedDetails struct {
 
 func (x *WorkflowInstanceStartedDetails) Reset() {
 	*x = WorkflowInstanceStartedDetails{}
-	mi := &file_definition_websocket_proto_msgTypes[6]
+	mi := &file_definition_websocket_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -687,7 +665,7 @@ func (x *WorkflowInstanceStartedDetails) String() string {
 func (*WorkflowInstanceStartedDetails) ProtoMessage() {}
 
 func (x *WorkflowInstanceStartedDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_definition_websocket_proto_msgTypes[6]
+	mi := &file_definition_websocket_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -700,7 +678,7 @@ func (x *WorkflowInstanceStartedDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowInstanceStartedDetails.ProtoReflect.Descriptor instead.
 func (*WorkflowInstanceStartedDetails) Descriptor() ([]byte, []int) {
-	return file_definition_websocket_proto_rawDescGZIP(), []int{6}
+	return file_definition_websocket_proto_rawDescGZIP(), []int{5}
 }
 
 type WorkflowInstanceUpdatedDetails struct {
@@ -711,7 +689,7 @@ type WorkflowInstanceUpdatedDetails struct {
 
 func (x *WorkflowInstanceUpdatedDetails) Reset() {
 	*x = WorkflowInstanceUpdatedDetails{}
-	mi := &file_definition_websocket_proto_msgTypes[7]
+	mi := &file_definition_websocket_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -723,7 +701,7 @@ func (x *WorkflowInstanceUpdatedDetails) String() string {
 func (*WorkflowInstanceUpdatedDetails) ProtoMessage() {}
 
 func (x *WorkflowInstanceUpdatedDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_definition_websocket_proto_msgTypes[7]
+	mi := &file_definition_websocket_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -736,7 +714,7 @@ func (x *WorkflowInstanceUpdatedDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowInstanceUpdatedDetails.ProtoReflect.Descriptor instead.
 func (*WorkflowInstanceUpdatedDetails) Descriptor() ([]byte, []int) {
-	return file_definition_websocket_proto_rawDescGZIP(), []int{7}
+	return file_definition_websocket_proto_rawDescGZIP(), []int{6}
 }
 
 type WorkflowInstanceCompletedDetails struct {
@@ -747,7 +725,7 @@ type WorkflowInstanceCompletedDetails struct {
 
 func (x *WorkflowInstanceCompletedDetails) Reset() {
 	*x = WorkflowInstanceCompletedDetails{}
-	mi := &file_definition_websocket_proto_msgTypes[8]
+	mi := &file_definition_websocket_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -759,7 +737,7 @@ func (x *WorkflowInstanceCompletedDetails) String() string {
 func (*WorkflowInstanceCompletedDetails) ProtoMessage() {}
 
 func (x *WorkflowInstanceCompletedDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_definition_websocket_proto_msgTypes[8]
+	mi := &file_definition_websocket_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -772,7 +750,7 @@ func (x *WorkflowInstanceCompletedDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowInstanceCompletedDetails.ProtoReflect.Descriptor instead.
 func (*WorkflowInstanceCompletedDetails) Descriptor() ([]byte, []int) {
-	return file_definition_websocket_proto_rawDescGZIP(), []int{8}
+	return file_definition_websocket_proto_rawDescGZIP(), []int{7}
 }
 
 type WorkflowInstanceFailedDetails struct {
@@ -783,7 +761,7 @@ type WorkflowInstanceFailedDetails struct {
 
 func (x *WorkflowInstanceFailedDetails) Reset() {
 	*x = WorkflowInstanceFailedDetails{}
-	mi := &file_definition_websocket_proto_msgTypes[9]
+	mi := &file_definition_websocket_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -795,7 +773,7 @@ func (x *WorkflowInstanceFailedDetails) String() string {
 func (*WorkflowInstanceFailedDetails) ProtoMessage() {}
 
 func (x *WorkflowInstanceFailedDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_definition_websocket_proto_msgTypes[9]
+	mi := &file_definition_websocket_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -808,34 +786,111 @@ func (x *WorkflowInstanceFailedDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowInstanceFailedDetails.ProtoReflect.Descriptor instead.
 func (*WorkflowInstanceFailedDetails) Descriptor() ([]byte, []int) {
+	return file_definition_websocket_proto_rawDescGZIP(), []int{8}
+}
+
+type WorkflowInstanceCreatedDetails struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WorkflowInstanceCreatedDetails) Reset() {
+	*x = WorkflowInstanceCreatedDetails{}
+	mi := &file_definition_websocket_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkflowInstanceCreatedDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkflowInstanceCreatedDetails) ProtoMessage() {}
+
+func (x *WorkflowInstanceCreatedDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_definition_websocket_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkflowInstanceCreatedDetails.ProtoReflect.Descriptor instead.
+func (*WorkflowInstanceCreatedDetails) Descriptor() ([]byte, []int) {
 	return file_definition_websocket_proto_rawDescGZIP(), []int{9}
+}
+
+type RegisteredMessage struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisteredMessage) Reset() {
+	*x = RegisteredMessage{}
+	mi := &file_definition_websocket_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisteredMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisteredMessage) ProtoMessage() {}
+
+func (x *RegisteredMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_definition_websocket_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisteredMessage.ProtoReflect.Descriptor instead.
+func (*RegisteredMessage) Descriptor() ([]byte, []int) {
+	return file_definition_websocket_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *RegisteredMessage) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
 }
 
 var File_definition_websocket_proto protoreflect.FileDescriptor
 
 const file_definition_websocket_proto_rawDesc = "" +
 	"\n" +
-	"\x1adefinition/websocket.proto\x12\twebsocket\"S\n" +
+	"\x1adefinition/websocket.proto\x12\twebsocket\"_\n" +
 	"\x0eWebsocketScope\x121\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x1d.websocket.WebsocketScopeTypeR\x04type\x12\x0e\n" +
-	"\x02id\x18\x02 \x01(\tR\x02id\"\xae\x01\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x1d.websocket.WebsocketScopeTypeR\x04type\x12\x13\n" +
+	"\x02id\x18\x02 \x01(\tH\x00R\x02id\x88\x01\x01B\x05\n" +
+	"\x03_id\"\xae\x02\n" +
 	"\x10WebsocketMessage\x123\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x1f.websocket.WebsocketMessageTypeR\x04type\x12Z\n" +
-	"\x17workflow_instance_event\x18\x02 \x01(\v2 .websocket.WorkflowInstanceEventH\x00R\x15workflowInstanceEventB\t\n" +
-	"\apayload\"\x82\x02\n" +
-	"\x10WebsocketCommand\x123\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x1f.websocket.WebsocketCommandTypeR\x04type\x12S\n" +
-	"\x11subscribe_command\x18\x02 \x01(\v2$.websocket.WebsocketSubscribeCommandH\x00R\x10subscribeCommand\x12Y\n" +
-	"\x13unsubscribe_command\x18\x03 \x01(\v2&.websocket.WebsocketUnsubscribeCommandH\x00R\x12unsubscribeCommandB\t\n" +
-	"\acommand\"t\n" +
-	"\x19WebsocketSubscribeCommand\x12<\n" +
-	"\n" +
-	"scope_type\x18\x01 \x01(\x0e2\x1d.websocket.WebsocketScopeTypeR\tscopeType\x12\x19\n" +
-	"\bscope_id\x18\x02 \x01(\tR\ascopeId\"v\n" +
-	"\x1bWebsocketUnsubscribeCommand\x12<\n" +
-	"\n" +
-	"scope_type\x18\x01 \x01(\x0e2\x1d.websocket.WebsocketScopeTypeR\tscopeType\x12\x19\n" +
-	"\bscope_id\x18\x02 \x01(\tR\ascopeId\"\xf4\x03\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x1f.websocket.WebsocketMessageTypeR\x04type\x12/\n" +
+	"\x05scope\x18\x02 \x01(\v2\x19.websocket.WebsocketScopeR\x05scope\x12Z\n" +
+	"\x17workflow_instance_event\x18\x03 \x01(\v2 .websocket.WorkflowInstanceEventH\x00R\x15workflowInstanceEvent\x12M\n" +
+	"\x12registered_message\x18\x04 \x01(\v2\x1c.websocket.RegisteredMessageH\x00R\x11registeredMessageB\t\n" +
+	"\apayload\"\xc4\x01\n" +
+	"\x10WebsocketCommand\x12\x1b\n" +
+	"\tclient_id\x18\x01 \x01(\tR\bclientId\x123\n" +
+	"\x04type\x18\x02 \x01(\x0e2\x1f.websocket.WebsocketCommandTypeR\x04type\x12S\n" +
+	"\x11subscribe_command\x18\x03 \x01(\v2$.websocket.WebsocketSubscribeCommandH\x00R\x10subscribeCommandB\t\n" +
+	"\acommand\"N\n" +
+	"\x19WebsocketSubscribeCommand\x121\n" +
+	"\x06scopes\x18\x01 \x03(\v2\x19.websocket.WebsocketScopeR\x06scopes\"\xca\x04\n" +
 	"\x15WorkflowInstanceEvent\x120\n" +
 	"\x14workflow_instance_id\x18\x01 \x01(\tR\x12workflowInstanceId\x12C\n" +
 	"\n" +
@@ -843,28 +898,34 @@ const file_definition_websocket_proto_rawDesc = "" +
 	"\x0fstarted_details\x18\x03 \x01(\v2).websocket.WorkflowInstanceStartedDetailsH\x00R\x0estartedDetails\x12T\n" +
 	"\x0fupdated_details\x18\x04 \x01(\v2).websocket.WorkflowInstanceUpdatedDetailsH\x00R\x0eupdatedDetails\x12Z\n" +
 	"\x11completed_details\x18\x05 \x01(\v2+.websocket.WorkflowInstanceCompletedDetailsH\x00R\x10completedDetails\x12Q\n" +
-	"\x0efailed_details\x18\x06 \x01(\v2(.websocket.WorkflowInstanceFailedDetailsH\x00R\rfailedDetailsB\t\n" +
+	"\x0efailed_details\x18\x06 \x01(\v2(.websocket.WorkflowInstanceFailedDetailsH\x00R\rfailedDetails\x12T\n" +
+	"\x0fcreated_details\x18\a \x01(\v2).websocket.WorkflowInstanceCreatedDetailsH\x00R\x0ecreatedDetailsB\t\n" +
 	"\adetails\" \n" +
 	"\x1eWorkflowInstanceStartedDetails\" \n" +
 	"\x1eWorkflowInstanceUpdatedDetails\"\"\n" +
 	" WorkflowInstanceCompletedDetails\"\x1f\n" +
-	"\x1dWorkflowInstanceFailedDetails*f\n" +
+	"\x1dWorkflowInstanceFailedDetails\" \n" +
+	"\x1eWorkflowInstanceCreatedDetails\"0\n" +
+	"\x11RegisteredMessage\x12\x1b\n" +
+	"\tclient_id\x18\x01 \x01(\tR\bclientId*f\n" +
 	"\x12WebsocketScopeType\x12$\n" +
 	" WEBSOCKET_SCOPE_TYPE_UNSPECIFIED\x10\x00\x12*\n" +
-	"&WEBSOCKET_SCOPE_TYPE_WORKFLOW_INSTANCE\x10\x01*r\n" +
+	"&WEBSOCKET_SCOPE_TYPE_WORKFLOW_INSTANCE\x10\x01*\x99\x01\n" +
 	"\x14WebsocketMessageType\x12&\n" +
 	"\"WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED\x10\x00\x122\n" +
-	".WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT\x10\x01*\x8c\x01\n" +
+	".WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT\x10\x01\x12%\n" +
+	"!WEBSOCKET_MESSAGE_TYPE_REGISTERED\x10\x02*\x8c\x01\n" +
 	"\x14WebsocketCommandType\x12&\n" +
 	"\"WEBSOCKET_COMMAND_TYPE_UNSPECIFIED\x10\x00\x12$\n" +
 	" WEBSOCKET_COMMAND_TYPE_SUBSCRIBE\x10\x01\x12&\n" +
-	"\"WEBSOCKET_COMMAND_TYPE_UNSUBSCRIBE\x10\x02*\xf2\x01\n" +
+	"\"WEBSOCKET_COMMAND_TYPE_UNSUBSCRIBE\x10\x02*\x9c\x02\n" +
 	"\x19WorkflowInstanceEventType\x12,\n" +
 	"(WORKFLOW_INSTANCE_EVENT_TYPE_UNSPECIFIED\x10\x00\x12(\n" +
 	"$WORKFLOW_INSTANCE_EVENT_TYPE_STARTED\x10\x01\x12(\n" +
 	"$WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED\x10\x02\x12*\n" +
 	"&WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED\x10\x03\x12'\n" +
-	"#WORKFLOW_INSTANCE_EVENT_TYPE_FAILED\x10\x04B\tZ\a./protob\x06proto3"
+	"#WORKFLOW_INSTANCE_EVENT_TYPE_FAILED\x10\x04\x12(\n" +
+	"$WORKFLOW_INSTANCE_EVENT_TYPE_CREATED\x10\x05B\tZ\a./protob\x06proto3"
 
 var (
 	file_definition_websocket_proto_rawDescOnce sync.Once
@@ -879,7 +940,7 @@ func file_definition_websocket_proto_rawDescGZIP() []byte {
 }
 
 var file_definition_websocket_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_definition_websocket_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_definition_websocket_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_definition_websocket_proto_goTypes = []any{
 	(WebsocketScopeType)(0),                  // 0: websocket.WebsocketScopeType
 	(WebsocketMessageType)(0),                // 1: websocket.WebsocketMessageType
@@ -889,32 +950,34 @@ var file_definition_websocket_proto_goTypes = []any{
 	(*WebsocketMessage)(nil),                 // 5: websocket.WebsocketMessage
 	(*WebsocketCommand)(nil),                 // 6: websocket.WebsocketCommand
 	(*WebsocketSubscribeCommand)(nil),        // 7: websocket.WebsocketSubscribeCommand
-	(*WebsocketUnsubscribeCommand)(nil),      // 8: websocket.WebsocketUnsubscribeCommand
-	(*WorkflowInstanceEvent)(nil),            // 9: websocket.WorkflowInstanceEvent
-	(*WorkflowInstanceStartedDetails)(nil),   // 10: websocket.WorkflowInstanceStartedDetails
-	(*WorkflowInstanceUpdatedDetails)(nil),   // 11: websocket.WorkflowInstanceUpdatedDetails
-	(*WorkflowInstanceCompletedDetails)(nil), // 12: websocket.WorkflowInstanceCompletedDetails
-	(*WorkflowInstanceFailedDetails)(nil),    // 13: websocket.WorkflowInstanceFailedDetails
+	(*WorkflowInstanceEvent)(nil),            // 8: websocket.WorkflowInstanceEvent
+	(*WorkflowInstanceStartedDetails)(nil),   // 9: websocket.WorkflowInstanceStartedDetails
+	(*WorkflowInstanceUpdatedDetails)(nil),   // 10: websocket.WorkflowInstanceUpdatedDetails
+	(*WorkflowInstanceCompletedDetails)(nil), // 11: websocket.WorkflowInstanceCompletedDetails
+	(*WorkflowInstanceFailedDetails)(nil),    // 12: websocket.WorkflowInstanceFailedDetails
+	(*WorkflowInstanceCreatedDetails)(nil),   // 13: websocket.WorkflowInstanceCreatedDetails
+	(*RegisteredMessage)(nil),                // 14: websocket.RegisteredMessage
 }
 var file_definition_websocket_proto_depIdxs = []int32{
 	0,  // 0: websocket.WebsocketScope.type:type_name -> websocket.WebsocketScopeType
 	1,  // 1: websocket.WebsocketMessage.type:type_name -> websocket.WebsocketMessageType
-	9,  // 2: websocket.WebsocketMessage.workflow_instance_event:type_name -> websocket.WorkflowInstanceEvent
-	2,  // 3: websocket.WebsocketCommand.type:type_name -> websocket.WebsocketCommandType
-	7,  // 4: websocket.WebsocketCommand.subscribe_command:type_name -> websocket.WebsocketSubscribeCommand
-	8,  // 5: websocket.WebsocketCommand.unsubscribe_command:type_name -> websocket.WebsocketUnsubscribeCommand
-	0,  // 6: websocket.WebsocketSubscribeCommand.scope_type:type_name -> websocket.WebsocketScopeType
-	0,  // 7: websocket.WebsocketUnsubscribeCommand.scope_type:type_name -> websocket.WebsocketScopeType
+	4,  // 2: websocket.WebsocketMessage.scope:type_name -> websocket.WebsocketScope
+	8,  // 3: websocket.WebsocketMessage.workflow_instance_event:type_name -> websocket.WorkflowInstanceEvent
+	14, // 4: websocket.WebsocketMessage.registered_message:type_name -> websocket.RegisteredMessage
+	2,  // 5: websocket.WebsocketCommand.type:type_name -> websocket.WebsocketCommandType
+	7,  // 6: websocket.WebsocketCommand.subscribe_command:type_name -> websocket.WebsocketSubscribeCommand
+	4,  // 7: websocket.WebsocketSubscribeCommand.scopes:type_name -> websocket.WebsocketScope
 	3,  // 8: websocket.WorkflowInstanceEvent.event_type:type_name -> websocket.WorkflowInstanceEventType
-	10, // 9: websocket.WorkflowInstanceEvent.started_details:type_name -> websocket.WorkflowInstanceStartedDetails
-	11, // 10: websocket.WorkflowInstanceEvent.updated_details:type_name -> websocket.WorkflowInstanceUpdatedDetails
-	12, // 11: websocket.WorkflowInstanceEvent.completed_details:type_name -> websocket.WorkflowInstanceCompletedDetails
-	13, // 12: websocket.WorkflowInstanceEvent.failed_details:type_name -> websocket.WorkflowInstanceFailedDetails
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	9,  // 9: websocket.WorkflowInstanceEvent.started_details:type_name -> websocket.WorkflowInstanceStartedDetails
+	10, // 10: websocket.WorkflowInstanceEvent.updated_details:type_name -> websocket.WorkflowInstanceUpdatedDetails
+	11, // 11: websocket.WorkflowInstanceEvent.completed_details:type_name -> websocket.WorkflowInstanceCompletedDetails
+	12, // 12: websocket.WorkflowInstanceEvent.failed_details:type_name -> websocket.WorkflowInstanceFailedDetails
+	13, // 13: websocket.WorkflowInstanceEvent.created_details:type_name -> websocket.WorkflowInstanceCreatedDetails
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_definition_websocket_proto_init() }
@@ -922,18 +985,20 @@ func file_definition_websocket_proto_init() {
 	if File_definition_websocket_proto != nil {
 		return
 	}
+	file_definition_websocket_proto_msgTypes[0].OneofWrappers = []any{}
 	file_definition_websocket_proto_msgTypes[1].OneofWrappers = []any{
 		(*WebsocketMessage_WorkflowInstanceEvent)(nil),
+		(*WebsocketMessage_RegisteredMessage)(nil),
 	}
 	file_definition_websocket_proto_msgTypes[2].OneofWrappers = []any{
 		(*WebsocketCommand_SubscribeCommand)(nil),
-		(*WebsocketCommand_UnsubscribeCommand)(nil),
 	}
-	file_definition_websocket_proto_msgTypes[5].OneofWrappers = []any{
+	file_definition_websocket_proto_msgTypes[4].OneofWrappers = []any{
 		(*WorkflowInstanceEvent_StartedDetails)(nil),
 		(*WorkflowInstanceEvent_UpdatedDetails)(nil),
 		(*WorkflowInstanceEvent_CompletedDetails)(nil),
 		(*WorkflowInstanceEvent_FailedDetails)(nil),
+		(*WorkflowInstanceEvent_CreatedDetails)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -941,7 +1006,7 @@ func file_definition_websocket_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_definition_websocket_proto_rawDesc), len(file_definition_websocket_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

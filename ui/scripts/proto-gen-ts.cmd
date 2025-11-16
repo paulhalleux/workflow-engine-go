@@ -1,0 +1,1 @@
+protoc --plugin=.\node_modules\.bin\protoc-gen-ts_proto --ts_proto_opt=outputIndex=true --ts_proto_out=".\packages\wf-engine-proto\src" --proto_path="..\proto\definition\" websocket.proto

@@ -91,6 +91,7 @@ func NewEngine(
 		workflowDefinitionService,
 		pers,
 		workflowExecutor,
+		wsHub,
 	)
 
 	stepExecutor.RegisterTypeExecutor(models.StepTypeTask, service.NewAgentStepExecutor(agentRegistry, agentTaskChan))
@@ -129,6 +130,7 @@ func (e *Engine) Start() {
 	go e.startHttpServer()
 	go e.workflowExecutor.Start(e.Context)
 	go e.stepExecutor.Start(e.Context)
+	go e.wsHub.Run()
 
 	<-e.Context.Done()
 	log.Printf("[Engine] Shutting down workflow engine...")
@@ -192,8 +194,6 @@ func serveWS(ctx *gin.Context, hub *internal.WebsocketHub) {
 	}
 
 	client := internal.NewWebsocketClient(ws, hub)
-	log.Printf("New client: %v", client.Conn.RemoteAddr())
-
 	hub.RegisterNewClient(client)
 
 	go client.Write()

@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_9cUNkjVmoq
 createdAt: 2025-11-07T09:30:20.466057300
-updatedAt: 2025-11-07T09:30:20.466057400
+updatedAt: 2025-11-15T17:05:00.482924600
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_TqVXkoLnYe
 authentication: {}
@@ -14,5 +14,5 @@ headers: []
 method: GET
 name: GetById
 sortPriority: 3.0
-url: ${[baseURL]}/api/workflow-definitions/dd95db02-bf5b-475e-816f-bfee5a3fce73
+url: ${[baseURL]}/api/workflow-definitions/8a003687-ce17-477d-a9ea-04ff2936a68d
 urlParameters: []
