@@ -4,7 +4,7 @@ import { MessageFns } from "../types/ws.ts";
 
 export type WebsocketProtocol<Message, Command> = {
   encode: (data: Command) => Uint8Array;
-  decode: (data: MessageEvent) => Message;
+  decode: (data: MessageEvent) => Promise<Message>;
 };
 
 type CreateProtobufProtocolOptions<Message, Command> = {
@@ -23,7 +23,7 @@ export const createProtobufProtocol = <Message, Command>({
     encode: (data: Command) => {
       return command.encode(data).finish();
     },
-    decode: (data: MessageEvent) => {
+    decode: async (data: MessageEvent) => {
       let bytes: Uint8Array;
 
       if (typeof data.data === "string") {
@@ -31,9 +31,10 @@ export const createProtobufProtocol = <Message, Command>({
       } else if (data.data instanceof ArrayBuffer) {
         bytes = new Uint8Array(data.data);
       } else if (data.data instanceof Blob) {
-        throw new Error("Blob data type not supported in this context");
+        const arrayBuffer = await data.data.arrayBuffer();
+        bytes = new Uint8Array(arrayBuffer);
       } else {
-        throw new Error("Unknown WebSocket message type");
+        throw new Error("Unsupported message data type");
       }
 
       const reader = new BinaryReader(bytes);
