@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/ws"
 )
 
 type HttpServer struct {
@@ -35,8 +36,15 @@ func NewHttpServer(address, port string) HttpServer {
 	}
 }
 
-func (h *HttpServer) Start() {
+func (h *HttpServer) Start(
+	wsHandler ws.WebsocketServer,
+) {
 	log.Printf("[engine] HTTP server listening on %s", h.server.Addr)
+
+	h.gin.GET("/ws", func(c *gin.Context) {
+		wsHandler.HandleWebSocket(c.Writer, c.Request)
+	})
+
 	if err := h.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		panic(fmt.Sprintf("failed to start HTTP server: %v", err))
 	}

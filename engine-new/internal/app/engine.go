@@ -8,6 +8,7 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/grpcserver"
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/httpserver"
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/persistance"
+	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/ws"
 	"gorm.io/gorm"
 )
 
@@ -41,8 +42,10 @@ func (e *Engine) Start() error {
 		e.cfg.GrpcPort,
 	)
 
+	wsSrv := ws.NewServer()
+
 	// Lancer les serveurs en goroutines.
-	go httpSrv.Start()
+	go httpSrv.Start(wsSrv)
 	go grpcSrv.Start()
 
 	// Attendre la fin du contexte.

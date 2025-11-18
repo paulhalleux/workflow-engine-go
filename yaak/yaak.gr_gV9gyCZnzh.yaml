@@ -2,7 +2,7 @@ type: grpc_request
 model: grpc_request
 id: gr_gV9gyCZnzh
 createdAt: 2025-11-07T09:38:58.800944800
-updatedAt: 2025-11-07T21:28:42.410506
+updatedAt: 2025-11-18T19:34:41.262284600
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_bnj3ZTPWPB
 authenticationType: null
@@ -16,8 +16,8 @@ message: |-
       }
   }
 metadata: []
-method: StartWorkflow
+method: null
 name: ''
-service: engine.EngineService
+service: null
 sortPriority: 2000.0
 url: ${[ baseURL ]}

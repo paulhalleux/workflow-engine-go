@@ -2,27 +2,14 @@ type: websocket_request
 model: websocket_request
 id: wr_RdKK3bjh7K
 createdAt: 2025-11-14T10:20:35.342742600
-updatedAt: 2025-11-15T20:58:41.208524300
+updatedAt: 2025-11-18T20:07:59.329909600
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_xcPDHSVLmv
 authentication: {}
 authenticationType: null
 description: ''
 headers: []
-message: |-
-  {
-    "client_id": "ca190bfb-b7a5-4cd4-80a8-1a6b6b0b1b68",
-    "type": 1,
-    "command": {
-      "subscribe_command": {
-        "scopes": [
-          {
-            "type": 1
-          }
-        ]
-      }
-    }
-  }
+message: ''
 name: WebSocket
 sortPriority: 1999.9999
 url: ${[ baseURL ]}/ws
