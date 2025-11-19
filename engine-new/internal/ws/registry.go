@@ -12,12 +12,8 @@ type Registry struct {
 	commands map[proto.WebsocketCommandType]CommandHandler
 }
 
-type CommandHandler struct {
-	Handle func(ctx context.Context, command *proto.WebsocketCommand) error
-}
-
-type MessageHandler struct {
-	Handle func(ctx context.Context, message *proto.WebsocketMessage) error
+type CommandHandler interface {
+	Handle(ctx context.Context, conn *Connection, command *proto.WebsocketCommand) error
 }
 
 func NewRegistry() *Registry {

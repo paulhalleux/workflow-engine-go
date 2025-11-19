@@ -9,6 +9,7 @@ package websocket;
 enum WebsocketScopeType {
   WEBSOCKET_SCOPE_TYPE_UNSPECIFIED = 0;
   WEBSOCKET_SCOPE_TYPE_WORKFLOW_INSTANCE = 1;
+  WEBSOCKET_SCOPE_TYPE_TASK_INSTANCE = 2;
 }
 
 message WebsocketScope {
@@ -21,7 +22,7 @@ message WebsocketScope {
 enum WebsocketMessageType {
   WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED = 0;
   WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT = 1;
-  WEBSOCKET_MESSAGE_TYPE_REGISTERED = 2;
+  WEBSOCKET_MESSAGE_TYPE_CLIENT_REGISTERED = 2;
 }
 
 message WebsocketMessage {
@@ -30,7 +31,8 @@ message WebsocketMessage {
 
   oneof payload {
     WorkflowInstanceEvent workflow_instance_event = 3;
-    RegisteredMessage registered_message = 4;
+    TaskInstanceEvent task_instance_event = 4;
+    ClientRegisteredEvent client_registered_event = 5;
   }
 }
 
@@ -85,8 +87,32 @@ message WorkflowInstanceCompletedDetails {}
 message WorkflowInstanceFailedDetails {}
 message WorkflowInstanceCreatedDetails {}
 
+// Task Instance Event
+
+enum TaskInstanceEventType {
+  TASK_INSTANCE_EVENT_TYPE_UNSPECIFIED = 0;
+  TASK_INSTANCE_EVENT_TYPE_STARTED = 1;
+  TASK_INSTANCE_EVENT_TYPE_COMPLETED = 2;
+  TASK_INSTANCE_EVENT_TYPE_FAILED = 3;
+}
+
+message TaskInstanceEvent {
+  string task_instance_id = 1;
+  TaskInstanceEventType event_type = 2;
+
+  oneof details {
+    TaskInstanceStartedDetails started_details = 3;
+    TaskInstanceCompletedDetails completed_details = 4;
+    TaskInstanceFailedDetails failed_details = 5;
+  }
+}
+
+message TaskInstanceStartedDetails {}
+message TaskInstanceCompletedDetails {}
+message TaskInstanceFailedDetails {}
+
 // Registered Message
 
-message RegisteredMessage {
+message ClientRegisteredEvent {
   string client_id = 1;
 }

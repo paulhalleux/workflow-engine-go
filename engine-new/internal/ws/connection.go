@@ -25,6 +25,8 @@ type Connection struct {
 	cancelFunc context.CancelFunc
 	wg         sync.WaitGroup
 	registry   *Registry
+	scopesMu   sync.RWMutex
+	scopes     map[proto.WebsocketScopeType][]string
 }
 
 func NewConnection(id string, ws *websocket.Conn, reg *Registry) *Connection {
@@ -37,6 +39,7 @@ func NewConnection(id string, ws *websocket.Conn, reg *Registry) *Connection {
 		ctx:        ctx,
 		cancelFunc: cancel,
 		registry:   reg,
+		scopes:     make(map[proto.WebsocketScopeType][]string),
 	}
 }
 
@@ -63,6 +66,45 @@ func (c *Connection) SendMessage(msg *proto.WebsocketMessage) error {
 	case <-c.ctx.Done():
 		return c.ctx.Err()
 	}
+}
+
+func (c *Connection) ResetScopes() {
+	c.scopes = make(map[proto.WebsocketScopeType][]string)
+}
+
+func (c *Connection) AddScope(scopeType proto.WebsocketScopeType, scopeID *string) {
+	c.scopesMu.Lock()
+	defer c.scopesMu.Unlock()
+
+	if _, exists := c.scopes[scopeType]; !exists {
+		c.scopes[scopeType] = []string{}
+	}
+
+	if scopeID != nil {
+		c.scopes[scopeType] = append(c.scopes[scopeType], *scopeID)
+	}
+}
+
+func (c *Connection) IsSubscribedTo(scopeType proto.WebsocketScopeType, scopeID *string) bool {
+	c.scopesMu.RLock()
+	defer c.scopesMu.RUnlock()
+
+	ids, exists := c.scopes[scopeType]
+	if !exists {
+		return false
+	}
+
+	if scopeID == nil {
+		return true
+	}
+
+	for _, id := range ids {
+		if id == *scopeID {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (c *Connection) readPump() {
@@ -94,7 +136,7 @@ func (c *Connection) readPump() {
 			if command.Command != nil {
 				handler, exists := c.registry.GetCommandHandler(command.Type)
 				if exists {
-					err := handler.Handle(c.ctx, &command)
+					err := handler.Handle(c.ctx, c, &command)
 					if err != nil {
 						log.Printf("error handling command: %v", err)
 					}

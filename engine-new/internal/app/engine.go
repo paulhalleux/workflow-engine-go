@@ -9,6 +9,7 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/httpserver"
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/persistance"
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/ws"
+	"github.com/paulhalleux/workflow-engine-go/proto"
 	"gorm.io/gorm"
 )
 
@@ -43,6 +44,7 @@ func (e *Engine) Start() error {
 	)
 
 	wsSrv := ws.NewServer()
+	wsSrv.Registry.RegisterCommand(proto.WEBSOCKET_COMMAND_TYPE_SUBSCRIBE, ws.NewSubscribeCommandHandler())
 
 	// Lancer les serveurs en goroutines.
 	go httpSrv.Start(wsSrv)
