@@ -3,7 +3,7 @@ go 1.25.3
 use (
 	./agent
 	./echo-agent
-	./engine-new
+	./engine
 	./proto
 	./utils
 )

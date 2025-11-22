@@ -3,9 +3,6 @@ package models
 import (
 	"database/sql/driver"
 	"encoding/json"
-
-	"github.com/google/uuid"
-	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
 type StepType string // @name StepType
@@ -23,8 +20,8 @@ type WorkflowStepDefinition struct {
 	StepDefinitionID string                    `json:"stepDefinitionId" validate:"required"`
 	Name             string                    `json:"name" validate:"required"`
 	Description      string                    `json:"description"`
-	Parameters       *StepDefinitionParameters `json:"parameters"`
-	Metadata         utils.UnknownJson         `json:"metadata,omitempty"`
+	Parameters       *StepDefinitionParameters `json:"parameters,omitempty"`
+	Metadata         *map[string]interface{}   `json:"metadata,omitempty"`
 	Type             StepType                  `json:"type" validate:"required"`
 	TaskConfig       *TaskConfig               `json:"taskConfig,omitempty"`
 	WorkflowConfig   *WorkflowConfig           `json:"workflowConfig,omitempty"`
@@ -36,27 +33,27 @@ type WorkflowStepDefinition struct {
 
 type TaskConfig struct {
 	TaskDefinitionID string  `json:"taskDefinitionId" validate:"required"`
-	NextStepID       *string `json:"nextStepId"`
+	NextStepID       *string `json:"nextStepId,omitempty"`
 } // @name TaskConfig
 
 type WorkflowConfig struct {
 	WorkflowDefinitionID string  `json:"workflowDefinitionId" validate:"required"`
-	NextStepID           *string `json:"nextStepId"`
+	NextStepID           *string `json:"nextStepId,omitempty"`
 } // @name WorkflowConfig
 
 type WaitConfig struct {
 	DurationSeconds StepDefinitionParameter `json:"durationSeconds" validate:"required"`
-	NextStepID      *string                 `json:"nextStepId"`
+	NextStepID      *string                 `json:"nextStepId,omitempty"`
 } // @name WaitConfig
 
 type JoinConfig struct {
 	IncomingStepIDs []string `json:"incomingStepIds" validate:"required"`
-	NextStepID      *string  `json:"nextStepId"`
+	NextStepID      *string  `json:"nextStepId,omitempty"`
 } // @name JoinConfig
 
 type ForkBranch struct {
-	Name        *string `json:"name"`
-	Description *string `json:"description"`
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
 	NextStepID  string  `json:"nextStepId" validate:"required"`
 } // @name ForkBranch
 
@@ -66,8 +63,8 @@ type ForkConfig struct {
 } // @name ForkConfig
 
 type DecisionCase struct {
-	Name        *string `json:"name"`
-	Description *string `json:"description"`
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
 	Condition   string  `json:"condition" validate:"required"`
 	NextStepID  string  `json:"nextStepId" validate:"required"`
 } // @name DecisionCase
@@ -89,20 +86,4 @@ func (list *WorkflowStepDefinitionList) Scan(value interface{}) error {
 		return nil
 	}
 	return json.Unmarshal(bytes, list)
-}
-
-func (def WorkflowStepDefinition) NewInstance(
-	workflowDefinitionId string,
-	workflowInstanceId string,
-	input *map[string]interface{},
-) *StepInstance {
-	return &StepInstance{
-		ID:                   uuid.New().String(),
-		StepID:               def.StepDefinitionID,
-		WorkflowDefinitionID: workflowDefinitionId,
-		WorkflowInstanceID:   workflowInstanceId,
-		Status:               StepStatusPending,
-		Input:                utils.UnknownJsonFromMap(input),
-		Progress:             0,
-	}
 }

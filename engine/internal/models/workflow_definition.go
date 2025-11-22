@@ -4,33 +4,22 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/paulhalleux/workflow-engine-go/engine/internal/errors"
-	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
+	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/errors"
 )
 
 type WorkflowDefinition struct {
-	ID               string                           `gorm:"primaryKey;type:uuid;default:gen_random_uuid()" json:"id" validate:"required"`
+	ID               uuid.UUID                        `gorm:"primaryKey;type:uuid;default:gen_random_uuid()" json:"id" validate:"required"`
 	Name             string                           `gorm:"type:varchar(255);not null" json:"name" validate:"required"`
 	Description      string                           `gorm:"type:text" json:"description"`
 	Version          string                           `gorm:"type:varchar(50);not null;uniqueIndex:idx_name_version" json:"version" validate:"required"`
-	IsDraft          bool                             `gorm:"not null;default:true" json:"isDraft" validate:"required"`
 	IsEnabled        bool                             `gorm:"not null;default:false" json:"isEnabled" validate:"required"`
-	InputParameters  *WorkflowParameterDefinitionList `gorm:"type:jsonb" json:"inputParameters"`
-	OutputParameters *interface{}                     `gorm:"type:jsonb" json:"outputParameters"`
-	Steps            *WorkflowStepDefinitionList      `gorm:"type:jsonb;not null" json:"steps" validate:"required"`
+	InputParameters  *WorkflowParameterDefinitionList `gorm:"type:jsonb" json:"inputParameters,omitempty"`
+	OutputParameters *interface{}                     `gorm:"type:jsonb" json:"outputParameters,omitempty"`
+	Steps            *WorkflowStepDefinitionList      `gorm:"type:jsonb;not null" json:"steps,omitempty" validate:"required"`
 	CreatedAt        time.Time                        `gorm:"autoCreateTime" json:"createdAt" validate:"required"`
 	UpdatedAt        time.Time                        `gorm:"autoUpdateTime" json:"updatedAt" validate:"required"`
-	Metadata         *utils.UnknownJson               `gorm:"type:jsonb" json:"metadata,omitempty"`
+	Metadata         *map[string]interface{}          `gorm:"type:jsonb" json:"metadata,omitempty"`
 } // @name WorkflowDefinition
-
-func (def WorkflowDefinition) NewInstance(input *map[string]interface{}) *WorkflowInstance {
-	return &WorkflowInstance{
-		ID:                   uuid.New().String(),
-		WorkflowDefinitionID: def.ID,
-		Status:               WorkflowStatusPending,
-		Input:                utils.UnknownJsonFromMap(input),
-	}
-}
 
 func (def WorkflowDefinition) GetFirstStep() (*WorkflowStepDefinition, error) {
 	if def.Steps == nil || len(*def.Steps) == 0 {

@@ -3,17 +3,15 @@ package models
 import (
 	"database/sql/driver"
 	"encoding/json"
-
-	"github.com/paulhalleux/workflow-engine-go/engine/internal/utils"
 )
 
 type WorkflowParameterDefinition struct {
-	Name        string            `json:"name"`
-	Type        string            `json:"type"`
-	Required    bool              `json:"required"`
-	Default     interface{}       `json:"default"`
-	Description *string           `json:"description"`
-	Metadata    utils.UnknownJson `json:"metadata"`
+	Name        string                  `json:"name"`
+	Type        string                  `json:"type"`
+	Required    bool                    `json:"required"`
+	Default     interface{}             `json:"default"`
+	Description *string                 `json:"description"`
+	Metadata    *map[string]interface{} `json:"metadata"`
 } // @name WorkflowParameterDefinition
 
 type WorkflowParameterDefinitionList []WorkflowParameterDefinition // @name WorkflowParameterDefinitionList

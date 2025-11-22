@@ -1,38 +1,36 @@
 package main
 
 import (
+	"context"
 	"log"
-	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/joho/godotenv"
-	"github.com/paulhalleux/workflow-engine-go/engine"
+	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/app"
 )
 
-// @version 1.0
-// @title Workflow Engine API
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+	if err := godotenv.Load(".env"); err != nil {
+		log.Printf("warning: unable to load .env file: %v", err)
 	}
 
-	eng := engine.NewEngine(&engine.WorkflowEngineConfig{
-		GrpcPort: os.Getenv("GRPC_PORT"),
-		HttpPort: os.Getenv("HTTP_PORT"),
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
 
-		DbName:     os.Getenv("DB_NAME"),
-		DbUser:     os.Getenv("DB_USER"),
-		DbPassword: os.Getenv("DB_PASSWORD"),
-		DbHost:     os.Getenv("DB_HOST"),
-		DbPort:     os.Getenv("DB_PORT"),
-		DbSSLMode:  os.Getenv("DB_SSLMODE"),
+	cfg, err := app.LoadConfigFromEnv()
+	if err != nil {
+		log.Fatalf("invalid configuration: %v", err)
+	}
 
-		MaxWorkflowQueueSize: 10,
-		MaxParallelWorkflows: 1,
+	engine, err := app.NewEngine(ctx, cfg)
+	if err != nil {
+		log.Fatalf("failed to initialize engine: %v", err)
+	}
 
-		MaxStepQueueSize: 100,
-		MaxParallelSteps: 5,
-	})
+	if err := engine.Start(); err != nil {
+		log.Printf("engine stopped with error: %v", err)
+	}
 
-	eng.Start()
+	log.Println("engine terminated")
 }
