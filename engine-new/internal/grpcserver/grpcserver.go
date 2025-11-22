@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/paulhalleux/workflow-engine-go/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -16,9 +17,17 @@ type GrpcServer struct {
 	listener net.Listener
 }
 
-func NewGrpcServer(address, port string) *GrpcServer {
+func NewGrpcServer(
+	address,
+	port string,
+	engineService proto.EngineServiceServer,
+	taskService proto.TaskServiceServer,
+) *GrpcServer {
 	server := grpc.NewServer()
 	reflection.Register(server)
+
+	proto.RegisterEngineServiceServer(server, engineService)
+	proto.RegisterTaskServiceServer(server, taskService)
 
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", address, port))
 	if err != nil {
@@ -45,9 +54,6 @@ func (g *GrpcServer) Stop() error {
 	return g.listener.Close()
 }
 
-func joinHostPort(host, port string) string {
-	if host == "" {
-		return fmt.Sprintf(":%s", port)
-	}
-	return fmt.Sprintf("%s:%s", host, port)
+func (g *GrpcServer) GetServer() *grpc.Server {
+	return g.server
 }

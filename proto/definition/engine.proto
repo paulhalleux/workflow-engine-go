@@ -20,9 +20,9 @@ service EngineService {
 }
 
 enum AgentProtocol {
-  UNKNOWN = 0;
-  GRPC = 1;
-  HTTP = 2;
+  AGENT_PROTOCOL_UNKNOWN = 0;
+  AGENT_PROTOCOL_GRPC = 1;
+  AGENT_PROTOCOL_HTTP = 2;
 }
 
 message EnginePingRequest {

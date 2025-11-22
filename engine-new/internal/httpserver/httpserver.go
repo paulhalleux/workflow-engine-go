@@ -11,11 +11,16 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/ws"
 )
 
+type Handler interface {
+	Register(router gin.IRoutes)
+}
+
 type HttpServer struct {
 	address string
 	port    string
 	gin     *gin.Engine
 	server  *http.Server
+	api     *gin.RouterGroup
 }
 
 func NewHttpServer(address, port string) HttpServer {
@@ -28,11 +33,14 @@ func NewHttpServer(address, port string) HttpServer {
 		Handler: r,
 	}
 
+	api := r.Group("/api")
+
 	return HttpServer{
 		address: address,
 		port:    port,
 		gin:     r,
 		server:  server,
+		api:     api,
 	}
 }
 
@@ -52,6 +60,14 @@ func (h *HttpServer) Start(
 
 func (h *HttpServer) Stop() error {
 	return h.server.Shutdown(context.Background())
+}
+
+func (h *HttpServer) RegisterHandler(handler Handler) {
+	handler.Register(h.gin)
+}
+
+func (h *HttpServer) RegisterApiHandler(handler Handler) {
+	handler.Register(h.api)
 }
 
 func joinHostPort(host, port string) string {

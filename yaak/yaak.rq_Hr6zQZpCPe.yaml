@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_Hr6zQZpCPe
 createdAt: 2025-11-07T09:30:20.466150200
-updatedAt: 2025-11-07T21:18:55.474708300
+updatedAt: 2025-11-22T22:12:22.785745300
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_TqVXkoLnYe
 authentication: {}
@@ -10,8 +10,7 @@ authenticationType: null
 body:
   text: |-
     {
-      "name": "fork",
-      "version": "1.0.4",
+      "name": "fork2",
       "steps": [
         {
           "stepDefinitionId": "fork",
@@ -71,5 +70,5 @@ headers:
 method: POST
 name: Save
 sortPriority: 4.0
-url: ${[baseURL]}/api/workflow-definitions
+url: ${[baseURL]}/api/workflow-definitions?draft=false
 urlParameters: []

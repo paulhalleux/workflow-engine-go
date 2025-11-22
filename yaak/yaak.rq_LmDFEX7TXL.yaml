@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_LmDFEX7TXL
 createdAt: 2025-11-07T09:30:20.465928
-updatedAt: 2025-11-07T09:30:25.267796700
+updatedAt: 2025-11-22T20:54:11.282223600
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_TqVXkoLnYe
 authentication: {}
@@ -10,8 +10,13 @@ authenticationType: null
 body:
   text: |-
     {
-        "name": "test",
-        "isRelease": true
+      "not": {
+        "compare": {
+          "left": "name",
+          "operator": "=",
+          "right": "fork"
+        }
+      }
     }
 bodyType: application/json
 description: ''

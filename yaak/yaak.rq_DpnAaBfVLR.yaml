@@ -1,8 +1,8 @@
 type: http_request
 model: http_request
-id: rq_SfokjAWEY5
-createdAt: 2025-11-07T09:30:20.466536600
-updatedAt: 2025-11-22T22:11:13.955816100
+id: rq_DpnAaBfVLR
+createdAt: 2025-11-22T21:59:36.534666700
+updatedAt: 2025-11-22T21:59:53.420383600
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_TqVXkoLnYe
 authentication: {}
@@ -16,8 +16,8 @@ headers:
   name: Content-Type
   value: application/json
   id: null
-method: DELETE
-name: Delete
-sortPriority: 7.0
-url: ${[baseURL]}/api/workflow-definitions/f7e01908-46d3-447c-97e7-3125402bdb9b
+method: PATCH
+name: Enable
+sortPriority: 6.001
+url: ${[baseURL]}/api/workflow-definitions/43014243-bfa1-4bb8-a7a2-7a4cb2dbb8ae/enable
 urlParameters: []

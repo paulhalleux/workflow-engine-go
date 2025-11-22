@@ -26,22 +26,22 @@ const (
 type AgentProtocol int32
 
 const (
-	AgentProtocol_UNKNOWN AgentProtocol = 0
-	AgentProtocol_GRPC    AgentProtocol = 1
-	AgentProtocol_HTTP    AgentProtocol = 2
+	AgentProtocol_AGENT_PROTOCOL_UNKNOWN AgentProtocol = 0
+	AgentProtocol_AGENT_PROTOCOL_GRPC    AgentProtocol = 1
+	AgentProtocol_AGENT_PROTOCOL_HTTP    AgentProtocol = 2
 )
 
 // Enum value maps for AgentProtocol.
 var (
 	AgentProtocol_name = map[int32]string{
-		0: "UNKNOWN",
-		1: "GRPC",
-		2: "HTTP",
+		0: "AGENT_PROTOCOL_UNKNOWN",
+		1: "AGENT_PROTOCOL_GRPC",
+		2: "AGENT_PROTOCOL_HTTP",
 	}
 	AgentProtocol_value = map[string]int32{
-		"UNKNOWN": 0,
-		"GRPC":    1,
-		"HTTP":    2,
+		"AGENT_PROTOCOL_UNKNOWN": 0,
+		"AGENT_PROTOCOL_GRPC":    1,
+		"AGENT_PROTOCOL_HTTP":    2,
 	}
 )
 
@@ -234,7 +234,7 @@ func (x *RegisterAgentRequest) GetProtocol() AgentProtocol {
 	if x != nil {
 		return x.Protocol
 	}
-	return AgentProtocol_UNKNOWN
+	return AgentProtocol_AGENT_PROTOCOL_UNKNOWN
 }
 
 func (x *RegisterAgentRequest) GetSupportedTasks() []*TaskDefinition {
@@ -569,11 +569,11 @@ const file_definition_engine_proto_rawDesc = "" +
 	"\amessage\x18\x03 \x01(\tH\x01R\amessage\x88\x01\x01B\x17\n" +
 	"\x15_workflow_instance_idB\n" +
 	"\n" +
-	"\b_message*0\n" +
-	"\rAgentProtocol\x12\v\n" +
-	"\aUNKNOWN\x10\x00\x12\b\n" +
-	"\x04GRPC\x10\x01\x12\b\n" +
-	"\x04HTTP\x10\x022\xab\x01\n" +
+	"\b_message*]\n" +
+	"\rAgentProtocol\x12\x1a\n" +
+	"\x16AGENT_PROTOCOL_UNKNOWN\x10\x00\x12\x17\n" +
+	"\x13AGENT_PROTOCOL_GRPC\x10\x01\x12\x17\n" +
+	"\x13AGENT_PROTOCOL_HTTP\x10\x022\xab\x01\n" +
 	"\vTaskService\x12K\n" +
 	"\x10NotifyTaskStatus\x12\x1f.engine.NotifyTaskStatusRequest\x1a\x16.google.protobuf.Empty\x12O\n" +
 	"\x12NotifyTaskProgress\x12!.engine.NotifyTaskProgressRequest\x1a\x16.google.protobuf.Empty2\xea\x01\n" +

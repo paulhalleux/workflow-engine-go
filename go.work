@@ -1,9 +1,9 @@
 go 1.25.3
 
 use (
-	./engine
-	./engine-new
 	./agent
 	./echo-agent
+	./engine-new
 	./proto
+	./utils
 )

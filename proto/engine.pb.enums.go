@@ -4,7 +4,7 @@
 package proto
 
 const (
-	UNKNOWN = AgentProtocol_UNKNOWN
-	GRPC    = AgentProtocol_GRPC
-	HTTP    = AgentProtocol_HTTP
+	AGENT_PROTOCOL_UNKNOWN = AgentProtocol_AGENT_PROTOCOL_UNKNOWN
+	AGENT_PROTOCOL_GRPC    = AgentProtocol_AGENT_PROTOCOL_GRPC
+	AGENT_PROTOCOL_HTTP    = AgentProtocol_AGENT_PROTOCOL_HTTP
 )

@@ -41,10 +41,17 @@ func (e *Engine) Start() error {
 	grpcSrv := grpcserver.NewGrpcServer(
 		e.cfg.GrpcAddress,
 		e.cfg.GrpcPort,
+		grpcserver.NewEngineService(),
+		grpcserver.NewTaskService(),
 	)
 
 	wsSrv := ws.NewServer()
 	wsSrv.Registry.RegisterCommand(proto.WEBSOCKET_COMMAND_TYPE_SUBSCRIBE, ws.NewSubscribeCommandHandler())
+
+	wfDefRepo := persistance.NewWorkflowDefinitionRepository(e.db)
+	wfDefHandlers := httpserver.NewWorkflowDefinitionsHandlers(wfDefRepo)
+
+	httpSrv.RegisterApiHandler(wfDefHandlers)
 
 	// Lancer les serveurs en goroutines.
 	go httpSrv.Start(wsSrv)

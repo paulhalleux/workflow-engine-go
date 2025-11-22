@@ -2,13 +2,22 @@ type: http_request
 model: http_request
 id: rq_MvVvRe6Xg7
 createdAt: 2025-11-07T09:30:20.466340600
-updatedAt: 2025-11-07T09:30:20.466341
+updatedAt: 2025-11-22T21:12:51.394338
 workspaceId: wk_Kz3U9tLuVH
 folderId: fl_TqVXkoLnYe
 authentication: {}
 authenticationType: null
 body:
-  text: "{\r\n    \"name\": \"workflow\"\r\n}"
+  text: |-
+    {
+        "steps": [
+            {
+                "id": "say-hello",
+                "displayName": "Say Hello",
+                "description": "Say Hello To The Users"
+            }
+        ]
+    }
 bodyType: application/json
 description: ''
 headers:

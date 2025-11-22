@@ -12,11 +12,10 @@ type WorkflowDefinition struct {
 	Name             string                           `gorm:"type:varchar(255);not null" json:"name" validate:"required"`
 	Description      string                           `gorm:"type:text" json:"description"`
 	Version          string                           `gorm:"type:varchar(50);not null;uniqueIndex:idx_name_version" json:"version" validate:"required"`
-	IsDraft          bool                             `gorm:"not null;default:true" json:"isDraft" validate:"required"`
 	IsEnabled        bool                             `gorm:"not null;default:false" json:"isEnabled" validate:"required"`
-	InputParameters  *WorkflowParameterDefinitionList `gorm:"type:jsonb" json:"inputParameters"`
-	OutputParameters *interface{}                     `gorm:"type:jsonb" json:"outputParameters"`
-	Steps            *WorkflowStepDefinitionList      `gorm:"type:jsonb;not null" json:"steps" validate:"required"`
+	InputParameters  *WorkflowParameterDefinitionList `gorm:"type:jsonb" json:"inputParameters,omitempty"`
+	OutputParameters *interface{}                     `gorm:"type:jsonb" json:"outputParameters,omitempty"`
+	Steps            *WorkflowStepDefinitionList      `gorm:"type:jsonb;not null" json:"steps,omitempty" validate:"required"`
 	CreatedAt        time.Time                        `gorm:"autoCreateTime" json:"createdAt" validate:"required"`
 	UpdatedAt        time.Time                        `gorm:"autoUpdateTime" json:"updatedAt" validate:"required"`
 	Metadata         *map[string]interface{}          `gorm:"type:jsonb" json:"metadata,omitempty"`
