@@ -1,4 +1,5 @@
 .idea
 .env
 _engine/
+_agent/
 */out/

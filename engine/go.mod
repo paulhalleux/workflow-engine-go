@@ -6,12 +6,14 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/gin-gonic/gin v1.11.0
 	github.com/google/uuid v1.6.0
+	github.com/gorilla/websocket v1.5.3
 	github.com/joho/godotenv v1.5.1
+	github.com/paulhalleux/workflow-engine-go/proto v0.0.0-20251122223836-e652af694c57
+	github.com/paulhalleux/workflow-engine-go/utils v0.0.0-20251122223836-e652af694c57
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.0
-	github.com/paulhalleux/workflow-engine-go/utils v0.0.0-20251119212644-681503aedaa4
 )
 
 require (

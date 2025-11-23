@@ -8,6 +8,7 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/grpcserver"
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/httpserver"
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/persistance"
+	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/registry"
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/ws"
 	"github.com/paulhalleux/workflow-engine-go/proto"
 	"gorm.io/gorm"
@@ -33,6 +34,8 @@ func NewEngine(ctx context.Context, cfg *Config) (*Engine, error) {
 }
 
 func (e *Engine) Start() error {
+	agentRegistry := registry.NewAgentRegistry()
+
 	httpSrv := httpserver.NewHttpServer(
 		e.cfg.HttpAddress,
 		e.cfg.HttpPort,
@@ -41,7 +44,9 @@ func (e *Engine) Start() error {
 	grpcSrv := grpcserver.NewGrpcServer(
 		e.cfg.GrpcAddress,
 		e.cfg.GrpcPort,
-		grpcserver.NewEngineService(),
+		grpcserver.NewEngineService(
+			agentRegistry,
+		),
 		grpcserver.NewTaskService(),
 	)
 

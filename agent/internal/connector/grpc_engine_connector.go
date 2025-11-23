@@ -3,9 +3,7 @@ package connector
 import (
 	"context"
 	"errors"
-	"net"
 
-	"github.com/paulhalleux/workflow-engine-go/agent/internal"
 	"github.com/paulhalleux/workflow-engine-go/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -50,15 +48,17 @@ func (g *GrpcEngineConnector) Ping(name string) (bool, error) {
 	return result.KnowAgent, nil
 }
 
-func (g *GrpcEngineConnector) RegisterAgent(config *internal.WorkflowAgentConfig, registry *internal.TaskDefinitionRegistry) (bool, error) {
+func (g *GrpcEngineConnector) RegisterAgent(
+	agent *AgentInfo,
+) (bool, error) {
 	client := proto.NewEngineServiceClient(g.connection)
 	res, err := client.RegisterAgent(context.Background(), &proto.RegisterAgentRequest{
-		Name:           config.Name,
-		Version:        config.Version,
-		Address:        config.GrpcAddress,
-		Port:           config.GrpcPort,
-		Protocol:       proto.AgentProtocol_GRPC,
-		SupportedTasks: registry.ToProto(),
+		Name:           agent.Name,
+		Version:        agent.Version,
+		Address:        &agent.Address,
+		Port:           agent.Port,
+		Protocol:       proto.AGENT_PROTOCOL_GRPC,
+		SupportedTasks: agent.Definitions,
 	})
 
 	if err != nil {
@@ -74,11 +74,4 @@ func (g *GrpcEngineConnector) RegisterAgent(config *internal.WorkflowAgentConfig
 	}
 
 	return true, nil
-}
-
-func joinHostPort(host *string, port string) string {
-	if host != nil {
-		return net.JoinHostPort(*host, port)
-	}
-	return net.JoinHostPort("", port)
 }

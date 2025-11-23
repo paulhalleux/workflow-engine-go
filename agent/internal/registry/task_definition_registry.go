@@ -1,45 +1,36 @@
-package internal
+package registry
 
 import (
 	"encoding/json"
 	"log"
 
+	"github.com/paulhalleux/workflow-engine-go/agent/internal/models"
 	"github.com/paulhalleux/workflow-engine-go/proto"
 	"github.com/swaggest/jsonschema-go"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-type TaskHandler func(req *TaskExecutionRequest) TaskExecutionResult
-type TaskDefinition struct {
-	ID               string
-	Name             string
-	Description      string
-	InputParameters  *jsonschema.Schema
-	OutputParameters *jsonschema.Schema
-	Handle           TaskHandler
-}
-
 type TaskDefinitionRegistry struct {
-	definitions map[string]TaskDefinition
+	definitions map[string]models.TaskDefinition
 }
 
 func NewTaskDefinitionRegistry() *TaskDefinitionRegistry {
 	return &TaskDefinitionRegistry{
-		definitions: make(map[string]TaskDefinition),
+		definitions: make(map[string]models.TaskDefinition),
 	}
 }
 
-func (r *TaskDefinitionRegistry) Register(def TaskDefinition) {
+func (r *TaskDefinitionRegistry) Register(def models.TaskDefinition) {
 	r.definitions[def.ID] = def
 }
 
-func (r *TaskDefinitionRegistry) Get(id string) (TaskDefinition, bool) {
+func (r *TaskDefinitionRegistry) Get(id string) (models.TaskDefinition, bool) {
 	def, exists := r.definitions[id]
 	return def, exists
 }
 
-func (r *TaskDefinitionRegistry) List() []TaskDefinition {
-	defs := make([]TaskDefinition, 0, len(r.definitions))
+func (r *TaskDefinitionRegistry) List() []models.TaskDefinition {
+	defs := make([]models.TaskDefinition, 0, len(r.definitions))
 	for _, def := range r.definitions {
 		defs = append(defs, def)
 	}

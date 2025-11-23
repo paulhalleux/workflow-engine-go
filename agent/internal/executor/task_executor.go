@@ -1,4 +1,4 @@
-package internal
+package executor
 
 import (
 	"context"
@@ -7,6 +7,8 @@ import (
 	"log"
 
 	"github.com/kaptinlin/jsonschema"
+	"github.com/paulhalleux/workflow-engine-go/agent/internal/models"
+	"github.com/paulhalleux/workflow-engine-go/agent/internal/registry"
 	"github.com/paulhalleux/workflow-engine-go/proto"
 	tjs "github.com/swaggest/jsonschema-go"
 	"google.golang.org/grpc"
@@ -19,25 +21,21 @@ type TaskExecution struct {
 	Input       map[string]interface{}
 }
 
-type TaskExecutionResult struct {
-	Output *map[string]interface{}
-	Error  *error
-}
-
-type TaskExecutionRequest struct {
-	Input map[string]interface{}
-}
-
 type TaskExecutor struct {
 	engineConnection       *grpc.ClientConn
-	taskDefinitionRegistry *TaskDefinitionRegistry
+	taskDefinitionRegistry *registry.TaskDefinitionRegistry
 	taskQueue              chan *TaskExecution
 	sem                    chan struct{}
 }
 
+type TaskExecutorConfig struct {
+	MaxQueueSize     int
+	MaxParallelTasks int
+}
+
 func NewTaskExecutor(
-	config *WorkflowAgentConfig,
-	taskDefinitionRegistry *TaskDefinitionRegistry,
+	config *TaskExecutorConfig,
+	taskDefinitionRegistry *registry.TaskDefinitionRegistry,
 	engineConnection *grpc.ClientConn,
 ) *TaskExecutor {
 	return &TaskExecutor{
@@ -82,8 +80,8 @@ func (te *TaskExecutor) Start(ctx context.Context) {
 	}
 }
 
-func (te *TaskExecutor) handle(execCtx *TaskExecution, taskDef TaskDefinition) {
-	req := &TaskExecutionRequest{
+func (te *TaskExecutor) handle(execCtx *TaskExecution, taskDef models.TaskDefinition) {
+	req := &models.TaskExecutionRequest{
 		Input: execCtx.Input,
 	}
 
