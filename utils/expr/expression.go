@@ -1,13 +1,17 @@
 package expr
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
 
 type Expression struct {
 	And     *[]Expression      `json:"and,omitempty"`
 	Or      *[]Expression      `json:"or,omitempty"`
 	Not     *Expression        `json:"not,omitempty"`
 	Compare *CompareExpression `json:"compare,omitempty"`
-}
+} // @name Expression
 
 func (e Expression) IsEmpty() bool {
 	return e.And == nil && e.Or == nil && e.Not == nil && e.Compare == nil
@@ -35,12 +39,12 @@ func NewNotExpression(expression Expression) Expression {
 	}
 }
 
-func NewCompareExpression(left string, operator ComparisonOperator, right string) Expression {
+func NewCompareExpression(field string, operator ComparisonOperator, value fmt.Stringer) Expression {
 	return Expression{
 		Compare: &CompareExpression{
-			Left:     &left,
+			Field:    &field,
 			Operator: operator,
-			Right:    &right,
+			Value:    &value,
 		},
 	}
 }

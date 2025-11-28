@@ -1,0 +1,961 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Workflow Engine API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/agents": {
+            "get": {
+                "description": "Retrieve a list of all registered agents in the system.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agents"
+                ],
+                "summary": "Get all registered agents",
+                "operationId": "GetAllAgents",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/AgentOverviewResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/agents/{name}": {
+            "get": {
+                "description": "Retrieve detailed information about a specific agent by its name.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agents"
+                ],
+                "summary": "Get agent by name",
+                "operationId": "GetAgentByName",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent Name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AgentResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/workflow-definitions": {
+            "get": {
+                "description": "Retrieve a paginated list of all workflow definitions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workflow Definitions"
+                ],
+                "summary": "Get all workflow definitions",
+                "operationId": "GetAllWorkflowDefinitions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/WorkflowDefinition"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new workflow definition, optionally as a draft",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workflow Definitions"
+                ],
+                "summary": "Create a new workflow definition",
+                "operationId": "CreateWorkflowDefinition",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Create as draft",
+                        "name": "draft",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Workflow Definition Data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/WorkflowDefinition"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/WorkflowDefinition"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/workflow-definitions/search": {
+            "post": {
+                "description": "Search for workflow definitions based on a given expression",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workflow Definitions"
+                ],
+                "summary": "Search workflow definitions",
+                "operationId": "SearchWorkflowDefinitions",
+                "parameters": [
+                    {
+                        "description": "Search expression",
+                        "name": "expression",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Expression"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/WorkflowDefinition"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/workflow-definitions/{id}": {
+            "get": {
+                "description": "Retrieve a workflow definition by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workflow Definitions"
+                ],
+                "summary": "Get workflow definition by ID",
+                "operationId": "GetWorkflowDefinitionByID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workflow Definition ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/WorkflowDefinition"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing workflow definition by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workflow Definitions"
+                ],
+                "summary": "Update an existing workflow definition",
+                "operationId": "UpdateWorkflowDefinition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workflow Definition ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Workflow Definition Data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/WorkflowDefinition"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/WorkflowDefinition"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a workflow definition by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workflow Definitions"
+                ],
+                "summary": "Delete a workflow definition",
+                "operationId": "DeleteWorkflowDefinition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workflow Definition ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/workflow-definitions/{id}/disable": {
+            "patch": {
+                "description": "Disable a workflow definition by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workflow Definitions"
+                ],
+                "summary": "Disable a workflow definition",
+                "operationId": "DisableWorkflowDefinition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workflow Definition ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/workflow-definitions/{id}/enable": {
+            "patch": {
+                "description": "Enable a workflow definition by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workflow Definitions"
+                ],
+                "summary": "Enable a workflow definition",
+                "operationId": "EnableWorkflowDefinition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workflow Definition ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/workflow-definitions/{id}/publish": {
+            "patch": {
+                "description": "Publish a draft workflow definition by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workflow Definitions"
+                ],
+                "summary": "Publish a workflow definition",
+                "operationId": "PublishWorkflowDefinition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workflow Definition ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "AgentOverviewResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "string"
+                },
+                "protocol": {
+                    "type": "string"
+                },
+                "tasks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AgentTaskOverviewResponse"
+                    }
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "AgentResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "string"
+                },
+                "protocol": {
+                    "type": "string"
+                },
+                "supportedTasks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AgentTaskResponse"
+                    }
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "AgentTaskOverviewResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "AgentTaskResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "inputParameters": {},
+                "name": {
+                    "type": "string"
+                },
+                "outputParameters": {}
+            }
+        },
+        "CompareExpression": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "operator": {
+                    "$ref": "#/definitions/ComparisonOperator"
+                },
+                "value": {}
+            }
+        },
+        "ComparisonOperator": {
+            "type": "string",
+            "enum": [
+                "=",
+                "!=",
+                "\u003e",
+                "\u003c",
+                "\u003e=",
+                "\u003c=",
+                "in"
+            ],
+            "x-enum-varnames": [
+                "OperatorEquals",
+                "OperatorNotEquals",
+                "OperatorGreaterThan",
+                "OperatorLessThan",
+                "OperatorGreaterEqual",
+                "OperatorLessEqual",
+                "OperatorIn"
+            ]
+        },
+        "DecisionCase": {
+            "type": "object",
+            "required": [
+                "condition",
+                "nextStepId"
+            ],
+            "properties": {
+                "condition": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nextStepId": {
+                    "type": "string"
+                }
+            }
+        },
+        "DecisionConfig": {
+            "type": "object",
+            "required": [
+                "cases",
+                "joinStepId"
+            ],
+            "properties": {
+                "cases": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DecisionCase"
+                    }
+                },
+                "joinStepId": {
+                    "type": "string"
+                }
+            }
+        },
+        "Expression": {
+            "type": "object",
+            "properties": {
+                "and": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Expression"
+                    }
+                },
+                "compare": {
+                    "$ref": "#/definitions/CompareExpression"
+                },
+                "not": {
+                    "$ref": "#/definitions/Expression"
+                },
+                "or": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Expression"
+                    }
+                }
+            }
+        },
+        "ForkBranch": {
+            "type": "object",
+            "required": [
+                "nextStepId"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nextStepId": {
+                    "type": "string"
+                }
+            }
+        },
+        "ForkConfig": {
+            "type": "object",
+            "required": [
+                "branches",
+                "joinStepId"
+            ],
+            "properties": {
+                "branches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ForkBranch"
+                    }
+                },
+                "joinStepId": {
+                    "type": "string"
+                }
+            }
+        },
+        "JoinConfig": {
+            "type": "object",
+            "required": [
+                "incomingStepIds"
+            ],
+            "properties": {
+                "incomingStepIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "nextStepId": {
+                    "type": "string"
+                }
+            }
+        },
+        "StepDefinitionParameter": {
+            "type": "object",
+            "required": [
+                "type",
+                "value"
+            ],
+            "properties": {
+                "type": {
+                    "$ref": "#/definitions/StepParameterType"
+                },
+                "value": {}
+            }
+        },
+        "StepDefinitionParameters": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/StepDefinitionParameter"
+            }
+        },
+        "StepParameterType": {
+            "type": "string",
+            "enum": [
+                "constant",
+                "workflowInput",
+                "taskOutput"
+            ],
+            "x-enum-varnames": [
+                "StepParameterTypeConstant",
+                "StepParameterTypeWorkflow",
+                "StepParameterTypeTaskOutput"
+            ]
+        },
+        "StepType": {
+            "type": "string",
+            "enum": [
+                "task",
+                "workflow",
+                "wait",
+                "decision",
+                "fork",
+                "join"
+            ],
+            "x-enum-varnames": [
+                "StepTypeTask",
+                "StepTypeWorkflow",
+                "StepTypeWait",
+                "StepTypeDecision",
+                "StepTypeFork",
+                "StepTypeJoin"
+            ]
+        },
+        "TaskConfig": {
+            "type": "object",
+            "required": [
+                "taskDefinitionId"
+            ],
+            "properties": {
+                "nextStepId": {
+                    "type": "string"
+                },
+                "taskDefinitionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "WaitConfig": {
+            "type": "object",
+            "required": [
+                "durationSeconds"
+            ],
+            "properties": {
+                "durationSeconds": {
+                    "$ref": "#/definitions/StepDefinitionParameter"
+                },
+                "nextStepId": {
+                    "type": "string"
+                }
+            }
+        },
+        "WorkflowConfig": {
+            "type": "object",
+            "required": [
+                "workflowDefinitionId"
+            ],
+            "properties": {
+                "nextStepId": {
+                    "type": "string"
+                },
+                "workflowDefinitionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "WorkflowDefinition": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "id",
+                "isEnabled",
+                "name",
+                "steps",
+                "updatedAt",
+                "version"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "inputParameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/WorkflowParameterDefinition"
+                    }
+                },
+                "isEnabled": {
+                    "type": "boolean"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "name": {
+                    "type": "string"
+                },
+                "outputParameters": {},
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/WorkflowStepDefinition"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "WorkflowParameterDefinition": {
+            "type": "object",
+            "properties": {
+                "default": {},
+                "description": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "name": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "WorkflowStepDefinition": {
+            "type": "object",
+            "required": [
+                "name",
+                "stepDefinitionId",
+                "type"
+            ],
+            "properties": {
+                "decisionConfig": {
+                    "$ref": "#/definitions/DecisionConfig"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "forkConfig": {
+                    "$ref": "#/definitions/ForkConfig"
+                },
+                "joinConfig": {
+                    "$ref": "#/definitions/JoinConfig"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parameters": {
+                    "$ref": "#/definitions/StepDefinitionParameters"
+                },
+                "retryCount": {
+                    "type": "integer"
+                },
+                "stepDefinitionId": {
+                    "type": "string"
+                },
+                "taskConfig": {
+                    "$ref": "#/definitions/TaskConfig"
+                },
+                "timeoutSeconds": {
+                    "type": "integer"
+                },
+                "type": {
+                    "$ref": "#/definitions/StepType"
+                },
+                "waitConfig": {
+                    "$ref": "#/definitions/WaitConfig"
+                },
+                "workflowConfig": {
+                    "$ref": "#/definitions/WorkflowConfig"
+                }
+            }
+        },
+        "gin.H": {
+            "type": "object",
+            "additionalProperties": {}
+        }
+    }
+}

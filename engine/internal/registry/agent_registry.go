@@ -8,15 +8,15 @@ import (
 )
 
 type RegisteredAgent struct {
-	Name           string
-	Version        string
-	Address        *string
-	Port           string
-	Protocol       proto.AgentProtocol
-	SupportedTasks []*proto.TaskDefinition
+	Name           string                  `json:"name"`
+	Version        string                  `json:"version"`
+	Address        *string                 `json:"address,omitempty"`
+	Port           string                  `json:"port"`
+	Protocol       proto.AgentProtocol     `json:"protocol"`
+	SupportedTasks []*proto.TaskDefinition `json:"supportedTasks"`
 }
 
-type RegisteredAgentsList []RegisteredAgent
+type RegisteredAgentsList []*RegisteredAgent
 
 type AgentRegistry struct {
 	agents           map[string]RegisteredAgent
@@ -59,9 +59,9 @@ func (ar *AgentRegistry) RegisterAgent(name string, agent RegisteredAgent) error
 	return err
 }
 
-func (ar *AgentRegistry) GetAgent(name string) (RegisteredAgent, bool) {
+func (ar *AgentRegistry) GetAgent(name string) (*RegisteredAgent, bool) {
 	agent, exists := ar.agents[name]
-	return agent, exists
+	return &agent, exists
 }
 
 func (ar *AgentRegistry) GetAgentConnector(name string) (*connector.AgentConnector, bool) {
@@ -81,9 +81,9 @@ func (ar *AgentRegistry) UnregisterAgent(name string) {
 }
 
 func (ar *AgentRegistry) ListAgents() RegisteredAgentsList {
-	agents := make([]RegisteredAgent, 0, len(ar.agents))
+	agents := make([]*RegisteredAgent, 0, len(ar.agents))
 	for _, agent := range ar.agents {
-		agents = append(agents, agent)
+		agents = append(agents, &agent)
 	}
 	return agents
 }

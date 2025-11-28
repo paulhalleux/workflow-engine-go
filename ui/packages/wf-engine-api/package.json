@@ -6,7 +6,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "generate": "start ./generate.sh"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

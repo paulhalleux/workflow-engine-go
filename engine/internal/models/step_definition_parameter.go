@@ -4,7 +4,7 @@ type StepParameterType string // @name StepParameterType
 
 const (
 	StepParameterTypeConstant   StepParameterType = "constant"
-	StepParameterTypeWorkflow   StepParameterType = "workflow"
+	StepParameterTypeWorkflow   StepParameterType = "workflowInput"
 	StepParameterTypeTaskOutput StepParameterType = "taskOutput"
 )
 

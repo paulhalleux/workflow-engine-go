@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { AgentProtocol } from './AgentProtocol';
+import type { AgentTaskResponse } from './AgentTaskResponse';
 import {
-    AgentProtocolFromJSON,
-    AgentProtocolFromJSONTyped,
-    AgentProtocolToJSON,
-    AgentProtocolToJSONTyped,
-} from './AgentProtocol';
+    AgentTaskResponseFromJSON,
+    AgentTaskResponseFromJSONTyped,
+    AgentTaskResponseToJSON,
+    AgentTaskResponseToJSONTyped,
+} from './AgentTaskResponse';
 
 /**
  * 
@@ -47,16 +47,16 @@ export interface AgentResponse {
     port?: string;
     /**
      * 
-     * @type {AgentProtocol}
+     * @type {string}
      * @memberof AgentResponse
      */
-    protocol?: AgentProtocol;
+    protocol?: string;
     /**
      * 
-     * @type {Array<string>}
+     * @type {Array<AgentTaskResponse>}
      * @memberof AgentResponse
      */
-    supportedTasks?: Array<string>;
+    supportedTasks?: Array<AgentTaskResponse>;
     /**
      * 
      * @type {string}
@@ -64,8 +64,6 @@ export interface AgentResponse {
      */
     version?: string;
 }
-
-
 
 /**
  * Check if a given object implements the AgentResponse interface.
@@ -87,8 +85,8 @@ export function AgentResponseFromJSONTyped(json: any, ignoreDiscriminator: boole
         'address': json['address'] == null ? undefined : json['address'],
         'name': json['name'] == null ? undefined : json['name'],
         'port': json['port'] == null ? undefined : json['port'],
-        'protocol': json['protocol'] == null ? undefined : AgentProtocolFromJSON(json['protocol']),
-        'supportedTasks': json['supportedTasks'] == null ? undefined : json['supportedTasks'],
+        'protocol': json['protocol'] == null ? undefined : json['protocol'],
+        'supportedTasks': json['supportedTasks'] == null ? undefined : ((json['supportedTasks'] as Array<any>).map(AgentTaskResponseFromJSON)),
         'version': json['version'] == null ? undefined : json['version'],
     };
 }
@@ -107,8 +105,8 @@ export function AgentResponseToJSONTyped(value?: AgentResponse | null, ignoreDis
         'address': value['address'],
         'name': value['name'],
         'port': value['port'],
-        'protocol': AgentProtocolToJSON(value['protocol']),
-        'supportedTasks': value['supportedTasks'],
+        'protocol': value['protocol'],
+        'supportedTasks': value['supportedTasks'] == null ? undefined : ((value['supportedTasks'] as Array<any>).map(AgentTaskResponseToJSON)),
         'version': value['version'],
     };
 }

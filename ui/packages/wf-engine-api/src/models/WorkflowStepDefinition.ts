@@ -120,6 +120,12 @@ export interface WorkflowStepDefinition {
     parameters?: { [key: string]: StepDefinitionParameter; };
     /**
      * 
+     * @type {number}
+     * @memberof WorkflowStepDefinition
+     */
+    retryCount?: number;
+    /**
+     * 
      * @type {string}
      * @memberof WorkflowStepDefinition
      */
@@ -130,6 +136,12 @@ export interface WorkflowStepDefinition {
      * @memberof WorkflowStepDefinition
      */
     taskConfig?: TaskConfig;
+    /**
+     * 
+     * @type {number}
+     * @memberof WorkflowStepDefinition
+     */
+    timeoutSeconds?: number;
     /**
      * 
      * @type {StepType}
@@ -179,8 +191,10 @@ export function WorkflowStepDefinitionFromJSONTyped(json: any, ignoreDiscriminat
         'metadata': json['metadata'] == null ? undefined : json['metadata'],
         'name': json['name'],
         'parameters': json['parameters'] == null ? undefined : (mapValues(json['parameters'], StepDefinitionParameterFromJSON)),
+        'retryCount': json['retryCount'] == null ? undefined : json['retryCount'],
         'stepDefinitionId': json['stepDefinitionId'],
         'taskConfig': json['taskConfig'] == null ? undefined : TaskConfigFromJSON(json['taskConfig']),
+        'timeoutSeconds': json['timeoutSeconds'] == null ? undefined : json['timeoutSeconds'],
         'type': StepTypeFromJSON(json['type']),
         'waitConfig': json['waitConfig'] == null ? undefined : WaitConfigFromJSON(json['waitConfig']),
         'workflowConfig': json['workflowConfig'] == null ? undefined : WorkflowConfigFromJSON(json['workflowConfig']),
@@ -205,8 +219,10 @@ export function WorkflowStepDefinitionToJSONTyped(value?: WorkflowStepDefinition
         'metadata': value['metadata'],
         'name': value['name'],
         'parameters': value['parameters'] == null ? undefined : (mapValues(value['parameters'], StepDefinitionParameterToJSON)),
+        'retryCount': value['retryCount'],
         'stepDefinitionId': value['stepDefinitionId'],
         'taskConfig': TaskConfigToJSON(value['taskConfig']),
+        'timeoutSeconds': value['timeoutSeconds'],
         'type': StepTypeToJSON(value['type']),
         'waitConfig': WaitConfigToJSON(value['waitConfig']),
         'workflowConfig': WorkflowConfigToJSON(value['workflowConfig']),

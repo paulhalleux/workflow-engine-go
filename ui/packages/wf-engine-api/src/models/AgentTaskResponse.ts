@@ -16,53 +16,53 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface TaskDefinitionResponse
+ * @interface AgentTaskResponse
  */
-export interface TaskDefinitionResponse {
+export interface AgentTaskResponse {
     /**
      * 
      * @type {string}
-     * @memberof TaskDefinitionResponse
+     * @memberof AgentTaskResponse
      */
     description?: string;
     /**
      * 
      * @type {string}
-     * @memberof TaskDefinitionResponse
+     * @memberof AgentTaskResponse
      */
     id?: string;
     /**
      * 
-     * @type {{ [key: string]: any; }}
-     * @memberof TaskDefinitionResponse
+     * @type {object}
+     * @memberof AgentTaskResponse
      */
-    inputParameters?: { [key: string]: any; };
+    inputParameters?: object;
     /**
      * 
      * @type {string}
-     * @memberof TaskDefinitionResponse
+     * @memberof AgentTaskResponse
      */
     name?: string;
     /**
      * 
-     * @type {{ [key: string]: any; }}
-     * @memberof TaskDefinitionResponse
+     * @type {object}
+     * @memberof AgentTaskResponse
      */
-    outputParameters?: { [key: string]: any; };
+    outputParameters?: object;
 }
 
 /**
- * Check if a given object implements the TaskDefinitionResponse interface.
+ * Check if a given object implements the AgentTaskResponse interface.
  */
-export function instanceOfTaskDefinitionResponse(value: object): value is TaskDefinitionResponse {
+export function instanceOfAgentTaskResponse(value: object): value is AgentTaskResponse {
     return true;
 }
 
-export function TaskDefinitionResponseFromJSON(json: any): TaskDefinitionResponse {
-    return TaskDefinitionResponseFromJSONTyped(json, false);
+export function AgentTaskResponseFromJSON(json: any): AgentTaskResponse {
+    return AgentTaskResponseFromJSONTyped(json, false);
 }
 
-export function TaskDefinitionResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): TaskDefinitionResponse {
+export function AgentTaskResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): AgentTaskResponse {
     if (json == null) {
         return json;
     }
@@ -76,11 +76,11 @@ export function TaskDefinitionResponseFromJSONTyped(json: any, ignoreDiscriminat
     };
 }
 
-export function TaskDefinitionResponseToJSON(json: any): TaskDefinitionResponse {
-    return TaskDefinitionResponseToJSONTyped(json, false);
+export function AgentTaskResponseToJSON(json: any): AgentTaskResponse {
+    return AgentTaskResponseToJSONTyped(json, false);
 }
 
-export function TaskDefinitionResponseToJSONTyped(value?: TaskDefinitionResponse | null, ignoreDiscriminator: boolean = false): any {
+export function AgentTaskResponseToJSONTyped(value?: AgentTaskResponse | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

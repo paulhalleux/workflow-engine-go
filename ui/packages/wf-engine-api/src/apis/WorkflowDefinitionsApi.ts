@@ -15,18 +15,19 @@
 
 import * as runtime from '../runtime';
 import type {
-  UpdateWorkflowDefRequest,
+  Expression,
   WorkflowDefinition,
 } from '../models/index';
 import {
-    UpdateWorkflowDefRequestFromJSON,
-    UpdateWorkflowDefRequestToJSON,
+    ExpressionFromJSON,
+    ExpressionToJSON,
     WorkflowDefinitionFromJSON,
     WorkflowDefinitionToJSON,
 } from '../models/index';
 
 export interface CreateWorkflowDefinitionRequest {
-    definition: WorkflowDefinition;
+    body: WorkflowDefinition;
+    draft?: boolean;
 }
 
 export interface DeleteWorkflowDefinitionRequest {
@@ -41,6 +42,11 @@ export interface EnableWorkflowDefinitionRequest {
     id: string;
 }
 
+export interface GetAllWorkflowDefinitionsRequest {
+    page?: number;
+    pageSize?: number;
+}
+
 export interface GetWorkflowDefinitionByIDRequest {
     id: string;
 }
@@ -49,9 +55,15 @@ export interface PublishWorkflowDefinitionRequest {
     id: string;
 }
 
+export interface SearchWorkflowDefinitionsRequest {
+    expression: Expression;
+    page?: number;
+    pageSize?: number;
+}
+
 export interface UpdateWorkflowDefinitionRequest {
     id: string;
-    definition: UpdateWorkflowDefRequest;
+    body: WorkflowDefinition;
 }
 
 /**
@@ -60,18 +72,22 @@ export interface UpdateWorkflowDefinitionRequest {
 export class WorkflowDefinitionsApi extends runtime.BaseAPI {
 
     /**
-     * Create a new workflow definition
+     * Create a new workflow definition, optionally as a draft
      * Create a new workflow definition
      */
     async createWorkflowDefinitionRaw(requestParameters: CreateWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WorkflowDefinition>> {
-        if (requestParameters['definition'] == null) {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'definition',
-                'Required parameter "definition" was null or undefined when calling createWorkflowDefinition().'
+                'body',
+                'Required parameter "body" was null or undefined when calling createWorkflowDefinition().'
             );
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters['draft'] != null) {
+            queryParameters['draft'] = requestParameters['draft'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -85,14 +101,14 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: WorkflowDefinitionToJSON(requestParameters['definition']),
+            body: WorkflowDefinitionToJSON(requestParameters['body']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => WorkflowDefinitionFromJSON(jsonValue));
     }
 
     /**
-     * Create a new workflow definition
+     * Create a new workflow definition, optionally as a draft
      * Create a new workflow definition
      */
     async createWorkflowDefinition(requestParameters: CreateWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WorkflowDefinition> {
@@ -101,7 +117,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a workflow definition
+     * Delete a workflow definition by its ID
      * Delete a workflow definition
      */
     async deleteWorkflowDefinitionRaw(requestParameters: DeleteWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -131,7 +147,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a workflow definition
+     * Delete a workflow definition by its ID
      * Delete a workflow definition
      */
     async deleteWorkflowDefinition(requestParameters: DeleteWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -139,8 +155,8 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a workflow definition
-     * Delete a workflow definition
+     * Disable a workflow definition by its ID
+     * Disable a workflow definition
      */
     async disableWorkflowDefinitionRaw(requestParameters: DisableWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
@@ -169,16 +185,16 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a workflow definition
-     * Delete a workflow definition
+     * Disable a workflow definition by its ID
+     * Disable a workflow definition
      */
     async disableWorkflowDefinition(requestParameters: DisableWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.disableWorkflowDefinitionRaw(requestParameters, initOverrides);
     }
 
     /**
-     * Delete a workflow definition
-     * Delete a workflow definition
+     * Enable a workflow definition by its ID
+     * Enable a workflow definition
      */
     async enableWorkflowDefinitionRaw(requestParameters: EnableWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
@@ -207,19 +223,27 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a workflow definition
-     * Delete a workflow definition
+     * Enable a workflow definition by its ID
+     * Enable a workflow definition
      */
     async enableWorkflowDefinition(requestParameters: EnableWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.enableWorkflowDefinitionRaw(requestParameters, initOverrides);
     }
 
     /**
-     * Get all workflow definitions
+     * Retrieve a paginated list of all workflow definitions
      * Get all workflow definitions
      */
-    async getAllWorkflowDefinitionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<WorkflowDefinition>>> {
+    async getAllWorkflowDefinitionsRaw(requestParameters: GetAllWorkflowDefinitionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<WorkflowDefinition>>> {
         const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['pageSize'] = requestParameters['pageSize'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -237,17 +261,17 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get all workflow definitions
+     * Retrieve a paginated list of all workflow definitions
      * Get all workflow definitions
      */
-    async getAllWorkflowDefinitions(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<WorkflowDefinition>> {
-        const response = await this.getAllWorkflowDefinitionsRaw(initOverrides);
+    async getAllWorkflowDefinitions(requestParameters: GetAllWorkflowDefinitionsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<WorkflowDefinition>> {
+        const response = await this.getAllWorkflowDefinitionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * Get a workflow definition by ID
-     * Get a workflow definition by ID
+     * Retrieve a workflow definition by its ID
+     * Get workflow definition by ID
      */
     async getWorkflowDefinitionByIDRaw(requestParameters: GetWorkflowDefinitionByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WorkflowDefinition>> {
         if (requestParameters['id'] == null) {
@@ -276,8 +300,8 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a workflow definition by ID
-     * Get a workflow definition by ID
+     * Retrieve a workflow definition by its ID
+     * Get workflow definition by ID
      */
     async getWorkflowDefinitionByID(requestParameters: GetWorkflowDefinitionByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WorkflowDefinition> {
         const response = await this.getWorkflowDefinitionByIDRaw(requestParameters, initOverrides);
@@ -285,7 +309,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Publish a workflow definition
+     * Publish a draft workflow definition by its ID
      * Publish a workflow definition
      */
     async publishWorkflowDefinitionRaw(requestParameters: PublishWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -315,7 +339,7 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Publish a workflow definition
+     * Publish a draft workflow definition by its ID
      * Publish a workflow definition
      */
     async publishWorkflowDefinition(requestParameters: PublishWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -323,7 +347,56 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update an existing workflow definition
+     * Search for workflow definitions based on a given expression
+     * Search workflow definitions
+     */
+    async searchWorkflowDefinitionsRaw(requestParameters: SearchWorkflowDefinitionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<WorkflowDefinition>>> {
+        if (requestParameters['expression'] == null) {
+            throw new runtime.RequiredError(
+                'expression',
+                'Required parameter "expression" was null or undefined when calling searchWorkflowDefinitions().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['pageSize'] = requestParameters['pageSize'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/api/workflow-definitions/search`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ExpressionToJSON(requestParameters['expression']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(WorkflowDefinitionFromJSON));
+    }
+
+    /**
+     * Search for workflow definitions based on a given expression
+     * Search workflow definitions
+     */
+    async searchWorkflowDefinitions(requestParameters: SearchWorkflowDefinitionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<WorkflowDefinition>> {
+        const response = await this.searchWorkflowDefinitionsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update an existing workflow definition by its ID
      * Update an existing workflow definition
      */
     async updateWorkflowDefinitionRaw(requestParameters: UpdateWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WorkflowDefinition>> {
@@ -334,10 +407,10 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['definition'] == null) {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'definition',
-                'Required parameter "definition" was null or undefined when calling updateWorkflowDefinition().'
+                'body',
+                'Required parameter "body" was null or undefined when calling updateWorkflowDefinition().'
             );
         }
 
@@ -356,14 +429,14 @@ export class WorkflowDefinitionsApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UpdateWorkflowDefRequestToJSON(requestParameters['definition']),
+            body: WorkflowDefinitionToJSON(requestParameters['body']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => WorkflowDefinitionFromJSON(jsonValue));
     }
 
     /**
-     * Update an existing workflow definition
+     * Update an existing workflow definition by its ID
      * Update an existing workflow definition
      */
     async updateWorkflowDefinition(requestParameters: UpdateWorkflowDefinitionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WorkflowDefinition> {

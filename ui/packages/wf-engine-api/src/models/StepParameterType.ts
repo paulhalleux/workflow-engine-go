@@ -19,7 +19,7 @@
  */
 export enum StepParameterType {
     StepParameterTypeConstant = 'constant',
-    StepParameterTypeWorkflow = 'workflow',
+    StepParameterTypeWorkflow = 'workflowInput',
     StepParameterTypeTaskOutput = 'taskOutput'
 }
 

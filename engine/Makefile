@@ -23,3 +23,12 @@ ifeq ($(OS),Windows_NT)
 else
 	@set -a; . .env; migrate -path migrations -database "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${DB_PORT}/${POSTGRES_DB}?sslmode=disable" down 1; set +a
 endif
+
+swagger:
+	swag init -g ./cmd/engine/main.go -o ./docs --parseInternal --parseDependency  --outputTypes json
+ifeq ($(OS),Windows_NT)
+	@powershell -NoProfile -Command "New-Item -ItemType Directory -Force -Path '..\ui\packages\wf-engine-api\docs' ; Copy-Item -Path './docs/swagger.json' -Destination '..\ui\packages\wf-engine-api\docs\swagger.json' -Force"
+else
+	mkdir -p ../ui/packages/wf-engine-api/docs
+	cp ./docs/swagger.json ../ui/packages/wf-engine-api/docs/swagger.json
+endif

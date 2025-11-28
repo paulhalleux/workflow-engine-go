@@ -63,12 +63,6 @@ export interface WorkflowDefinition {
      * @type {boolean}
      * @memberof WorkflowDefinition
      */
-    isDraft: boolean;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof WorkflowDefinition
-     */
     isEnabled: boolean;
     /**
      * 
@@ -114,7 +108,6 @@ export interface WorkflowDefinition {
 export function instanceOfWorkflowDefinition(value: object): value is WorkflowDefinition {
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('isDraft' in value) || value['isDraft'] === undefined) return false;
     if (!('isEnabled' in value) || value['isEnabled'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('steps' in value) || value['steps'] === undefined) return false;
@@ -137,7 +130,6 @@ export function WorkflowDefinitionFromJSONTyped(json: any, ignoreDiscriminator: 
         'description': json['description'] == null ? undefined : json['description'],
         'id': json['id'],
         'inputParameters': json['inputParameters'] == null ? undefined : ((json['inputParameters'] as Array<any>).map(WorkflowParameterDefinitionFromJSON)),
-        'isDraft': json['isDraft'],
         'isEnabled': json['isEnabled'],
         'metadata': json['metadata'] == null ? undefined : json['metadata'],
         'name': json['name'],
@@ -163,7 +155,6 @@ export function WorkflowDefinitionToJSONTyped(value?: WorkflowDefinition | null,
         'description': value['description'],
         'id': value['id'],
         'inputParameters': value['inputParameters'] == null ? undefined : ((value['inputParameters'] as Array<any>).map(WorkflowParameterDefinitionToJSON)),
-        'isDraft': value['isDraft'],
         'isEnabled': value['isEnabled'],
         'metadata': value['metadata'],
         'name': value['name'],

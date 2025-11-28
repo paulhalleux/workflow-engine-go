@@ -1,15 +1,19 @@
 package expr
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
 
 // CompareExpression represents a comparison between two value expressions using a comparison operator.
 type CompareExpression struct {
-	Left     *string            `json:"left,omitempty"`
+	Field    *string            `json:"field,omitempty"`
 	Operator ComparisonOperator `json:"operator,omitempty"`
-	Right    *string            `json:"right,omitempty"`
-}
+	Value    *fmt.Stringer      `json:"value,omitempty"`
+} // @name CompareExpression
 
-type ComparisonOperator string
+type ComparisonOperator string // @name ComparisonOperator
 
 const (
 	OperatorEquals       ComparisonOperator = "="
@@ -22,50 +26,50 @@ const (
 )
 
 func (e CompareExpression) ToGorm(db *gorm.DB, negate bool) *gorm.DB {
-	left := *e.Left
-	right := *e.Right
+	field := *e.Field
+	value := (*e.Value).String()
 	switch e.Operator {
 	case OperatorEquals:
 		if negate {
-			db = db.Where(left+" != ?", right)
+			db = db.Where(field+" != ?", value)
 		} else {
-			db = db.Where(left+" = ?", right)
+			db = db.Where(field+" = ?", value)
 		}
 	case OperatorNotEquals:
 		if negate {
-			db = db.Where(left+" = ?", right)
+			db = db.Where(field+" = ?", value)
 		} else {
-			db = db.Where(left+" != ?", right)
+			db = db.Where(field+" != ?", value)
 		}
 	case OperatorGreaterThan:
 		if negate {
-			db = db.Where(left+" <= ?", right)
+			db = db.Where(field+" <= ?", value)
 		} else {
-			db = db.Where(left+" > ?", right)
+			db = db.Where(field+" > ?", value)
 		}
 	case OperatorLessThan:
 		if negate {
-			db = db.Where(left+" >= ?", right)
+			db = db.Where(field+" >= ?", value)
 		} else {
-			db = db.Where(left+" < ?", right)
+			db = db.Where(field+" < ?", value)
 		}
 	case OperatorGreaterEqual:
 		if negate {
-			db = db.Where(left+" < ?", right)
+			db = db.Where(field+" < ?", value)
 		} else {
-			db = db.Where(left+" >= ?", right)
+			db = db.Where(field+" >= ?", value)
 		}
 	case OperatorLessEqual:
 		if negate {
-			db = db.Where(left+" > ?", right)
+			db = db.Where(field+" > ?", value)
 		} else {
-			db = db.Where(left+" <= ?", right)
+			db = db.Where(field+" <= ?", value)
 		}
 	case OperatorIn:
 		if negate {
-			db = db.Where(left+" NOT IN (?)", right)
+			db = db.Where(field+" NOT IN (?)", value)
 		} else {
-			db = db.Where(left+" IN (?)", right)
+			db = db.Where(field+" IN (?)", value)
 		}
 	}
 	return db

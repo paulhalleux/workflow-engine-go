@@ -55,8 +55,10 @@ func (e *Engine) Start() error {
 
 	wfDefRepo := persistance.NewWorkflowDefinitionRepository(e.db)
 	wfDefHandlers := httpserver.NewWorkflowDefinitionsHandlers(wfDefRepo)
+	wfAgentsHandlers := httpserver.NewAgentsHandlers(agentRegistry)
 
 	httpSrv.RegisterApiHandler(wfDefHandlers)
+	httpSrv.RegisterApiHandler(wfAgentsHandlers)
 
 	// Lancer les serveurs en goroutines.
 	go httpSrv.Start(wsSrv)

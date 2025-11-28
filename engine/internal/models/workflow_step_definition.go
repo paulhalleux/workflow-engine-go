@@ -22,13 +22,16 @@ type WorkflowStepDefinition struct {
 	Description      string                    `json:"description"`
 	Parameters       *StepDefinitionParameters `json:"parameters,omitempty"`
 	Metadata         *map[string]interface{}   `json:"metadata,omitempty"`
-	Type             StepType                  `json:"type" validate:"required"`
-	TaskConfig       *TaskConfig               `json:"taskConfig,omitempty"`
-	WorkflowConfig   *WorkflowConfig           `json:"workflowConfig,omitempty"`
-	WaitConfig       *WaitConfig               `json:"waitConfig,omitempty"`
-	DecisionConfig   *DecisionConfig           `json:"decisionConfig,omitempty"`
-	ForkConfig       *ForkConfig               `json:"forkConfig,omitempty"`
-	JoinConfig       *JoinConfig               `json:"joinConfig,omitempty"`
+	TimeoutSeconds   *int                      `json:"timeoutSeconds,omitempty"`
+	RetryCount       *int                      `json:"retryCount,omitempty"`
+
+	Type           StepType        `json:"type" validate:"required"`
+	TaskConfig     *TaskConfig     `json:"taskConfig,omitempty" validate:"required_if=Type task"`
+	WorkflowConfig *WorkflowConfig `json:"workflowConfig,omitempty" validate:"required_if=Type workflow"`
+	WaitConfig     *WaitConfig     `json:"waitConfig,omitempty" validate:"required_if=Type wait"`
+	DecisionConfig *DecisionConfig `json:"decisionConfig,omitempty" validate:"required_if=Type decision"`
+	ForkConfig     *ForkConfig     `json:"forkConfig,omitempty" validate:"required_if=Type fork"`
+	JoinConfig     *JoinConfig     `json:"joinConfig,omitempty" validate:"required_if=Type join"`
 } // @name WorkflowStepDefinition
 
 type TaskConfig struct {

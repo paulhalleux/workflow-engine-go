@@ -10,6 +10,8 @@ import (
 	"github.com/paulhalleux/workflow-engine-go/engine-new/internal/app"
 )
 
+// @version 1.0
+// @title Workflow Engine API
 func main() {
 	if err := godotenv.Load(".env"); err != nil {
 		log.Printf("warning: unable to load .env file: %v", err)

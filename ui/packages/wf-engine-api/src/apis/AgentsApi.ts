@@ -15,9 +15,12 @@
 
 import * as runtime from '../runtime';
 import type {
+  AgentOverviewResponse,
   AgentResponse,
 } from '../models/index';
 import {
+    AgentOverviewResponseFromJSON,
+    AgentOverviewResponseToJSON,
     AgentResponseFromJSON,
     AgentResponseToJSON,
 } from '../models/index';
@@ -32,7 +35,7 @@ export interface GetAgentByNameRequest {
 export class AgentsApi extends runtime.BaseAPI {
 
     /**
-     * Get details of a registered agent by its name
+     * Retrieve detailed information about a specific agent by its name.
      * Get agent by name
      */
     async getAgentByNameRaw(requestParameters: GetAgentByNameRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AgentResponse>> {
@@ -62,7 +65,7 @@ export class AgentsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get details of a registered agent by its name
+     * Retrieve detailed information about a specific agent by its name.
      * Get agent by name
      */
     async getAgentByName(requestParameters: GetAgentByNameRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AgentResponse> {
@@ -71,10 +74,10 @@ export class AgentsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a list of all registered agents
-     * Get all agents
+     * Retrieve a list of all registered agents in the system.
+     * Get all registered agents
      */
-    async getAllAgentsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<AgentResponse>>> {
+    async getAllAgentsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<AgentOverviewResponse>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -89,14 +92,14 @@ export class AgentsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(AgentResponseFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(AgentOverviewResponseFromJSON));
     }
 
     /**
-     * Get a list of all registered agents
-     * Get all agents
+     * Retrieve a list of all registered agents in the system.
+     * Get all registered agents
      */
-    async getAllAgents(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<AgentResponse>> {
+    async getAllAgents(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<AgentOverviewResponse>> {
         const response = await this.getAllAgentsRaw(initOverrides);
         return await response.value();
     }
