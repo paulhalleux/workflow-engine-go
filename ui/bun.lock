@@ -21,6 +21,9 @@
     "packages/wf-engine-proto": {
       "name": "@paulhalleux/wf-engine-proto",
       "version": "1.0.0",
+      "dependencies": {
+        "ts-protoc-gen": "^0.15.0",
+      },
       "devDependencies": {
         "typescript": "^5.9.3",
       },

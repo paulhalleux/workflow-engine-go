@@ -8,8 +8,9 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
 export enum WebsocketScopeType {
-  UNSPECIFIED = 0,
-  WORKFLOW_INSTANCE = 1,
+  WEBSOCKET_SCOPE_TYPE_UNSPECIFIED = 0,
+  WEBSOCKET_SCOPE_TYPE_WORKFLOW_INSTANCE = 1,
+  WEBSOCKET_SCOPE_TYPE_TASK_INSTANCE = 2,
   UNRECOGNIZED = -1,
 }
 
@@ -17,10 +18,13 @@ export function websocketScopeTypeFromJSON(object: any): WebsocketScopeType {
   switch (object) {
     case 0:
     case "WEBSOCKET_SCOPE_TYPE_UNSPECIFIED":
-      return WebsocketScopeType.UNSPECIFIED;
+      return WebsocketScopeType.WEBSOCKET_SCOPE_TYPE_UNSPECIFIED;
     case 1:
     case "WEBSOCKET_SCOPE_TYPE_WORKFLOW_INSTANCE":
-      return WebsocketScopeType.WORKFLOW_INSTANCE;
+      return WebsocketScopeType.WEBSOCKET_SCOPE_TYPE_WORKFLOW_INSTANCE;
+    case 2:
+    case "WEBSOCKET_SCOPE_TYPE_TASK_INSTANCE":
+      return WebsocketScopeType.WEBSOCKET_SCOPE_TYPE_TASK_INSTANCE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -30,10 +34,12 @@ export function websocketScopeTypeFromJSON(object: any): WebsocketScopeType {
 
 export function websocketScopeTypeToJSON(object: WebsocketScopeType): string {
   switch (object) {
-    case WebsocketScopeType.UNSPECIFIED:
+    case WebsocketScopeType.WEBSOCKET_SCOPE_TYPE_UNSPECIFIED:
       return "WEBSOCKET_SCOPE_TYPE_UNSPECIFIED";
-    case WebsocketScopeType.WORKFLOW_INSTANCE:
+    case WebsocketScopeType.WEBSOCKET_SCOPE_TYPE_WORKFLOW_INSTANCE:
       return "WEBSOCKET_SCOPE_TYPE_WORKFLOW_INSTANCE";
+    case WebsocketScopeType.WEBSOCKET_SCOPE_TYPE_TASK_INSTANCE:
+      return "WEBSOCKET_SCOPE_TYPE_TASK_INSTANCE";
     case WebsocketScopeType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -41,9 +47,9 @@ export function websocketScopeTypeToJSON(object: WebsocketScopeType): string {
 }
 
 export enum WebsocketMessageType {
-  UNSPECIFIED = 0,
-  WORKFLOW_INSTANCE_EVENT = 1,
-  REGISTERED = 2,
+  WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED = 0,
+  WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT = 1,
+  WEBSOCKET_MESSAGE_TYPE_CLIENT_REGISTERED = 2,
   UNRECOGNIZED = -1,
 }
 
@@ -51,13 +57,13 @@ export function websocketMessageTypeFromJSON(object: any): WebsocketMessageType 
   switch (object) {
     case 0:
     case "WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED":
-      return WebsocketMessageType.UNSPECIFIED;
+      return WebsocketMessageType.WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED;
     case 1:
     case "WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT":
-      return WebsocketMessageType.WORKFLOW_INSTANCE_EVENT;
+      return WebsocketMessageType.WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT;
     case 2:
-    case "WEBSOCKET_MESSAGE_TYPE_REGISTERED":
-      return WebsocketMessageType.REGISTERED;
+    case "WEBSOCKET_MESSAGE_TYPE_CLIENT_REGISTERED":
+      return WebsocketMessageType.WEBSOCKET_MESSAGE_TYPE_CLIENT_REGISTERED;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -67,12 +73,12 @@ export function websocketMessageTypeFromJSON(object: any): WebsocketMessageType 
 
 export function websocketMessageTypeToJSON(object: WebsocketMessageType): string {
   switch (object) {
-    case WebsocketMessageType.UNSPECIFIED:
+    case WebsocketMessageType.WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED:
       return "WEBSOCKET_MESSAGE_TYPE_UNSPECIFIED";
-    case WebsocketMessageType.WORKFLOW_INSTANCE_EVENT:
+    case WebsocketMessageType.WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT:
       return "WEBSOCKET_MESSAGE_TYPE_WORKFLOW_INSTANCE_EVENT";
-    case WebsocketMessageType.REGISTERED:
-      return "WEBSOCKET_MESSAGE_TYPE_REGISTERED";
+    case WebsocketMessageType.WEBSOCKET_MESSAGE_TYPE_CLIENT_REGISTERED:
+      return "WEBSOCKET_MESSAGE_TYPE_CLIENT_REGISTERED";
     case WebsocketMessageType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -80,9 +86,9 @@ export function websocketMessageTypeToJSON(object: WebsocketMessageType): string
 }
 
 export enum WebsocketCommandType {
-  UNSPECIFIED = 0,
-  SUBSCRIBE = 1,
-  UNSUBSCRIBE = 2,
+  WEBSOCKET_COMMAND_TYPE_UNSPECIFIED = 0,
+  WEBSOCKET_COMMAND_TYPE_SUBSCRIBE = 1,
+  WEBSOCKET_COMMAND_TYPE_UNSUBSCRIBE = 2,
   UNRECOGNIZED = -1,
 }
 
@@ -90,13 +96,13 @@ export function websocketCommandTypeFromJSON(object: any): WebsocketCommandType 
   switch (object) {
     case 0:
     case "WEBSOCKET_COMMAND_TYPE_UNSPECIFIED":
-      return WebsocketCommandType.UNSPECIFIED;
+      return WebsocketCommandType.WEBSOCKET_COMMAND_TYPE_UNSPECIFIED;
     case 1:
     case "WEBSOCKET_COMMAND_TYPE_SUBSCRIBE":
-      return WebsocketCommandType.SUBSCRIBE;
+      return WebsocketCommandType.WEBSOCKET_COMMAND_TYPE_SUBSCRIBE;
     case 2:
     case "WEBSOCKET_COMMAND_TYPE_UNSUBSCRIBE":
-      return WebsocketCommandType.UNSUBSCRIBE;
+      return WebsocketCommandType.WEBSOCKET_COMMAND_TYPE_UNSUBSCRIBE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -106,11 +112,11 @@ export function websocketCommandTypeFromJSON(object: any): WebsocketCommandType 
 
 export function websocketCommandTypeToJSON(object: WebsocketCommandType): string {
   switch (object) {
-    case WebsocketCommandType.UNSPECIFIED:
+    case WebsocketCommandType.WEBSOCKET_COMMAND_TYPE_UNSPECIFIED:
       return "WEBSOCKET_COMMAND_TYPE_UNSPECIFIED";
-    case WebsocketCommandType.SUBSCRIBE:
+    case WebsocketCommandType.WEBSOCKET_COMMAND_TYPE_SUBSCRIBE:
       return "WEBSOCKET_COMMAND_TYPE_SUBSCRIBE";
-    case WebsocketCommandType.UNSUBSCRIBE:
+    case WebsocketCommandType.WEBSOCKET_COMMAND_TYPE_UNSUBSCRIBE:
       return "WEBSOCKET_COMMAND_TYPE_UNSUBSCRIBE";
     case WebsocketCommandType.UNRECOGNIZED:
     default:
@@ -119,12 +125,12 @@ export function websocketCommandTypeToJSON(object: WebsocketCommandType): string
 }
 
 export enum WorkflowInstanceEventType {
-  UNSPECIFIED = 0,
-  STARTED = 1,
-  UPDATED = 2,
-  COMPLETED = 3,
-  FAILED = 4,
-  CREATED = 5,
+  WORKFLOW_INSTANCE_EVENT_TYPE_UNSPECIFIED = 0,
+  WORKFLOW_INSTANCE_EVENT_TYPE_STARTED = 1,
+  WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED = 2,
+  WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED = 3,
+  WORKFLOW_INSTANCE_EVENT_TYPE_FAILED = 4,
+  WORKFLOW_INSTANCE_EVENT_TYPE_CREATED = 5,
   UNRECOGNIZED = -1,
 }
 
@@ -132,22 +138,22 @@ export function workflowInstanceEventTypeFromJSON(object: any): WorkflowInstance
   switch (object) {
     case 0:
     case "WORKFLOW_INSTANCE_EVENT_TYPE_UNSPECIFIED":
-      return WorkflowInstanceEventType.UNSPECIFIED;
+      return WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_UNSPECIFIED;
     case 1:
     case "WORKFLOW_INSTANCE_EVENT_TYPE_STARTED":
-      return WorkflowInstanceEventType.STARTED;
+      return WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_STARTED;
     case 2:
     case "WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED":
-      return WorkflowInstanceEventType.UPDATED;
+      return WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED;
     case 3:
     case "WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED":
-      return WorkflowInstanceEventType.COMPLETED;
+      return WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED;
     case 4:
     case "WORKFLOW_INSTANCE_EVENT_TYPE_FAILED":
-      return WorkflowInstanceEventType.FAILED;
+      return WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_FAILED;
     case 5:
     case "WORKFLOW_INSTANCE_EVENT_TYPE_CREATED":
-      return WorkflowInstanceEventType.CREATED;
+      return WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_CREATED;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -157,19 +163,64 @@ export function workflowInstanceEventTypeFromJSON(object: any): WorkflowInstance
 
 export function workflowInstanceEventTypeToJSON(object: WorkflowInstanceEventType): string {
   switch (object) {
-    case WorkflowInstanceEventType.UNSPECIFIED:
+    case WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_UNSPECIFIED:
       return "WORKFLOW_INSTANCE_EVENT_TYPE_UNSPECIFIED";
-    case WorkflowInstanceEventType.STARTED:
+    case WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_STARTED:
       return "WORKFLOW_INSTANCE_EVENT_TYPE_STARTED";
-    case WorkflowInstanceEventType.UPDATED:
+    case WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED:
       return "WORKFLOW_INSTANCE_EVENT_TYPE_UPDATED";
-    case WorkflowInstanceEventType.COMPLETED:
+    case WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED:
       return "WORKFLOW_INSTANCE_EVENT_TYPE_COMPLETED";
-    case WorkflowInstanceEventType.FAILED:
+    case WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_FAILED:
       return "WORKFLOW_INSTANCE_EVENT_TYPE_FAILED";
-    case WorkflowInstanceEventType.CREATED:
+    case WorkflowInstanceEventType.WORKFLOW_INSTANCE_EVENT_TYPE_CREATED:
       return "WORKFLOW_INSTANCE_EVENT_TYPE_CREATED";
     case WorkflowInstanceEventType.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+export enum TaskInstanceEventType {
+  TASK_INSTANCE_EVENT_TYPE_UNSPECIFIED = 0,
+  TASK_INSTANCE_EVENT_TYPE_STARTED = 1,
+  TASK_INSTANCE_EVENT_TYPE_COMPLETED = 2,
+  TASK_INSTANCE_EVENT_TYPE_FAILED = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function taskInstanceEventTypeFromJSON(object: any): TaskInstanceEventType {
+  switch (object) {
+    case 0:
+    case "TASK_INSTANCE_EVENT_TYPE_UNSPECIFIED":
+      return TaskInstanceEventType.TASK_INSTANCE_EVENT_TYPE_UNSPECIFIED;
+    case 1:
+    case "TASK_INSTANCE_EVENT_TYPE_STARTED":
+      return TaskInstanceEventType.TASK_INSTANCE_EVENT_TYPE_STARTED;
+    case 2:
+    case "TASK_INSTANCE_EVENT_TYPE_COMPLETED":
+      return TaskInstanceEventType.TASK_INSTANCE_EVENT_TYPE_COMPLETED;
+    case 3:
+    case "TASK_INSTANCE_EVENT_TYPE_FAILED":
+      return TaskInstanceEventType.TASK_INSTANCE_EVENT_TYPE_FAILED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return TaskInstanceEventType.UNRECOGNIZED;
+  }
+}
+
+export function taskInstanceEventTypeToJSON(object: TaskInstanceEventType): string {
+  switch (object) {
+    case TaskInstanceEventType.TASK_INSTANCE_EVENT_TYPE_UNSPECIFIED:
+      return "TASK_INSTANCE_EVENT_TYPE_UNSPECIFIED";
+    case TaskInstanceEventType.TASK_INSTANCE_EVENT_TYPE_STARTED:
+      return "TASK_INSTANCE_EVENT_TYPE_STARTED";
+    case TaskInstanceEventType.TASK_INSTANCE_EVENT_TYPE_COMPLETED:
+      return "TASK_INSTANCE_EVENT_TYPE_COMPLETED";
+    case TaskInstanceEventType.TASK_INSTANCE_EVENT_TYPE_FAILED:
+      return "TASK_INSTANCE_EVENT_TYPE_FAILED";
+    case TaskInstanceEventType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
   }
@@ -184,7 +235,8 @@ export interface WebsocketMessage {
   type: WebsocketMessageType;
   scope: WebsocketScope | undefined;
   workflowInstanceEvent?: WorkflowInstanceEvent | undefined;
-  registeredMessage?: RegisteredMessage | undefined;
+  taskInstanceEvent?: TaskInstanceEvent | undefined;
+  clientRegisteredEvent?: ClientRegisteredEvent | undefined;
 }
 
 export interface WebsocketCommand {
@@ -222,7 +274,24 @@ export interface WorkflowInstanceFailedDetails {
 export interface WorkflowInstanceCreatedDetails {
 }
 
-export interface RegisteredMessage {
+export interface TaskInstanceEvent {
+  taskInstanceId: string;
+  eventType: TaskInstanceEventType;
+  startedDetails?: TaskInstanceStartedDetails | undefined;
+  completedDetails?: TaskInstanceCompletedDetails | undefined;
+  failedDetails?: TaskInstanceFailedDetails | undefined;
+}
+
+export interface TaskInstanceStartedDetails {
+}
+
+export interface TaskInstanceCompletedDetails {
+}
+
+export interface TaskInstanceFailedDetails {
+}
+
+export interface ClientRegisteredEvent {
   clientId: string;
 }
 
@@ -303,7 +372,13 @@ export const WebsocketScope: MessageFns<WebsocketScope> = {
 };
 
 function createBaseWebsocketMessage(): WebsocketMessage {
-  return { type: 0, scope: undefined, workflowInstanceEvent: undefined, registeredMessage: undefined };
+  return {
+    type: 0,
+    scope: undefined,
+    workflowInstanceEvent: undefined,
+    taskInstanceEvent: undefined,
+    clientRegisteredEvent: undefined,
+  };
 }
 
 export const WebsocketMessage: MessageFns<WebsocketMessage> = {
@@ -317,8 +392,11 @@ export const WebsocketMessage: MessageFns<WebsocketMessage> = {
     if (message.workflowInstanceEvent !== undefined) {
       WorkflowInstanceEvent.encode(message.workflowInstanceEvent, writer.uint32(26).fork()).join();
     }
-    if (message.registeredMessage !== undefined) {
-      RegisteredMessage.encode(message.registeredMessage, writer.uint32(34).fork()).join();
+    if (message.taskInstanceEvent !== undefined) {
+      TaskInstanceEvent.encode(message.taskInstanceEvent, writer.uint32(34).fork()).join();
+    }
+    if (message.clientRegisteredEvent !== undefined) {
+      ClientRegisteredEvent.encode(message.clientRegisteredEvent, writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -359,7 +437,15 @@ export const WebsocketMessage: MessageFns<WebsocketMessage> = {
             break;
           }
 
-          message.registeredMessage = RegisteredMessage.decode(reader, reader.uint32());
+          message.taskInstanceEvent = TaskInstanceEvent.decode(reader, reader.uint32());
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.clientRegisteredEvent = ClientRegisteredEvent.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -378,8 +464,11 @@ export const WebsocketMessage: MessageFns<WebsocketMessage> = {
       workflowInstanceEvent: isSet(object.workflowInstanceEvent)
         ? WorkflowInstanceEvent.fromJSON(object.workflowInstanceEvent)
         : undefined,
-      registeredMessage: isSet(object.registeredMessage)
-        ? RegisteredMessage.fromJSON(object.registeredMessage)
+      taskInstanceEvent: isSet(object.taskInstanceEvent)
+        ? TaskInstanceEvent.fromJSON(object.taskInstanceEvent)
+        : undefined,
+      clientRegisteredEvent: isSet(object.clientRegisteredEvent)
+        ? ClientRegisteredEvent.fromJSON(object.clientRegisteredEvent)
         : undefined,
     };
   },
@@ -395,8 +484,11 @@ export const WebsocketMessage: MessageFns<WebsocketMessage> = {
     if (message.workflowInstanceEvent !== undefined) {
       obj.workflowInstanceEvent = WorkflowInstanceEvent.toJSON(message.workflowInstanceEvent);
     }
-    if (message.registeredMessage !== undefined) {
-      obj.registeredMessage = RegisteredMessage.toJSON(message.registeredMessage);
+    if (message.taskInstanceEvent !== undefined) {
+      obj.taskInstanceEvent = TaskInstanceEvent.toJSON(message.taskInstanceEvent);
+    }
+    if (message.clientRegisteredEvent !== undefined) {
+      obj.clientRegisteredEvent = ClientRegisteredEvent.toJSON(message.clientRegisteredEvent);
     }
     return obj;
   },
@@ -414,9 +506,13 @@ export const WebsocketMessage: MessageFns<WebsocketMessage> = {
       (object.workflowInstanceEvent !== undefined && object.workflowInstanceEvent !== null)
         ? WorkflowInstanceEvent.fromPartial(object.workflowInstanceEvent)
         : undefined;
-    message.registeredMessage = (object.registeredMessage !== undefined && object.registeredMessage !== null)
-      ? RegisteredMessage.fromPartial(object.registeredMessage)
+    message.taskInstanceEvent = (object.taskInstanceEvent !== undefined && object.taskInstanceEvent !== null)
+      ? TaskInstanceEvent.fromPartial(object.taskInstanceEvent)
       : undefined;
+    message.clientRegisteredEvent =
+      (object.clientRegisteredEvent !== undefined && object.clientRegisteredEvent !== null)
+        ? ClientRegisteredEvent.fromPartial(object.clientRegisteredEvent)
+        : undefined;
     return message;
   },
 };
@@ -980,22 +1076,291 @@ export const WorkflowInstanceCreatedDetails: MessageFns<WorkflowInstanceCreatedD
   },
 };
 
-function createBaseRegisteredMessage(): RegisteredMessage {
+function createBaseTaskInstanceEvent(): TaskInstanceEvent {
+  return {
+    taskInstanceId: "",
+    eventType: 0,
+    startedDetails: undefined,
+    completedDetails: undefined,
+    failedDetails: undefined,
+  };
+}
+
+export const TaskInstanceEvent: MessageFns<TaskInstanceEvent> = {
+  encode(message: TaskInstanceEvent, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.taskInstanceId !== "") {
+      writer.uint32(10).string(message.taskInstanceId);
+    }
+    if (message.eventType !== 0) {
+      writer.uint32(16).int32(message.eventType);
+    }
+    if (message.startedDetails !== undefined) {
+      TaskInstanceStartedDetails.encode(message.startedDetails, writer.uint32(26).fork()).join();
+    }
+    if (message.completedDetails !== undefined) {
+      TaskInstanceCompletedDetails.encode(message.completedDetails, writer.uint32(34).fork()).join();
+    }
+    if (message.failedDetails !== undefined) {
+      TaskInstanceFailedDetails.encode(message.failedDetails, writer.uint32(42).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TaskInstanceEvent {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTaskInstanceEvent();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.taskInstanceId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.eventType = reader.int32() as any;
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.startedDetails = TaskInstanceStartedDetails.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.completedDetails = TaskInstanceCompletedDetails.decode(reader, reader.uint32());
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.failedDetails = TaskInstanceFailedDetails.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TaskInstanceEvent {
+    return {
+      taskInstanceId: isSet(object.taskInstanceId) ? globalThis.String(object.taskInstanceId) : "",
+      eventType: isSet(object.eventType) ? taskInstanceEventTypeFromJSON(object.eventType) : 0,
+      startedDetails: isSet(object.startedDetails)
+        ? TaskInstanceStartedDetails.fromJSON(object.startedDetails)
+        : undefined,
+      completedDetails: isSet(object.completedDetails)
+        ? TaskInstanceCompletedDetails.fromJSON(object.completedDetails)
+        : undefined,
+      failedDetails: isSet(object.failedDetails) ? TaskInstanceFailedDetails.fromJSON(object.failedDetails) : undefined,
+    };
+  },
+
+  toJSON(message: TaskInstanceEvent): unknown {
+    const obj: any = {};
+    if (message.taskInstanceId !== "") {
+      obj.taskInstanceId = message.taskInstanceId;
+    }
+    if (message.eventType !== 0) {
+      obj.eventType = taskInstanceEventTypeToJSON(message.eventType);
+    }
+    if (message.startedDetails !== undefined) {
+      obj.startedDetails = TaskInstanceStartedDetails.toJSON(message.startedDetails);
+    }
+    if (message.completedDetails !== undefined) {
+      obj.completedDetails = TaskInstanceCompletedDetails.toJSON(message.completedDetails);
+    }
+    if (message.failedDetails !== undefined) {
+      obj.failedDetails = TaskInstanceFailedDetails.toJSON(message.failedDetails);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TaskInstanceEvent>, I>>(base?: I): TaskInstanceEvent {
+    return TaskInstanceEvent.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TaskInstanceEvent>, I>>(object: I): TaskInstanceEvent {
+    const message = createBaseTaskInstanceEvent();
+    message.taskInstanceId = object.taskInstanceId ?? "";
+    message.eventType = object.eventType ?? 0;
+    message.startedDetails = (object.startedDetails !== undefined && object.startedDetails !== null)
+      ? TaskInstanceStartedDetails.fromPartial(object.startedDetails)
+      : undefined;
+    message.completedDetails = (object.completedDetails !== undefined && object.completedDetails !== null)
+      ? TaskInstanceCompletedDetails.fromPartial(object.completedDetails)
+      : undefined;
+    message.failedDetails = (object.failedDetails !== undefined && object.failedDetails !== null)
+      ? TaskInstanceFailedDetails.fromPartial(object.failedDetails)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseTaskInstanceStartedDetails(): TaskInstanceStartedDetails {
+  return {};
+}
+
+export const TaskInstanceStartedDetails: MessageFns<TaskInstanceStartedDetails> = {
+  encode(_: TaskInstanceStartedDetails, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TaskInstanceStartedDetails {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTaskInstanceStartedDetails();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): TaskInstanceStartedDetails {
+    return {};
+  },
+
+  toJSON(_: TaskInstanceStartedDetails): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TaskInstanceStartedDetails>, I>>(base?: I): TaskInstanceStartedDetails {
+    return TaskInstanceStartedDetails.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TaskInstanceStartedDetails>, I>>(_: I): TaskInstanceStartedDetails {
+    const message = createBaseTaskInstanceStartedDetails();
+    return message;
+  },
+};
+
+function createBaseTaskInstanceCompletedDetails(): TaskInstanceCompletedDetails {
+  return {};
+}
+
+export const TaskInstanceCompletedDetails: MessageFns<TaskInstanceCompletedDetails> = {
+  encode(_: TaskInstanceCompletedDetails, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TaskInstanceCompletedDetails {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTaskInstanceCompletedDetails();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): TaskInstanceCompletedDetails {
+    return {};
+  },
+
+  toJSON(_: TaskInstanceCompletedDetails): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TaskInstanceCompletedDetails>, I>>(base?: I): TaskInstanceCompletedDetails {
+    return TaskInstanceCompletedDetails.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TaskInstanceCompletedDetails>, I>>(_: I): TaskInstanceCompletedDetails {
+    const message = createBaseTaskInstanceCompletedDetails();
+    return message;
+  },
+};
+
+function createBaseTaskInstanceFailedDetails(): TaskInstanceFailedDetails {
+  return {};
+}
+
+export const TaskInstanceFailedDetails: MessageFns<TaskInstanceFailedDetails> = {
+  encode(_: TaskInstanceFailedDetails, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TaskInstanceFailedDetails {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTaskInstanceFailedDetails();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): TaskInstanceFailedDetails {
+    return {};
+  },
+
+  toJSON(_: TaskInstanceFailedDetails): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TaskInstanceFailedDetails>, I>>(base?: I): TaskInstanceFailedDetails {
+    return TaskInstanceFailedDetails.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TaskInstanceFailedDetails>, I>>(_: I): TaskInstanceFailedDetails {
+    const message = createBaseTaskInstanceFailedDetails();
+    return message;
+  },
+};
+
+function createBaseClientRegisteredEvent(): ClientRegisteredEvent {
   return { clientId: "" };
 }
 
-export const RegisteredMessage: MessageFns<RegisteredMessage> = {
-  encode(message: RegisteredMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const ClientRegisteredEvent: MessageFns<ClientRegisteredEvent> = {
+  encode(message: ClientRegisteredEvent, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.clientId !== "") {
       writer.uint32(10).string(message.clientId);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): RegisteredMessage {
+  decode(input: BinaryReader | Uint8Array, length?: number): ClientRegisteredEvent {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRegisteredMessage();
+    const message = createBaseClientRegisteredEvent();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1016,11 +1381,11 @@ export const RegisteredMessage: MessageFns<RegisteredMessage> = {
     return message;
   },
 
-  fromJSON(object: any): RegisteredMessage {
+  fromJSON(object: any): ClientRegisteredEvent {
     return { clientId: isSet(object.clientId) ? globalThis.String(object.clientId) : "" };
   },
 
-  toJSON(message: RegisteredMessage): unknown {
+  toJSON(message: ClientRegisteredEvent): unknown {
     const obj: any = {};
     if (message.clientId !== "") {
       obj.clientId = message.clientId;
@@ -1028,11 +1393,11 @@ export const RegisteredMessage: MessageFns<RegisteredMessage> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<RegisteredMessage>, I>>(base?: I): RegisteredMessage {
-    return RegisteredMessage.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<ClientRegisteredEvent>, I>>(base?: I): ClientRegisteredEvent {
+    return ClientRegisteredEvent.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<RegisteredMessage>, I>>(object: I): RegisteredMessage {
-    const message = createBaseRegisteredMessage();
+  fromPartial<I extends Exact<DeepPartial<ClientRegisteredEvent>, I>>(object: I): ClientRegisteredEvent {
+    const message = createBaseClientRegisteredEvent();
     message.clientId = object.clientId ?? "";
     return message;
   },
